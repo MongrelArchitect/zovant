@@ -1,0 +1,8 @@
+.nav a.active {
+  opacity: 1;
+}
+
+.nav ul {
+  display: flex;
+  gap: 16px;
+}

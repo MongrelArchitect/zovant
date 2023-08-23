@@ -1,7 +1,19 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans&display=swap');
+
+:root {
+  --brand-blue : #28adde;
+  --brand-green: #0f0;
+  --bg-dark: #212529;
+  --bg-light: #f8f9fa;
+  --text-dark: #111;
+  --text-light: #eee;
+}
+
 * {
   box-sizing: border-box;
 }
 
 body {
-  background: #ccc;
+  background: var(--bg-light);
+  font-family: "Noto Sans", Arial, sans-serif;
 }

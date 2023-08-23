@@ -1,0 +1,25 @@
+.header {
+  align-items: center;
+  background: var(--bg-dark);
+  color: var(--text-light);
+  display: flex;
+  font-size: 1.1rem;
+  gap: 32px;
+  padding: 8px;
+}
+
+.header a {
+  color: var(--text-light);
+  opacity: 0.5;
+  text-decoration: none;
+  transition: opacity 200ms;
+}
+
+.header a:hover,
+.header a:focus {
+  opacity: 1;
+}
+
+.header img {
+  height: 64px;
+}
