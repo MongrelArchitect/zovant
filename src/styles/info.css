@@ -1,0 +1,40 @@
+.card {
+  background: #fff;
+  border-left: 8px solid var(--brand-green);
+  border-right: 8px solid var(--brand-blue);
+  box-shadow:0 0 4px 4px #ccc;
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.card h1 {
+  font-size: 2rem;
+}
+
+.card-image {
+  border: 3px solid #999;
+  border-radius: 5%;
+  height: 200px;
+  width: 200px;
+}
+
+.card-contents {
+  align-items: center;
+  display: flex;
+  gap: 16px;
+}
+
+.card-text {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 900px;
+}
+
+@media screen and (max-width: 600px) {
+  .card-contents {
+    flex-direction: column;
+  }
+}

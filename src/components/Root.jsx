@@ -5,9 +5,9 @@ export default function Root() {
   return (
     <div className="container">
       <Header />
-      <div className="content">
+      <main className="content">
         <Outlet />
-      </div>
+      </main>
     </div>
   );
 }

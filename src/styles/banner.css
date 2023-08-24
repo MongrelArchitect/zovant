@@ -1,0 +1,11 @@
+.banner {
+  align-items: center;
+  background: linear-gradient(90deg, var(--brand-green), var(--brand-blue));
+  box-shadow:0 0 4px 4px #ccc;
+  color: var(--text-dark);
+  display: flex;
+  font-size: 1.8rem;
+  justify-content: center;
+  height: 100px;
+  width: 100%;
+}
