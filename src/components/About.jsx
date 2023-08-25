@@ -1,10 +1,12 @@
-import '../styles/about.css';
+import HeroStatic from './HeroStatic';
 import Info from './Info';
+
+import aboutImage from '../assets/images/about.jpg';
 
 export default function About() {
   return (
     <div className="about">
-      <div className="about-hero" />
+      <HeroStatic image={aboutImage} />
       <div className="info">
         <Info
           heading="About Us"

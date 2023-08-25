@@ -1,11 +1,12 @@
+import HeroStatic from './HeroStatic';
 import Info from './Info';
 
-import '../styles/contact.css';
+import contactImage from '../assets/images/contact.jpg';
 
 export default function Contact() {
   return (
     <div className="contact">
-      <div className="contact-hero" />
+      <HeroStatic image={contactImage} />
       <div className="info">
         <Info
           heading="Contact"
