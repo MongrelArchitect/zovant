@@ -12,8 +12,8 @@ export default function Home() {
       <Hero />
       <div className="info">
         <Info
-          heading="Our Story"
-          content="Lorem ipsa vero iste minus ex aliquam, aliquam. Reprehenderit consequuntur eveniet inventore sunt aut voluptatibus Quae dicta quos officia fugit delectus placeat Harum commodi quisquam rem possimus illo aliquid, alias! Dolor quisquam praesentium mollitia ipsum sapiente? Ex sunt dolorum voluptatum eum corporis blanditiis, nemo eum Sunt consequatur voluptatem impedit ipsam quisquam Magnam vero ipsam aspernatur culpa eveniet! Blanditiis iste nobis illo voluptatum ipsam Expedita numquam ad ipsam saepe dolore est Doloribus a eos obcaecati veritatis repellat, eius? Laboriosam minima id."
+          heading="Heading"
+          content="Reprehenderit consequuntur eveniet inventore sunt aut voluptatibus Quae dicta quos officia fugit delectus placeat Harum commodi quisquam rem possimus illo aliquid, alias! Dolor quisquam praesentium mollitia ipsum sapiente? Ex sunt dolorum voluptatum eum corporis blanditiis, nemo eum Sunt consequatur voluptatem impedit ipsam quisquam Magnam vero ipsam aspernatur culpa eveniet! Blanditiis iste nobis illo voluptatum ipsam Expedita numquam ad ipsam saepe dolore est Doloribus a eos obcaecati veritatis repellat, eius? Laboriosam minima id."
         />
         <Banner content="A banner goes here" />
         <Info
