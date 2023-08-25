@@ -1,11 +1,7 @@
-.header-content {
-  align-items: center;
-  background: var(--bg-dark);
-  color: var(--text-light);
-  display: flex;
-  font-size: 1.1rem;
-  gap: 32px;
-  padding: 8px;
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 9;
 }
 
 .header a {
@@ -23,6 +19,17 @@
 .header img {
   height: 64px;
 }
+
+.header-content {
+  align-items: center;
+  background: var(--bg-dark);
+  color: var(--text-light);
+  display: flex;
+  font-size: 1.1rem;
+  gap: 32px;
+  padding: 8px;
+}
+
 
 .header-gradient {
   background: linear-gradient(90deg, var(--brand-green), var(--brand-blue));
