@@ -14,7 +14,7 @@
 }
 
 .card-image {
-  border: 3px solid #999;
+  border: 3px solid var(--brand-blue);
   border-radius: 5%;
   height: 200px;
   width: 200px;

@@ -1,4 +1,4 @@
-.header {
+.header-content {
   align-items: center;
   background: var(--bg-dark);
   color: var(--text-light);
@@ -22,4 +22,10 @@
 
 .header img {
   height: 64px;
+}
+
+.header-gradient {
+  background: linear-gradient(90deg, var(--brand-green), var(--brand-blue));
+  height: 4px;
+  width: 100%;
 }
