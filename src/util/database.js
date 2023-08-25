@@ -10,4 +10,13 @@ async function getAllCategories() {
   return categories;
 }
 
-export default getAllCategories;
+async function getAllProducts() {
+  const querySnapshot = await getDocs(collection(database, 'products'));
+  const products = [];
+  querySnapshot.forEach((doc) => {
+    products.push({ ...doc.data(), id: doc.id });
+  });
+  return products;
+}
+
+export { getAllCategories, getAllProducts };

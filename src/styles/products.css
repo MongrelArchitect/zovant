@@ -1,5 +1,6 @@
 .categories.card {
   flex-direction: column;
+  justify-content: flex-start;
 }
 
 .categories.card ul {
@@ -28,9 +29,43 @@
   grid-template-columns: auto 1fr;
 }
 
+.product-image {
+  height: auto;
+  max-width: 200px;
+}
+
+.products-list.card {
+  display: flex;
+  flex-direction: column;
+}
+
+.card h2 {
+  align-self: center;
+  font-size: 1.6rem;
+}
+
+.products-list-contents {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.single-product {
+  border: 1px solid #ccc;
+  padding: 16px;
+}
+
+.single-product h3 {
+  font-size: 1.2rem;
+}
+
 @media screen and (max-width: 600px) {
   .info.products-page {
     display: flex;
     flex-direction: column;
+  }
+
+  .products-list-contents {
+    justify-content: center;
   }
 }
