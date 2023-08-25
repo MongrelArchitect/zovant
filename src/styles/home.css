@@ -4,3 +4,10 @@
   gap: 32px;
   padding: 16px;
 }
+
+@media screen and (max-width: 600px) {
+  .info {
+    padding-left: 0;
+    padding-right: 0;
+  }
+}
