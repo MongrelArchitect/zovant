@@ -1,4 +1,3 @@
-import '../styles/footer.css';
 import facebookIcon from '../assets/images/facebook-logo.svg';
 import instagramIcon from '../assets/images/instagram-logo.svg';
 import youtubeIcon from '../assets/images/youtube-logo.svg';

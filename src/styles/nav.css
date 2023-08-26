@@ -1,9 +1,0 @@
-.nav a.active {
-  opacity: 1;
-}
-
-.nav ul {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 16px;
-}

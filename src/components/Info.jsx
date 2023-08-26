@@ -1,4 +1,3 @@
-import '../styles/info.css';
 import logo from '../assets/images/zovant-logo-notext-transparent.png';
 
 export default function Info({ content, heading, image }) {

@@ -5,8 +5,6 @@ import HeroStatic from './HeroStatic';
 
 import heroImage from '../assets/images/products.jpg';
 
-import '../styles/products.css';
-
 export default function Products() {
   const [categories, setCategories] = useState([]);
   const [categoryTitle, setCategoryTitle] = useState(null);

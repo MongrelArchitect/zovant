@@ -10,9 +10,6 @@ import lock01 from '../assets/images/lock01.jpg';
 import previousIcon from '../assets/images/previous.svg';
 import nextIcon from '../assets/images/next.svg';
 
-// style
-import '../styles/hero.css';
-
 export default function Hero() {
   const images = [cams01, globe01, lock01];
 

@@ -1,7 +1,6 @@
 import Banner from './Banner';
 import Hero from './Hero';
 import Info from './Info';
-import '../styles/home.css';
 
 import info01 from '../assets/images/info01.jpg';
 import info02 from '../assets/images/info02.jpg';
