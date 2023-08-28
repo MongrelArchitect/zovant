@@ -2,14 +2,14 @@ import { Outlet } from 'react-router-dom';
 import Footer from './Footer';
 import Header from './Header';
 
-export default function Root() {
+export default function Root({ user }) {
   return (
     <div className="container">
-      <Header />
+      <Header user={user} />
       <main className="content">
         <Outlet />
       </main>
-      <Footer />
+      <Footer user={user} />
     </div>
   );
 }

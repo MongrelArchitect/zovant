@@ -1,6 +1,8 @@
 import { NavLink } from 'react-router-dom';
+import { signOut } from 'firebase/auth';
+import { auth } from '../util/firebase';
 
-export default function Nav() {
+export default function Nav({ user }) {
   return (
     <nav className="nav">
       <ul>
@@ -16,6 +18,18 @@ export default function Nav() {
         <li>
           <NavLink to="/contact">Contact</NavLink>
         </li>
+        {user ? (
+          <li>
+            <button
+              onClick={() => {
+                signOut(auth);
+              }}
+              type="button"
+            >
+              Sign Out
+            </button>
+          </li>
+        ) : null}
       </ul>
     </nav>
   );

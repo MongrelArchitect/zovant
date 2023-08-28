@@ -1,9 +1,11 @@
+import { Link } from 'react-router-dom';
+
 import facebookIcon from '../assets/images/facebook-logo.svg';
 import instagramIcon from '../assets/images/instagram-logo.svg';
 import youtubeIcon from '../assets/images/youtube-logo.svg';
 import logoIcon from '../assets/images/zovant-logo-horizontal-transparent.png';
 
-export default function Footer() {
+export default function Footer({ user }) {
   return (
     <footer className="footer">
       <div className="footer-content">
@@ -55,6 +57,7 @@ export default function Footer() {
               </a>
             </li>
           </ul>
+          <Link to={user ? '/dashboard' : '/login'}>Admin</Link>
         </div>
 
         <div className="footer-links">

@@ -24,6 +24,15 @@ body {
   font-family: "Noto Sans", Arial, sans-serif;
 }
 
+button {
+  background: #14d66f;
+  border: none;
+  cursor: pointer;
+  font-family: "Noto Sans", Arial, sans-serif;
+  font-size: 1rem;
+  padding: 8px;
+}
+
 .banner {
   align-items: center;
   background: linear-gradient(90deg, var(--brand-green), var(--brand-blue));
@@ -34,6 +43,22 @@ body {
   justify-content: center;
   height: 100px;
   width: 100%;
+}
+
+.brand {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.brand a {
+  color: #ccc;
+  text-decoration: none;
+}
+
+.brand a:hover,
+.brand a:focus {
+  color: #eee;
 }
 
 .brand .logo {
@@ -162,6 +187,23 @@ body {
   text-align: center;
 }
 
+.dashboard .card {
+  align-items: center;
+  flex-direction: column;
+}
+
+.dashboard .dashboard-content {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: auto 1fr;
+  max-width: 900px;
+  width: 100%;
+}
+
+.dashboard .dashboard-content > * {
+  border: 2px solid red;
+}
+
 .footer {
   align-items: center;
   background: var(--bg-dark);
@@ -271,11 +313,32 @@ body {
   grid-template-columns: auto 1fr;
 }
 
+.login-form {
+  gap: 16px;
+}
+
+.login-form label {
+  gap: 4px;
+}
+
+.login-form,
+.login-form label {
+  display: flex;
+  flex-direction: column;
+}
+
+.login-form input {
+  font-family: "Noto Sans", Arial, sans-serif;
+  font-size: 1rem;
+  padding: 8px;
+}
+
 .nav a.active {
   opacity: 1;
 }
 
 .nav ul {
+  align-items: center;
   display: flex;
   flex-wrap: wrap;
   gap: 16px;
