@@ -5,6 +5,7 @@
   --brand-green: #0f0;
   --bg-dark: #212529;
   --bg-light: #f8f9fa;
+  --text-error: #ff5c5c;
   --text-dark: #111;
   --text-light: #eee;
 }
@@ -28,6 +29,27 @@ button {
   background: #14d66f;
   border: none;
   cursor: pointer;
+  font-family: "Noto Sans", Arial, sans-serif;
+  font-size: 1rem;
+  padding: 8px;
+}
+
+form {
+  gap: 16px;
+}
+
+form label {
+  gap: 4px;
+}
+
+form ,
+form label {
+  display: flex;
+  flex-direction: column;
+}
+
+form input,
+form textarea {
   font-family: "Noto Sans", Arial, sans-serif;
   font-size: 1rem;
   padding: 8px;
@@ -201,7 +223,12 @@ button {
 }
 
 .dashboard .dashboard-content > * {
-  border: 2px solid red;
+}
+
+.error {
+  background: var(--text-error);
+  color: var(--text-dark);
+  padding: 8px;
 }
 
 .footer {
@@ -311,26 +338,6 @@ button {
   display: grid;
   gap: 16px;
   grid-template-columns: auto 1fr;
-}
-
-.login-form {
-  gap: 16px;
-}
-
-.login-form label {
-  gap: 4px;
-}
-
-.login-form,
-.login-form label {
-  display: flex;
-  flex-direction: column;
-}
-
-.login-form input {
-  font-family: "Noto Sans", Arial, sans-serif;
-  font-size: 1rem;
-  padding: 8px;
 }
 
 .nav a.active {
