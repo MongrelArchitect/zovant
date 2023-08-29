@@ -11,7 +11,7 @@ export default function ListCategories() {
     if (categories.length) {
       return categories.map((category) => (
         <li key={category.id}>
-          <Link to={`/dashboard/categories/detail/${category.id}`}>
+          <Link to={`/dashboard/categories/${category.id}`}>
             {category.name}
           </Link>
         </li>

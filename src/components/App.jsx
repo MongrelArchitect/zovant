@@ -59,15 +59,15 @@ export default function App() {
           children: [
             { index: true, element: <Summary /> },
             {
-              path: 'categories/detail/:id',
+              path: 'categories/:id',
               element: <CategoryDetail />,
             },
             {
-              path: 'categories/edit/:id',
+              path: 'categories/:id/edit',
               element: <CategoryDetail editing />,
             },
             {
-              path: 'categories/list/',
+              path: 'categories/',
               element: <ListCategories />,
             },
             {
@@ -75,11 +75,11 @@ export default function App() {
               element: <NewCategory />,
             },
             {
-              path: 'products/detail/:id',
+              path: 'products/:id',
               element: <ProductDetail />,
             },
             {
-              path: 'products/edit/:id',
+              path: 'products/:id/edit',
               element: <ProductDetail editing />,
             },
             {
@@ -87,7 +87,7 @@ export default function App() {
               element: <NewProduct />,
             },
             {
-              path: 'products/list',
+              path: 'products/',
               element: <ListProducts />,
             },
           ],

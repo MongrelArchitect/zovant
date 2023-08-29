@@ -17,13 +17,13 @@ export default function Dashboard() {
                 <Link to="/dashboard/categories/new">New Category</Link>
               </li>
               <li>
-                <Link to="/dashboard/categories/list">Edit Category</Link>
+                <Link to="/dashboard/categories/">Edit Category</Link>
               </li>
               <li>
                 <Link to="/dashboard/products/new">New Product</Link>
               </li>
               <li>
-                <Link to="/dashboard/products/list">Edit Product</Link>
+                <Link to="/dashboard/products/">Edit Product</Link>
               </li>
             </ul>
           </div>

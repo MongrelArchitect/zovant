@@ -4,8 +4,8 @@
   --brand-blue : #28adde;
   --brand-green: #0f0;
   --bg-dark: #212529;
+  --bg-error: #ff5c5c;
   --bg-light: #f8f9fa;
-  --text-error: #ff5c5c;
   --text-dark: #111;
   --text-light: #eee;
 }
@@ -226,7 +226,7 @@ form textarea {
 }
 
 .error {
-  background: var(--text-error);
+  background: var(--bg-error);
   color: var(--text-dark);
   padding: 8px;
 }

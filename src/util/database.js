@@ -6,6 +6,7 @@ import {
   getDocs,
   limit,
   query,
+  updateDoc,
   where,
 } from 'firebase/firestore';
 import { database } from './firebase';
@@ -49,7 +50,15 @@ async function getSingleCategory(id) {
   if (categorySnap.exists()) {
     return categorySnap.data();
   }
-  return new Error(`Category id "${id}" not found`);
+  throw new Error(`Category id "${id}" not found`);
+}
+
+async function updateCategory(id, name, description) {
+  const categoryRef = doc(database, 'categories', id);
+  await updateDoc(categoryRef, {
+    description,
+    name,
+  });
 }
 
 export {
@@ -58,4 +67,5 @@ export {
   getAllCategories,
   getAllProducts,
   getSingleCategory,
+  updateCategory,
 };
