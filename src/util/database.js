@@ -1,6 +1,8 @@
 import {
   addDoc,
   collection,
+  doc,
+  getDoc,
   getDocs,
   limit,
   query,
@@ -26,8 +28,8 @@ async function checkCategoryExists(name) {
 async function getAllCategories() {
   const querySnapshot = await getDocs(collection(database, 'categories'));
   const categories = [];
-  querySnapshot.forEach((doc) => {
-    categories.push({ ...doc.data(), id: doc.id });
+  querySnapshot.forEach((docu) => {
+    categories.push({ ...docu.data(), id: docu.id });
   });
   return categories;
 }
@@ -35,10 +37,19 @@ async function getAllCategories() {
 async function getAllProducts() {
   const querySnapshot = await getDocs(collection(database, 'products'));
   const products = [];
-  querySnapshot.forEach((doc) => {
-    products.push({ ...doc.data(), id: doc.id });
+  querySnapshot.forEach((docu) => {
+    products.push({ ...docu.data(), id: docu.id });
   });
   return products;
+}
+
+async function getSingleCategory(id) {
+  const categoryRef = doc(database, 'categories', id);
+  const categorySnap = await getDoc(categoryRef);
+  if (categorySnap.exists()) {
+    return categorySnap.data();
+  }
+  return new Error(`Category id "${id}" not found`);
 }
 
 export {
@@ -46,4 +57,5 @@ export {
   checkCategoryExists,
   getAllCategories,
   getAllProducts,
+  getSingleCategory,
 };

@@ -1,9 +1,11 @@
 import { useState } from 'react';
+import EditCategory from './EditCategory';
 import NewCategory from './NewCategory';
 import NewProduct from './NewProduct';
 import Summary from './Summary';
 
 export default function Dashboard() {
+  const [categoryToEdit, setCategoryToEdit] = useState(null);
   const [mode, setMode] = useState('summary');
 
   const addNewCategory = () => {
@@ -14,12 +16,28 @@ export default function Dashboard() {
     setMode('newProduct');
   };
 
+  const editCategory = () => {
+    setMode('editCategory');
+  };
+
   const chooseMode = () => {
     switch (mode) {
       case 'newCategory':
-        return <NewCategory />;
+        return (
+          <NewCategory
+            setCategoryToEdit={setCategoryToEdit}
+            setMode={setMode}
+          />
+        );
       case 'newProduct':
         return <NewProduct />;
+      case 'editCategory':
+        return (
+          <EditCategory
+            categoryToEdit={categoryToEdit}
+            setCategoryToEdit={setCategoryToEdit}
+          />
+        );
       default:
         return <Summary />;
     }
@@ -46,6 +64,11 @@ export default function Dashboard() {
               <li>
                 <button onClick={addNewCategory} type="button">
                   New Category
+                </button>
+              </li>
+              <li>
+                <button onClick={editCategory} type="button">
+                  Edit Category
                 </button>
               </li>
               <li>
