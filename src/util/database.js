@@ -2,6 +2,7 @@ import {
   addDoc,
   collection,
   doc,
+  getCountFromServer,
   getDoc,
   getDocs,
   limit,
@@ -70,6 +71,20 @@ async function getSingleCategory(id) {
   throw new Error(`Category id "${id}" not found`);
 }
 
+async function getSummaryCounts() {
+  const result = {};
+
+  const categoriesRef = collection(database, 'categories');
+  const categoriesSnap = await getCountFromServer(categoriesRef);
+  result.categories = categoriesSnap.data().count;
+
+  const productsRef = collection(database, 'products');
+  const productsSnap = await getCountFromServer(productsRef);
+  result.products = productsSnap.data().count;
+
+  return result;
+}
+
 async function updateCategory(id, name, description) {
   const categoryRef = doc(database, 'categories', id);
   await updateDoc(categoryRef, {
@@ -85,5 +100,6 @@ export {
   getAllCategoryProducts,
   getAllProducts,
   getSingleCategory,
+  getSummaryCounts,
   updateCategory,
 };

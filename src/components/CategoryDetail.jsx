@@ -44,9 +44,9 @@ export default function CategoryDetail({ editing }) {
             <span>
               {products.length
                 ? `${products.length} ${
-                  products.length > 1 ? 'products' : 'product'
+                  products.length > 1 ? 'products:' : 'product:'
                 }`
-                : 'Category has no products'}
+                : 'No products found'}
             </span>
             {products.length
               ? products.map((product) => (
