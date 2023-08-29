@@ -33,6 +33,9 @@ export default function CategoryDetail({ editing }) {
   };
 
   const displayDetails = () => {
+    if (loading) {
+      return <div>Loading...</div>;
+    }
     if (categoryDetails) {
       return (
         <>
@@ -79,6 +82,9 @@ export default function CategoryDetail({ editing }) {
   };
 
   const displayForm = () => {
+    if (loading) {
+      return <div>Loading...</div>;
+    }
     if (categoryDetails) {
       return (
         <form>
@@ -144,7 +150,6 @@ export default function CategoryDetail({ editing }) {
   return (
     <>
       <h2>{editing ? 'Edit Category' : 'Category Detail'}</h2>
-      {loading ? <div>Loading...</div> : null}
       {editing ? displayForm() : displayDetails()}
       {error ? <div className="error">{error}</div> : null}
     </>
