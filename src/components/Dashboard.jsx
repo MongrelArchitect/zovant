@@ -1,52 +1,6 @@
-import { useState } from 'react';
-import EditCategory from './EditCategory';
-import NewCategory from './NewCategory';
-import NewProduct from './NewProduct';
-import Summary from './Summary';
+import { Link, Outlet } from 'react-router-dom';
 
 export default function Dashboard() {
-  const [categoryToEdit, setCategoryToEdit] = useState(null);
-  const [mode, setMode] = useState('summary');
-
-  const addNewCategory = () => {
-    setMode('newCategory');
-  };
-
-  const addNewProduct = () => {
-    setMode('newProduct');
-  };
-
-  const editCategory = () => {
-    setMode('editCategory');
-  };
-
-  const chooseMode = () => {
-    switch (mode) {
-      case 'newCategory':
-        return (
-          <NewCategory
-            setCategoryToEdit={setCategoryToEdit}
-            setMode={setMode}
-          />
-        );
-      case 'newProduct':
-        return <NewProduct />;
-      case 'editCategory':
-        return (
-          <EditCategory
-            categoryToEdit={categoryToEdit}
-            setCategoryToEdit={setCategoryToEdit}
-          />
-        );
-      default:
-        return <Summary />;
-    }
-  };
-
-  const showSummary = () => {
-    setMode('summary');
-  };
-
   return (
     <div className="dashboard info">
       <div className="card">
@@ -57,29 +11,26 @@ export default function Dashboard() {
             <h2>Options</h2>
             <ul>
               <li>
-                <button onClick={showSummary} type="button">
-                  Summary
-                </button>
+                <Link to="/dashboard">Summary</Link>
               </li>
               <li>
-                <button onClick={addNewCategory} type="button">
-                  New Category
-                </button>
+                <Link to="/dashboard/categories/new">New Category</Link>
               </li>
               <li>
-                <button onClick={editCategory} type="button">
-                  Edit Category
-                </button>
+                <Link to="/dashboard/categories/list">Edit Category</Link>
               </li>
               <li>
-                <button onClick={addNewProduct} type="button">
-                  New Product
-                </button>
+                <Link to="/dashboard/products/new">New Product</Link>
+              </li>
+              <li>
+                <Link to="/dashboard/products/list">Edit Product</Link>
               </li>
             </ul>
           </div>
 
-          <div className="dashboard-detail">{chooseMode()}</div>
+          <div className="dashboard-detail">
+            <Outlet />
+          </div>
         </div>
       </div>
     </div>

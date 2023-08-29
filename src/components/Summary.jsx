@@ -1,5 +1,5 @@
 export default function Summary() {
-  return  (
+  return (
     <h2>Summary</h2>
   );
 }

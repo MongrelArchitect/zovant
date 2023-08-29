@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { addNewCategory, checkCategoryExists } from '../util/database';
 
-export default function NewCategory({ setCategoryToEdit, setMode }) {
+export default function NewCategory() {
   const [description, setDescription] = useState('');
   const [error, setError] = useState('');
   const [name, setName] = useState('');
@@ -25,10 +25,7 @@ export default function NewCategory({ setCategoryToEdit, setMode }) {
       if (validDescription && validName) {
         const categoryExists = await checkCategoryExists(name);
         if (!categoryExists) {
-          const newCategory = await addNewCategory(name, description);
-          // bring up the newly created category to view & edit
-          setCategoryToEdit(newCategory.id);
-          setMode('editCategory');
+          await addNewCategory(name, description);
         } else {
           setError(`Category "${name}" already exists`);
         }
