@@ -1,6 +1,10 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { getSingleCategory, updateCategory } from '../util/database';
+import {
+  getAllCategoryProducts,
+  getSingleCategory,
+  updateCategory,
+} from '../util/database';
 
 export default function CategoryDetail({ editing }) {
   const { id } = useParams();
@@ -10,6 +14,7 @@ export default function CategoryDetail({ editing }) {
   const [categoryDetails, setCategoryDetails] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [products, setProducts] = useState([]);
   const [validName, setValidName] = useState(true);
   const [validDescription, setValidDescription] = useState(true);
 
@@ -35,6 +40,20 @@ export default function CategoryDetail({ editing }) {
           <div>{categoryDetails.description}</div>
           <Link to={`/dashboard/categories/${id}/edit`}>Edit</Link>
           <Link to="/dashboard/categories/">Back to category list</Link>
+          <ul>
+            <span>
+              {products.length
+                ? `${products.length} ${
+                  products.length > 1 ? 'products' : 'product'
+                }`
+                : 'Category has no products'}
+            </span>
+            {products.length
+              ? products.map((product) => (
+                <li key={product.id}>{product.model}</li>
+              ))
+              : null}
+          </ul>
         </>
       );
     }
@@ -95,6 +114,7 @@ export default function CategoryDetail({ editing }) {
 
   useEffect(() => {
     const getDetails = async () => {
+      setLoading(true);
       try {
         const details = await getSingleCategory(id);
         setCategoryDetails(details);
@@ -106,6 +126,20 @@ export default function CategoryDetail({ editing }) {
     };
     getDetails();
   }, [editing]);
+
+  useEffect(() => {
+    const getProducts = async () => {
+      setLoading(true);
+      try {
+        const categoryProducts = await getAllCategoryProducts(id);
+        setProducts(categoryProducts);
+      } catch (err) {
+        console.error(err);
+        setError(err.message);
+      }
+    };
+    getProducts();
+  }, []);
 
   return (
     <>

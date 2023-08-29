@@ -35,6 +35,23 @@ async function getAllCategories() {
   return categories;
 }
 
+async function getAllCategoryProducts(categoryId) {
+  const categoryRef = doc(database, 'categories', categoryId);
+  const productsRef = collection(database, 'products');
+  const productsQuery = query(
+    productsRef,
+    where('categories', 'array-contains', categoryRef),
+  );
+  const snapshot = await getDocs(productsQuery);
+  const result = [];
+  if (!snapshot.empty) {
+    snapshot.forEach((docu) => {
+      result.push({ ...docu.data(), id: docu.id });
+    });
+  }
+  return result;
+}
+
 async function getAllProducts() {
   const querySnapshot = await getDocs(collection(database, 'products'));
   const products = [];
@@ -65,6 +82,7 @@ export {
   addNewCategory,
   checkCategoryExists,
   getAllCategories,
+  getAllCategoryProducts,
   getAllProducts,
   getSingleCategory,
   updateCategory,
