@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { v4 as uuid } from 'uuid';
-import { getAllCategories } from '../util/database';
+import { getAllCategories, getAllProducts } from '../util/database';
 
 export default function NewProduct() {
+  const [accessories, setAccessories] = useState([]);
+  const [addingAccessories, setAddingAccessories] = useState(false);
   const [categories, setCategories] = useState([]);
   const [description, setDescription] = useState('');
   const [error, setError] = useState(null);
@@ -12,11 +14,26 @@ export default function NewProduct() {
   const [inStock, setInStock] = useState(true);
   const [loading, setLoading] = useState(true);
   const [model, setModel] = useState('');
+  const [products, setProducts] = useState([]);
   const [validCategories, setValidCategories] = useState(false);
   const [validDescription, setValidDescription] = useState(false);
   const [validFeatures, setValidFeatures] = useState(true);
   const [validImage, setValidImage] = useState(false);
   const [validModel, setValidModel] = useState(false);
+
+  const changeAccessories = (event) => {
+    const newAccessories = [...accessories];
+    const { checked } = event.target;
+    const productId = event.target.dataset.id;
+    if (checked) {
+      newAccessories.push(productId);
+      setAccessories(newAccessories);
+    } else {
+      const index = newAccessories.indexOf(productId);
+      newAccessories.splice(index, 1);
+      setAccessories(newAccessories);
+    }
+  };
 
   const changeCategories = (event) => {
     const { index } = event.target.dataset;
@@ -76,6 +93,23 @@ export default function NewProduct() {
     const newFeatures = { ...features };
     delete newFeatures[featureid];
     setFeatures(newFeatures);
+  };
+
+  const displayAccessories = () => {
+    if (addingAccessories && products.length) {
+      return products.map((product) => (
+        <div className="category-choice" key={product.id}>
+          <input
+            data-id={product.id}
+            id={`product${product.id}`}
+            onChange={changeAccessories}
+            type="checkbox"
+          />
+          <label htmlFor={`product${product.id}`}>{product.model}</label>
+        </div>
+      ));
+    }
+    return null;
   };
 
   const displayCategories = () => {
@@ -151,6 +185,21 @@ export default function NewProduct() {
     loadCategories();
   }, []);
 
+  useEffect(() => {
+    const loadProducts = async () => {
+      if (addingAccessories) {
+        try {
+          const allProducts = await getAllProducts();
+          setProducts(allProducts);
+        } catch (err) {
+          console.error(err);
+          setError(err.message);
+        }
+      }
+    };
+    loadProducts();
+  }, [addingAccessories]);
+
   return (
     <>
       <h2>New Product</h2>
@@ -222,6 +271,20 @@ export default function NewProduct() {
             {displayCategories()}
           </fieldset>
 
+          <fieldset>
+            <legend>Accessories / Related Products</legend>
+            {displayAccessories()}
+            {!addingAccessories ? (
+              <button
+                onClick={() => {
+                  setAddingAccessories(true);
+                }}
+                type="button"
+              >
+                + add accessories
+              </button>
+            ) : null}
+          </fieldset>
           <button type="button">Submit</button>
         </form>
       )}
