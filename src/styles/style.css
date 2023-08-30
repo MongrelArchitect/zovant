@@ -334,6 +334,10 @@ form textarea {
   width: 100%;
 }
 
+.image-preview {
+  width: 128px;
+}
+
 .info {
   display: flex;
   flex-direction: column;

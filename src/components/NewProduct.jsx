@@ -7,16 +7,29 @@ export default function NewProduct() {
   const [categories, setCategories] = useState([]);
   const [description, setDescription] = useState('');
   const [error, setError] = useState(null);
-  const [features, setFeatures] = useState([]);
+  const [features, setFeatures] = useState({});
+  const [image, setImage] = useState(null);
+  const [inStock, setInStock] = useState(true);
   const [loading, setLoading] = useState(true);
   const [model, setModel] = useState('');
+  const [validCategories, setValidCategories] = useState(false);
   const [validDescription, setValidDescription] = useState(false);
+  const [validFeatures, setValidFeatures] = useState(true);
+  const [validImage, setValidImage] = useState(false);
   const [validModel, setValidModel] = useState(false);
 
   const changeCategories = (event) => {
     const { index } = event.target.dataset;
     const newCategories = [...categories];
     newCategories[index].include = event.target.checked;
+    let valid = false;
+    for (let i = 0; i < newCategories.length; i += 1) {
+      if (newCategories[i].include) {
+        valid = true;
+        break;
+      }
+    }
+    setValidCategories(valid);
     setCategories(newCategories);
   };
 
@@ -26,10 +39,43 @@ export default function NewProduct() {
     setValidDescription(event.target.validity.valid);
   };
 
+  const changeFeature = (event) => {
+    if (event.target.value.trim()) {
+      setValidFeatures(true);
+    } else {
+      setValidFeatures(false);
+    }
+    const { featureid } = event.target.dataset;
+    const newFeatures = { ...features };
+    newFeatures[featureid] = event.target.value;
+    setFeatures(newFeatures);
+  };
+
+  const changeImage = (event) => {
+    const file = event.target.files[0];
+    if (!file || file.type.split('/')[0] !== 'image' || file.size > 5000000) {
+      setValidImage(false);
+    } else {
+      setValidImage(true);
+    }
+    setImage(file);
+  };
+
+  const changeInStock = (event) => {
+    setInStock(event.target.checked);
+  };
+
   const changeModel = (event) => {
     setError(null);
     setModel(event.target.value);
     setValidModel(event.target.validity.valid);
+  };
+
+  const deleteFeature = (event) => {
+    const { featureid } = event.target.dataset;
+    const newFeatures = { ...features };
+    delete newFeatures[featureid];
+    setFeatures(newFeatures);
   };
 
   const displayCategories = () => {
@@ -56,11 +102,23 @@ export default function NewProduct() {
   };
 
   const displayFeatures = () => {
-    if (features.length) {
-      return features.map((feature) => (
-        <div key={feature.id}>
-          <input type="text" />
-          <button type="button">X</button>
+    const keys = Object.keys(features);
+    if (keys.length) {
+      return keys.map((featureId) => (
+        <div key={featureId}>
+          <input
+            data-featureid={featureId}
+            onChange={changeFeature}
+            type="text"
+            value={features[featureId] || ''}
+          />
+          <button
+            data-featureid={featureId}
+            onClick={deleteFeature}
+            type="button"
+          >
+            X
+          </button>
         </div>
       ));
     }
@@ -68,11 +126,10 @@ export default function NewProduct() {
   };
 
   const newFeature = () => {
-    const newFeatures = [...features];
-    newFeatures.push({
-      id: uuid(),
-      text: '',
-    });
+    setValidFeatures(false);
+    const newFeatures = { ...features };
+    const featureId = uuid();
+    newFeatures[featureId] = '';
     setFeatures(newFeatures);
   };
 
@@ -124,17 +181,48 @@ export default function NewProduct() {
             />
           </label>
 
+          <div className="category-choice">
+            <input
+              checked={inStock}
+              id="inStock"
+              onChange={changeInStock}
+              type="checkbox"
+            />
+            {/* eslint-disable-next-line */}
+            <label htmlFor="inStock">In Stock</label>
+          </div>
+
           <fieldset>
             <legend>Features</legend>
             {displayFeatures()}
-            <button onClick={newFeature} type="button">+ add feature</button>
+            <button onClick={newFeature} type="button">
+              + add feature
+            </button>
           </fieldset>
+
+          <label htmlFor="image">
+            Image (5MB max)
+            {image ? (
+              <img
+                alt=""
+                className="image-preview"
+                src={URL.createObjectURL(image)}
+              />
+            ) : null}
+            <input
+              accept="image/*"
+              id="image"
+              onChange={changeImage}
+              type="file"
+            />
+          </label>
 
           <fieldset>
             <legend>Select all categories for this product</legend>
             {displayCategories()}
           </fieldset>
 
+          <button type="button">Submit</button>
         </form>
       )}
       {error ? <div className="error">{error}</div> : null}
