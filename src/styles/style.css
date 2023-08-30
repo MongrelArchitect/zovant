@@ -34,6 +34,11 @@ button {
   padding: 8px;
 }
 
+fieldset {
+  display: flex;
+  flex-direction: column;
+}
+
 form {
   gap: 16px;
 }
@@ -134,6 +139,7 @@ form textarea {
 }
 
 .carousel-controls {
+  align-items: center;
   background: rgba(0, 0, 0, 0.1);
   bottom: 0;
   display: flex;
@@ -190,6 +196,10 @@ form textarea {
   outline: 3px solid var(--brand-blue);
 }
 
+.category-choice {
+  display: flex;
+}
+
 .container {
   display: flex;
   flex-direction: column;
@@ -216,13 +226,10 @@ form textarea {
 
 .dashboard .dashboard-content {
   display: grid;
-  gap: 16px;
+  gap: 64px;
   grid-template-columns: auto 1fr;
   max-width: 900px;
   width: 100%;
-}
-
-.dashboard .dashboard-content > * {
 }
 
 .error {
