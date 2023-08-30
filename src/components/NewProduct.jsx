@@ -56,16 +56,29 @@ export default function NewProduct() {
     setValidDescription(event.target.validity.valid);
   };
 
-  const changeFeature = (event) => {
-    if (event.target.value.trim()) {
-      setValidFeatures(true);
-    } else {
-      setValidFeatures(false);
+  const checkValidFeatures = (copy) => {
+    const keys = Object.keys(copy);
+    let valid = true;
+    if (!keys.length) {
+      // no features = valid, since they're optional
+      return valid;
     }
+    for (let i = 0; i < keys.length; i += 1) {
+      if (!copy[keys[i]]) {
+        valid = false;
+        break;
+      }
+    }
+    return valid;
+  };
+
+  const changeFeature = (event) => {
+    const feature = event.target.value.trim();
     const { featureid } = event.target.dataset;
     const newFeatures = { ...features };
-    newFeatures[featureid] = event.target.value;
+    newFeatures[featureid] = feature;
     setFeatures(newFeatures);
+    setValidFeatures(checkValidFeatures(newFeatures));
   };
 
   const changeImage = (event) => {
@@ -93,6 +106,7 @@ export default function NewProduct() {
     const newFeatures = { ...features };
     delete newFeatures[featureid];
     setFeatures(newFeatures);
+    setValidFeatures(checkValidFeatures(newFeatures));
   };
 
   const displayAccessories = () => {
@@ -289,6 +303,23 @@ export default function NewProduct() {
         </form>
       )}
       {error ? <div className="error">{error}</div> : null}
+      <div className="error">
+        <div>
+          {`validCategories: ${validCategories}`}
+        </div>
+        <div>
+          {`validDescription: ${validDescription}`}
+        </div>
+        <div>
+          {`validFeatures: ${validFeatures}`}
+        </div>
+        <div>
+          {`validImage: ${validImage}`}
+        </div>
+        <div>
+          {`validModel: ${validModel}`}
+        </div>
+      </div>
     </>
   );
 }
