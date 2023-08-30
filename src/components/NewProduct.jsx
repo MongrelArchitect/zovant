@@ -20,6 +20,7 @@ export default function NewProduct() {
   const [validFeatures, setValidFeatures] = useState(true);
   const [validImage, setValidImage] = useState(false);
   const [validModel, setValidModel] = useState(false);
+  const [validProduct, setValidProduct] = useState(false);
 
   const changeAccessories = (event) => {
     const newAccessories = [...accessories];
@@ -181,6 +182,19 @@ export default function NewProduct() {
     setFeatures(newFeatures);
   };
 
+  const submit = () => {
+    // XXX
+    if (
+      validCategories
+      && validDescription
+      && validFeatures
+      && validImage
+      && validModel
+    ) {
+      console.log('good to go!');
+    }
+  };
+
   useEffect(() => {
     const loadCategories = async () => {
       try {
@@ -222,7 +236,7 @@ export default function NewProduct() {
       ) : (
         <form>
           <label htmlFor="model">
-            Model
+            Model (required)
             <input
               id="model"
               onChange={changeModel}
@@ -234,7 +248,7 @@ export default function NewProduct() {
           </label>
 
           <label htmlFor="description">
-            Description
+            Description (required)
             <textarea
               id="description"
               onChange={changeDescription}
@@ -264,7 +278,7 @@ export default function NewProduct() {
           </fieldset>
 
           <label htmlFor="image">
-            Image (5MB max)
+            Image (required)
             {image ? (
               <img
                 alt=""
@@ -281,12 +295,12 @@ export default function NewProduct() {
           </label>
 
           <fieldset>
-            <legend>Select all categories for this product</legend>
+            <legend>Select categories (at least 1 required)</legend>
             {displayCategories()}
           </fieldset>
 
           <fieldset>
-            <legend>Accessories / Related Products</legend>
+            <legend>Accessories / related products</legend>
             {displayAccessories()}
             {!addingAccessories ? (
               <button
@@ -299,27 +313,12 @@ export default function NewProduct() {
               </button>
             ) : null}
           </fieldset>
-          <button type="button">Submit</button>
+          <button onClick={submit} type="button">
+            Submit
+          </button>
         </form>
       )}
       {error ? <div className="error">{error}</div> : null}
-      <div className="error">
-        <div>
-          {`validCategories: ${validCategories}`}
-        </div>
-        <div>
-          {`validDescription: ${validDescription}`}
-        </div>
-        <div>
-          {`validFeatures: ${validFeatures}`}
-        </div>
-        <div>
-          {`validImage: ${validImage}`}
-        </div>
-        <div>
-          {`validModel: ${validModel}`}
-        </div>
-      </div>
     </>
   );
 }

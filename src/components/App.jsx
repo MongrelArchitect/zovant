@@ -55,7 +55,7 @@ export default function App() {
         },
         {
           path: '/dashboard',
-          element: <Dashboard />,
+          element: <Dashboard user={user} />,
           children: [
             { index: true, element: <Summary /> },
             {

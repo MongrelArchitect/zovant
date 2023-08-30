@@ -60,6 +60,10 @@ form textarea {
   padding: 8px;
 }
 
+input[type="checkbox"] {
+  transform: scale(1.5);
+}
+
 .banner {
   align-items: center;
   background: linear-gradient(90deg, var(--brand-green), var(--brand-blue));
@@ -198,6 +202,7 @@ form textarea {
 
 .category-choice {
   display: flex;
+  gap: 8px;
 }
 
 .container {
