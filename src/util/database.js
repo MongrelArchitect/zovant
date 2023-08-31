@@ -10,7 +10,8 @@ import {
   updateDoc,
   where,
 } from 'firebase/firestore';
-import { database } from './firebase';
+import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
+import { database, storage } from './firebase';
 
 async function addNewCategory(name, description) {
   const docRef = await addDoc(collection(database, 'categories'), {
@@ -20,10 +21,39 @@ async function addNewCategory(name, description) {
   return docRef;
 }
 
+async function addNewProduct(product) {
+  const docRef = await (addDoc(collection(database, 'products'), product));
+  return docRef;
+}
+
+async function addProductImage(id, file) {
+  // upload image to storage and get the download url
+  const fileName = file.name;
+  const lastDot = fileName.lastIndexOf('.');
+  const extension = fileName.slice(lastDot + 1);
+  const imageRef = ref(storage, `products/${id}.${extension}`);
+  await uploadBytes(imageRef, file);
+  const imageURL = await getDownloadURL(imageRef);
+
+  // update the product with image location
+  const productRef = doc(database, 'products', id);
+  const updatedProduct = await updateDoc(productRef, {
+    image: imageURL,
+  });
+  return updatedProduct;
+}
+
 async function checkCategoryExists(name) {
   const categories = collection(database, 'categories');
   const nameQuery = query(categories, where('name', '==', name), limit(1));
   const snapshot = await getDocs(nameQuery);
+  return !snapshot.empty;
+}
+
+async function checkProductExists(model) {
+  const products = collection(database, 'products');
+  const modelQuery = query(products, where('model', '==', model), limit(1));
+  const snapshot = await getDocs(modelQuery);
   return !snapshot.empty;
 }
 
@@ -95,7 +125,10 @@ async function updateCategory(id, name, description) {
 
 export {
   addNewCategory,
+  addNewProduct,
+  addProductImage,
   checkCategoryExists,
+  checkProductExists,
   getAllCategories,
   getAllCategoryProducts,
   getAllProducts,

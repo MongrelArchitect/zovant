@@ -1,11 +1,18 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { v4 as uuid } from 'uuid';
-import { getAllCategories, getAllProducts } from '../util/database';
+import {
+  addNewProduct,
+  addProductImage,
+  checkProductExists,
+  getAllCategories,
+  getAllProducts,
+} from '../util/database';
 
 export default function NewProduct() {
   const [accessories, setAccessories] = useState([]);
   const [addingAccessories, setAddingAccessories] = useState(false);
+  const [attempted, setAttempted] = useState(false);
   const [categories, setCategories] = useState([]);
   const [description, setDescription] = useState('');
   const [error, setError] = useState(null);
@@ -20,7 +27,6 @@ export default function NewProduct() {
   const [validFeatures, setValidFeatures] = useState(true);
   const [validImage, setValidImage] = useState(false);
   const [validModel, setValidModel] = useState(false);
-  const [validProduct, setValidProduct] = useState(false);
 
   const changeAccessories = (event) => {
     const newAccessories = [...accessories];
@@ -74,7 +80,7 @@ export default function NewProduct() {
   };
 
   const changeFeature = (event) => {
-    const feature = event.target.value.trim();
+    const feature = event.target.value;
     const { featureid } = event.target.dataset;
     const newFeatures = { ...features };
     newFeatures[featureid] = feature;
@@ -182,8 +188,8 @@ export default function NewProduct() {
     setFeatures(newFeatures);
   };
 
-  const submit = () => {
-    // XXX
+  const submit = async () => {
+    setAttempted(true);
     if (
       validCategories
       && validDescription
@@ -191,7 +197,29 @@ export default function NewProduct() {
       && validImage
       && validModel
     ) {
-      console.log('good to go!');
+      if (await checkProductExists(model)) {
+        setError(`Product model ${model} already in database`);
+      } else {
+        // load up the chosen categories
+        const productCategories = [];
+        categories.forEach((category) => {
+          if (category.include) {
+            productCategories.push(category.id);
+          }
+        });
+        const newProduct = {
+          accessories,
+          categories: productCategories,
+          description,
+          features,
+          inStock,
+          model,
+        };
+        const product = await addNewProduct(newProduct);
+        await addProductImage(product.id, image);
+      }
+    } else {
+      setError('Something went wrong - check each input');
     }
   };
 
@@ -245,6 +273,9 @@ export default function NewProduct() {
               type="text"
               value={model || ''}
             />
+            {attempted && !validModel ? (
+              <div className="error">Model required</div>
+            ) : null}
           </label>
 
           <label htmlFor="description">
@@ -256,6 +287,9 @@ export default function NewProduct() {
               rows="5"
               value={description || ''}
             />
+            {attempted && !validDescription ? (
+              <div className="error">Description required</div>
+            ) : null}
           </label>
 
           <div className="category-choice">
@@ -275,6 +309,9 @@ export default function NewProduct() {
             <button onClick={newFeature} type="button">
               + add feature
             </button>
+            {attempted && !validFeatures ? (
+              <div className="error">No empty features</div>
+            ) : null}
           </fieldset>
 
           <label htmlFor="image">
@@ -292,11 +329,17 @@ export default function NewProduct() {
               onChange={changeImage}
               type="file"
             />
+            {attempted && !validImage ? (
+              <div className="error">Image required (5MB limit)</div>
+            ) : null}
           </label>
 
           <fieldset>
             <legend>Select categories (at least 1 required)</legend>
             {displayCategories()}
+            {attempted && !validCategories ? (
+              <div className="error">At least 1 category required</div>
+            ) : null}
           </fieldset>
 
           <fieldset>
