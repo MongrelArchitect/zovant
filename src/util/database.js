@@ -82,9 +82,22 @@ async function checkProductExists(model) {
 async function getAllCategories() {
   const querySnapshot = await getDocs(collection(database, 'categories'));
   const categories = [];
-  querySnapshot.forEach((docu) => {
-    categories.push({ ...docu.data(), id: docu.id });
-  });
+  if (!querySnapshot.empty) {
+    querySnapshot.forEach((docu) => {
+      categories.push({ ...docu.data(), id: docu.id });
+    });
+    categories.sort((a, b) => {
+      const nameA = a.name.toLowerCase();
+      const nameB = b.name.toLowerCase();
+      if (nameA < nameB) {
+        return -1;
+      }
+      if (nameA < nameB) {
+        return 1;
+      }
+      return 0;
+    });
+  }
   return categories;
 }
 
@@ -101,6 +114,17 @@ async function getAllCategoryProducts(categoryId) {
     snapshot.forEach((docu) => {
       result.push({ ...docu.data(), id: docu.id });
     });
+    result.sort((a, b) => {
+      const modelA = a.model.toLowerCase();
+      const modelB = b.model.toLowerCase();
+      if (modelA < modelB) {
+        return -1;
+      }
+      if (modelA < modelB) {
+        return 1;
+      }
+      return 0;
+    });
   }
   return result;
 }
@@ -108,9 +132,22 @@ async function getAllCategoryProducts(categoryId) {
 async function getAllProducts() {
   const querySnapshot = await getDocs(collection(database, 'products'));
   const products = [];
-  querySnapshot.forEach((docu) => {
-    products.push({ ...docu.data(), id: docu.id });
-  });
+  if (!querySnapshot.empty) {
+    querySnapshot.forEach((docu) => {
+      products.push({ ...docu.data(), id: docu.id });
+    });
+    products.sort((a, b) => {
+      const modelA = a.model.toLowerCase();
+      const modelB = b.model.toLowerCase();
+      if (modelA < modelB) {
+        return -1;
+      }
+      if (modelA < modelB) {
+        return 1;
+      }
+      return 0;
+    });
+  }
   return products;
 }
 
