@@ -21,6 +21,7 @@ export default function NewProduct() {
   const [inStock, setInStock] = useState(true);
   const [loading, setLoading] = useState(true);
   const [model, setModel] = useState('');
+  const [productCategories, setProductCategories] = useState([]);
   const [products, setProducts] = useState([]);
   const [validCategories, setValidCategories] = useState(false);
   const [validDescription, setValidDescription] = useState(false);
@@ -43,18 +44,19 @@ export default function NewProduct() {
   };
 
   const changeCategories = (event) => {
-    const { index } = event.target.dataset;
-    const newCategories = [...categories];
-    newCategories[index].include = event.target.checked;
-    let valid = false;
-    for (let i = 0; i < newCategories.length; i += 1) {
-      if (newCategories[i].include) {
-        valid = true;
-        break;
-      }
+    const { categoryid } = event.target.dataset;
+    const { checked } = event.target;
+
+    const newProductCategories = [...productCategories];
+    if (checked) {
+      newProductCategories.push(categoryid);
+    } else {
+      const index = newProductCategories.indexOf(categoryid);
+      newProductCategories.splice(index, 1);
     }
-    setValidCategories(valid);
-    setCategories(newCategories);
+
+    setValidCategories(newProductCategories.length);
+    setProductCategories(newProductCategories);
   };
 
   const changeDescription = (event) => {
@@ -138,7 +140,7 @@ export default function NewProduct() {
       return categories.map((category) => (
         <div className="category-choice" key={category.id}>
           <input
-            data-index={categories.indexOf(category)}
+            data-categoryid={category.id}
             id={`category${category.id}`}
             onChange={changeCategories}
             type="checkbox"
@@ -200,13 +202,6 @@ export default function NewProduct() {
       if (await checkProductExists(model)) {
         setError(`Product model ${model} already in database`);
       } else {
-        // load up the chosen categories
-        const productCategories = [];
-        categories.forEach((category) => {
-          if (category.include) {
-            productCategories.push(category.id);
-          }
-        });
         const newProduct = {
           accessories,
           categories: productCategories,

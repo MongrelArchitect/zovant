@@ -22,7 +22,28 @@ async function addNewCategory(name, description) {
 }
 
 async function addNewProduct(product) {
-  const docRef = await (addDoc(collection(database, 'products'), product));
+  // first need to convert the array of category id strings into array
+  // of firestore references for those categories
+  const newProduct = { ...product };
+  const newCategories = [];
+  newProduct.categories.forEach((categoryId) => {
+    const categoryRef = doc(database, 'categories', categoryId);
+    newCategories.push(categoryRef);
+  });
+  newProduct.categories = newCategories;
+
+  // now do the same for any accessories
+  if (product.accessories.length) {
+    const newAccessories = [];
+    newProduct.accessories.forEach((productId) => {
+      const productRef = doc(database, 'products', productId);
+      newAccessories.push(productRef);
+    });
+    newProduct.accessories = newAccessories;
+  }
+
+  // now upload the product (we'll add the image later);
+  const docRef = await (addDoc(collection(database, 'products'), newProduct));
   return docRef;
 }
 
