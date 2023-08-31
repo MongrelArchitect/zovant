@@ -1,5 +1,6 @@
 import {
   addDoc,
+  arrayUnion,
   collection,
   doc,
   getCountFromServer,
@@ -136,6 +137,19 @@ async function getSummaryCounts() {
   return result;
 }
 
+async function updateProductAccessories(productId) {
+  const productRef = doc(database, 'products', productId);
+  const productSnap = await getDoc(productRef);
+  const { accessories } = productSnap.data();
+  if (accessories.length) {
+    accessories.forEach(async (accessory) => {
+      await updateDoc(accessory, {
+        accessories: arrayUnion(productRef),
+      });
+    });
+  }
+}
+
 async function updateCategory(id, name, description) {
   const categoryRef = doc(database, 'categories', id);
   await updateDoc(categoryRef, {
@@ -156,4 +170,5 @@ export {
   getSingleCategory,
   getSummaryCounts,
   updateCategory,
+  updateProductAccessories,
 };

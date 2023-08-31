@@ -7,6 +7,7 @@ import {
   checkProductExists,
   getAllCategories,
   getAllProducts,
+  updateProductAccessories,
 } from '../util/database';
 
 export default function NewProduct() {
@@ -213,6 +214,7 @@ export default function NewProduct() {
           };
           const product = await addNewProduct(newProduct);
           await addProductImage(product.id, image);
+          await updateProductAccessories(product.id);
           // XXX
           // need to navigate to product detail after success
         } catch (err) {
