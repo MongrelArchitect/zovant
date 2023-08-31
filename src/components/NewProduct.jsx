@@ -202,16 +202,23 @@ export default function NewProduct() {
       if (await checkProductExists(model)) {
         setError(`Product model ${model} already in database`);
       } else {
-        const newProduct = {
-          accessories,
-          categories: productCategories,
-          description,
-          features,
-          inStock,
-          model,
-        };
-        const product = await addNewProduct(newProduct);
-        await addProductImage(product.id, image);
+        try {
+          const newProduct = {
+            accessories,
+            categories: productCategories,
+            description,
+            features,
+            inStock,
+            model,
+          };
+          const product = await addNewProduct(newProduct);
+          await addProductImage(product.id, image);
+          // XXX
+          // need to navigate to product detail after success
+        } catch (err) {
+          console.error(err);
+          setError(err.message);
+        }
       }
     } else {
       setError('Something went wrong - check each input');
