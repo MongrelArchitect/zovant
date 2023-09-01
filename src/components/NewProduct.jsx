@@ -212,8 +212,11 @@ export default function NewProduct() {
             inStock,
             model,
           };
+          // upload new product to database
           const product = await addNewProduct(newProduct);
+          // upload image to storage and update product accordingly
           await addProductImage(product.id, image);
+          // add product to "accessories" arrays of its own accessories
           await updateProductAccessories(product.id);
           // XXX
           // need to navigate to product detail after success

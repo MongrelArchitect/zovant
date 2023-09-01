@@ -369,7 +369,8 @@ input[type="checkbox"] {
 
 .product-image {
   height: auto;
-  max-width: 200px;
+  max-width: 320px;
+  width: 100%;
 }
 
 .products-list.card {
@@ -413,6 +414,11 @@ input[type="checkbox"] {
 
   .carousel {
     height: 200px;
+  }
+
+  .dashboard .dashboard-content {
+    display: flex;
+    flex-direction: column;
   }
 
   .footer-content {

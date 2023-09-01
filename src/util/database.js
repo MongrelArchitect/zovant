@@ -44,7 +44,7 @@ async function addNewProduct(product) {
   }
 
   // now upload the product (we'll add the image later);
-  const docRef = await (addDoc(collection(database, 'products'), newProduct));
+  const docRef = await addDoc(collection(database, 'products'), newProduct);
   return docRef;
 }
 
@@ -129,6 +129,50 @@ async function getAllCategoryProducts(categoryId) {
   return result;
 }
 
+async function getSingleCategory(id) {
+  const categoryRef = doc(database, 'categories', id);
+  const categorySnap = await getDoc(categoryRef);
+  if (categorySnap.exists()) {
+    return categorySnap.data();
+  }
+  throw new Error(`Category id "${id}" not found`);
+}
+
+async function getSingleProduct(id) {
+  const productRef = doc(database, 'products', id);
+  const productSnap = await getDoc(productRef);
+  if (productSnap.exists()) {
+    return productSnap.data();
+  }
+  throw new Error(`Product id "${id}" not found`);
+}
+
+async function getAllProductAccessories(accessoryRefs) {
+  const accessories = [];
+  if (accessoryRefs.length) {
+    // eslint-disable-next-line
+    for (const acc of accessoryRefs) {
+      // eslint-disable-next-line
+      const accessory = await getSingleProduct(acc.id);
+      accessories.push({ ...accessory, id: acc.id });
+    }
+  }
+  return accessories;
+}
+
+async function getAllProductCategories(categoryRefs) {
+  const categories = [];
+  if (categoryRefs.length) {
+    // eslint-disable-next-line
+    for(const cat of categoryRefs) {
+    // eslint-disable-next-line
+      const category = await getSingleCategory(cat.id);
+      categories.push({ ...category, id: cat.id });
+    }
+  }
+  return categories;
+}
+
 async function getAllProducts() {
   const querySnapshot = await getDocs(collection(database, 'products'));
   const products = [];
@@ -149,15 +193,6 @@ async function getAllProducts() {
     });
   }
   return products;
-}
-
-async function getSingleCategory(id) {
-  const categoryRef = doc(database, 'categories', id);
-  const categorySnap = await getDoc(categoryRef);
-  if (categorySnap.exists()) {
-    return categorySnap.data();
-  }
-  throw new Error(`Category id "${id}" not found`);
 }
 
 async function getSummaryCounts() {
@@ -203,8 +238,11 @@ export {
   checkProductExists,
   getAllCategories,
   getAllCategoryProducts,
+  getAllProductAccessories,
+  getAllProductCategories,
   getAllProducts,
   getSingleCategory,
+  getSingleProduct,
   getSummaryCounts,
   updateCategory,
   updateProductAccessories,
