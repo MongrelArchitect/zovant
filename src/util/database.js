@@ -1,5 +1,6 @@
 import {
   addDoc,
+  arrayRemove,
   arrayUnion,
   collection,
   doc,
@@ -209,6 +210,18 @@ async function getSummaryCounts() {
   return result;
 }
 
+async function removeProductFromAccessories(id, products) {
+  const productRef = doc(database, 'products', id);
+  if (products.length) {
+    products.forEach(async (product) => {
+      const updateRef = doc(database, 'products', product);
+      await updateDoc(updateRef, {
+        accessories: arrayRemove(productRef),
+      });
+    });
+  }
+}
+
 async function updateCategory(id, name, description) {
   const categoryRef = doc(database, 'categories', id);
   await updateDoc(categoryRef, {
@@ -240,7 +253,7 @@ async function updateProduct(id, product) {
 
   // now update the product (we'll deal with the image later);
   const productRef = doc(database, 'products', id);
-  await updateDoc(productRef, product);
+  await updateDoc(productRef, newProduct);
 }
 
 async function updateProductAccessories(productId) {
@@ -271,6 +284,7 @@ export {
   getSingleCategory,
   getSingleProduct,
   getSummaryCounts,
+  removeProductFromAccessories,
   updateCategory,
   updateProduct,
   updateProductAccessories,

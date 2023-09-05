@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { v4 as uuid } from 'uuid';
 import {
   addNewProduct,
@@ -11,6 +11,8 @@ import {
 } from '../util/database';
 
 export default function NewProduct() {
+  const navigate = useNavigate();
+
   const [accessories, setAccessories] = useState([]);
   const [addingAccessories, setAddingAccessories] = useState(false);
   const [attempted, setAttempted] = useState(false);
@@ -203,6 +205,7 @@ export default function NewProduct() {
       if (await checkProductExists(model)) {
         setError(`Product model ${model} already in database`);
       } else {
+        setLoading(true);
         try {
           const newProduct = {
             accessories,
@@ -218,9 +221,10 @@ export default function NewProduct() {
           await addProductImage(product.id, image);
           // add product to "accessories" arrays of its own accessories
           await updateProductAccessories(product.id);
-          // XXX
-          // need to navigate to product detail after success
+          // navigate to product detail after success
+          navigate(`/dashboard/products/${product.id}`);
         } catch (err) {
+          setLoading(false);
           console.error(err);
           setError(err.message);
         }

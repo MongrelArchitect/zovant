@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { v4 as uuid } from 'uuid';
 
 import {
@@ -9,6 +9,7 @@ import {
   getAllProductCategories,
   getAllProducts,
   getSingleProduct,
+  removeProductFromAccessories,
   updateProduct,
 } from '../util/database';
 
@@ -17,9 +18,12 @@ export default function ProductDetail({ editing }) {
 
   const { id } = useParams();
 
+  const navigate = useNavigate();
+
   const [categories, setCategories] = useState([]);
   const [error, setError] = useState(false);
   const [newImage, setNewImage] = useState(null);
+  const [originalAccessories, setOriginalAccessories] = useState([]);
   const [productDetails, setProductDetails] = useState(null);
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -219,7 +223,7 @@ export default function ProductDetail({ editing }) {
   };
 
   const submit = async () => {
-    /*
+    setLoading(true);
     try {
       // just need the ids
       const cleanedAccessories = [];
@@ -249,16 +253,29 @@ export default function ProductDetail({ editing }) {
 
       // then update the rest of the product info
       await updateProduct(id, updatedProduct);
+
+      // now we need to remove any reference to this product from any other
+      // products that have it in their 'accessories' array
+      const noMoreAccessory = [];
+      originalAccessories.forEach((accessory) => {
+        if (!updatedProduct.accessories.includes(accessory)) {
+          noMoreAccessory.push(accessory);
+        }
+      });
+      await removeProductFromAccessories(id, noMoreAccessory);
+
+      // finally redirect to the new product details page
+      navigate(`/dashboard/products/${id}`);
     } catch (err) {
+      setLoading(false);
       console.error(err);
       setError(err.message);
     }
-    */
   };
 
   const displayForm = () => {
     if (loading) {
-      return <div>Loadiing...</div>;
+      return <div>Loading...</div>;
     }
     if (productDetails) {
       return (
@@ -369,6 +386,13 @@ export default function ProductDetail({ editing }) {
           details.accessories,
         );
         if (editing) {
+          // keep track of the product's pre-edit accessories, so we can remove
+          // any reference to this product for any removed accessories
+          const originalIds = [];
+          details.accessories.forEach((accessory) => {
+            originalIds.push(accessory.id);
+          });
+          setOriginalAccessories(originalIds);
           // add "include" to those categories that the product belongs to
           const allCategories = await getAllCategories();
           allCategories.forEach((category) => {
