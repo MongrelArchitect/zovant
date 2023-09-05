@@ -209,7 +209,42 @@ async function getSummaryCounts() {
   return result;
 }
 
+async function updateCategory(id, name, description) {
+  const categoryRef = doc(database, 'categories', id);
+  await updateDoc(categoryRef, {
+    description,
+    name,
+  });
+}
+
+async function updateProduct(id, product) {
+  // first need to convert the array of category id strings into array
+  // of firestore references for those categories
+  const newProduct = { ...product };
+  const newCategories = [];
+  newProduct.categories.forEach((categoryId) => {
+    const categoryRef = doc(database, 'categories', categoryId);
+    newCategories.push(categoryRef);
+  });
+  newProduct.categories = newCategories;
+
+  // now do the same for any accessories
+  if (product.accessories.length) {
+    const newAccessories = [];
+    newProduct.accessories.forEach((productId) => {
+      const productRef = doc(database, 'products', productId);
+      newAccessories.push(productRef);
+    });
+    newProduct.accessories = newAccessories;
+  }
+
+  // now update the product (we'll deal with the image later);
+  const productRef = doc(database, 'products', id);
+  await updateDoc(productRef, product);
+}
+
 async function updateProductAccessories(productId) {
+  // add's a product to the accessories of it's own accessories
   const productRef = doc(database, 'products', productId);
   const productSnap = await getDoc(productRef);
   const { accessories } = productSnap.data();
@@ -220,14 +255,6 @@ async function updateProductAccessories(productId) {
       });
     });
   }
-}
-
-async function updateCategory(id, name, description) {
-  const categoryRef = doc(database, 'categories', id);
-  await updateDoc(categoryRef, {
-    description,
-    name,
-  });
 }
 
 export {
@@ -245,5 +272,6 @@ export {
   getSingleProduct,
   getSummaryCounts,
   updateCategory,
+  updateProduct,
   updateProductAccessories,
 };
