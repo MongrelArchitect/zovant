@@ -20,6 +20,7 @@ export default function ProductDetail({ editing }) {
 
   const navigate = useNavigate();
 
+  const [attempted, setAttempted] = useState(false);
   const [categories, setCategories] = useState([]);
   const [error, setError] = useState(false);
   const [newImage, setNewImage] = useState(null);
@@ -27,12 +28,18 @@ export default function ProductDetail({ editing }) {
   const [productDetails, setProductDetails] = useState(null);
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [validCategories, setValidCategories] = useState(true);
+  const [validDescription, setValidDescription] = useState(true);
+  const [validFeatures, setValidFeatures] = useState(true);
+  const [validImage, setValidImage] = useState(true);
+  const [validModel, setValidModel] = useState(true);
 
   const addNewFeature = () => {
     const featuresCopy = { ...productDetails.features };
     const newId = uuid();
     featuresCopy[newId] = '';
     setProductDetails({ ...productDetails, features: featuresCopy });
+    setValidFeatures(false);
   };
 
   const changeAccessories = (event) => {
@@ -70,21 +77,63 @@ export default function ProductDetail({ editing }) {
     }
     setProductDetails({ ...productDetails, categories: newProductCategories });
     setCategories(newCategories);
+    setValidCategories(newProductCategories.length);
   };
 
   const changeDescription = (event) => {
+    setError(null);
     setProductDetails({ ...productDetails, description: event.target.value });
+    setValidDescription(event.target.validity.valid);
+  };
+
+  const checkValidFeatures = (copy) => {
+    const keys = Object.keys(copy);
+    let valid = true;
+    if (!keys.length) {
+      // no features = valid, since they're optional
+      return valid;
+    }
+    for (let i = 0; i < keys.length; i += 1) {
+      if (!copy[keys[i]]) {
+        valid = false;
+        break;
+      }
+    }
+    return valid;
   };
 
   const changeFeature = (event) => {
+    setError(null);
     const featuresCopy = { ...productDetails.features };
     featuresCopy[event.target.dataset.featureid] = event.target.value;
     setProductDetails({ ...productDetails, features: featuresCopy });
+    setValidFeatures(checkValidFeatures(featuresCopy));
   };
 
   const changeImage = (event) => {
     const file = event.target.files[0];
+    if (file) {
+      if (file.type.split('/')[0] !== 'image' || file.size > 5000000) {
+        setValidImage(false);
+      } else {
+        setValidImage(true);
+      }
+    } else {
+      setValidImage(true);
+    }
     setNewImage(file);
+  };
+
+  const determineImageError = () => {
+    if (newImage) {
+      if (newImage.type.split('/')[0] !== 'image') {
+        return 'Wrong format - images only (jpg, png, gif, etc.)';
+      }
+      if (newImage.size > 5000000) {
+        return 'Image too large - 5MB maximum file size';
+      }
+    }
+    return null;
   };
 
   const changeInStock = (event) => {
@@ -92,13 +141,17 @@ export default function ProductDetail({ editing }) {
   };
 
   const changeModel = (event) => {
+    setError(null);
     setProductDetails({ ...productDetails, model: event.target.value });
+    setValidModel(event.target.validity.valid);
   };
 
   const deleteFeature = (event) => {
+    setError(null);
     const featuresCopy = { ...productDetails.features };
     delete featuresCopy[event.target.dataset.featureid];
     setProductDetails({ ...productDetails, features: featuresCopy });
+    setValidFeatures(checkValidFeatures(featuresCopy));
   };
 
   const displayAccessories = () => {
@@ -223,53 +276,64 @@ export default function ProductDetail({ editing }) {
   };
 
   const submit = async () => {
-    setLoading(true);
-    try {
-      // just need the ids
-      const cleanedAccessories = [];
-      productDetails.accessories.forEach((accessory) => {
-        cleanedAccessories.push(accessory.id);
-      });
+    setAttempted(true);
+    if (
+      validCategories
+      && validDescription
+      && validFeatures
+      && validImage
+      && validModel
+    ) {
+      setLoading(true);
+      try {
+        // just need the ids
+        const cleanedAccessories = [];
+        productDetails.accessories.forEach((accessory) => {
+          cleanedAccessories.push(accessory.id);
+        });
 
-      // just need the ids
-      const cleanedCategories = [];
-      productDetails.categories.forEach((category) => {
-        cleanedCategories.push(category.id);
-      });
+        // just need the ids
+        const cleanedCategories = [];
+        productDetails.categories.forEach((category) => {
+          cleanedCategories.push(category.id);
+        });
 
-      const updatedProduct = {
-        accessories: cleanedAccessories,
-        categories: cleanedCategories,
-        description: productDetails.description,
-        features: productDetails.features,
-        inStock: productDetails.inStock,
-        model: productDetails.model,
-      };
+        const updatedProduct = {
+          accessories: cleanedAccessories,
+          categories: cleanedCategories,
+          description: productDetails.description,
+          features: productDetails.features,
+          inStock: productDetails.inStock,
+          model: productDetails.model,
+        };
 
-      // first update the image (if there's a new one)
-      if (newImage) {
-        await addProductImage(id, newImage);
-      }
-
-      // then update the rest of the product info
-      await updateProduct(id, updatedProduct);
-
-      // now we need to remove any reference to this product from any other
-      // products that have it in their 'accessories' array
-      const noMoreAccessory = [];
-      originalAccessories.forEach((accessory) => {
-        if (!updatedProduct.accessories.includes(accessory)) {
-          noMoreAccessory.push(accessory);
+        // first update the image (if there's a new one)
+        if (newImage) {
+          await addProductImage(id, newImage);
         }
-      });
-      await removeProductFromAccessories(id, noMoreAccessory);
 
-      // finally redirect to the new product details page
-      navigate(`/dashboard/products/${id}`);
-    } catch (err) {
-      setLoading(false);
-      console.error(err);
-      setError(err.message);
+        // then update the rest of the product info
+        await updateProduct(id, updatedProduct);
+
+        // now we need to remove any reference to this product from any other
+        // products that have it in their 'accessories' array
+        const noMoreAccessory = [];
+        originalAccessories.forEach((accessory) => {
+          if (!updatedProduct.accessories.includes(accessory)) {
+            noMoreAccessory.push(accessory);
+          }
+        });
+        await removeProductFromAccessories(id, noMoreAccessory);
+
+        // finally redirect to the new product details page
+        navigate(`/dashboard/products/${id}`);
+      } catch (err) {
+        setLoading(false);
+        console.error(err);
+        setError(err.message);
+      }
+    } else {
+      setError('Something went wrong - check each input');
     }
   };
 
@@ -285,10 +349,14 @@ export default function ProductDetail({ editing }) {
             <input
               id="name"
               onChange={changeModel}
+              required
               placeholder="Model number / name"
               type="text"
               value={productDetails.model || ''}
             />
+            {attempted && !validModel ? (
+              <div className="error">Model required</div>
+            ) : null}
           </label>
 
           <label htmlFor="description">
@@ -297,9 +365,13 @@ export default function ProductDetail({ editing }) {
               id="description"
               onChange={changeDescription}
               placeholder="Provide a brief description of the product"
+              required
               rows="5"
               value={productDetails.description || ''}
             />
+            {attempted && !validDescription ? (
+              <div className="error">Description required</div>
+            ) : null}
           </label>
 
           <div className="category-choice">
@@ -310,7 +382,7 @@ export default function ProductDetail({ editing }) {
               type="checkbox"
             />
             {/* eslint-disable-next-line */}
-            <label htmlFor="inStock">In Stock</label>
+              <label htmlFor="inStock">In Stock</label>
           </div>
 
           <fieldset>
@@ -319,6 +391,9 @@ export default function ProductDetail({ editing }) {
             <button onClick={addNewFeature} type="button">
               + add feature
             </button>
+            {attempted && !validFeatures ? (
+              <div className="error">No empty features</div>
+            ) : null}
           </fieldset>
 
           <label htmlFor="image">
@@ -327,8 +402,10 @@ export default function ProductDetail({ editing }) {
               alt={productDetails.model}
               className="image-preview"
               src={
-                newImage ? URL.createObjectURL(newImage) : productDetails.image
-              }
+                  newImage
+                    ? URL.createObjectURL(newImage)
+                    : productDetails.image
+                }
             />
             <div>{newImage ? newImage.name : 'using original image'}</div>
             <input
@@ -350,16 +427,23 @@ export default function ProductDetail({ editing }) {
             <button
               onClick={() => {
                 setNewImage(null);
+                setValidImage(true);
               }}
               type="button"
             >
               Use Original Image
             </button>
+            {attempted && !validImage ? (
+              <div className="error">{determineImageError()}</div>
+            ) : null}
           </label>
 
           <fieldset>
             <legend>Select categories (at least 1 required)</legend>
             {displayCategories()}
+            {attempted && !validCategories ? (
+              <div className="error">At least 1 category required</div>
+            ) : null}
           </fieldset>
 
           <fieldset>
@@ -370,6 +454,7 @@ export default function ProductDetail({ editing }) {
           <button onClick={submit} type="button">
             Submit
           </button>
+          <Link to={`/dashboard/products/${id}`}>Back to details</Link>
         </form>
       );
     }

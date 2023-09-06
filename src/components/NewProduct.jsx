@@ -295,6 +295,7 @@ export default function NewProduct() {
               id="description"
               onChange={changeDescription}
               placeholder="Provide a brief description of the product"
+              required
               rows="5"
               value={description || ''}
             />
