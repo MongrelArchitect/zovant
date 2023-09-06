@@ -3,6 +3,7 @@
 :root {
   --brand-blue : #28adde;
   --brand-green: #0f0;
+  --brand-middle: #14d66f;
   --bg-dark: #212529;
   --bg-error: #ff5c5c;
   --bg-light: #f8f9fa;
@@ -26,12 +27,16 @@ body {
 }
 
 button {
-  background: #14d66f;
+  background: var(--brand-blue);
   border: none;
   cursor: pointer;
   font-family: "Noto Sans", Arial, sans-serif;
   font-size: 1rem;
   padding: 8px;
+}
+
+button.submit {
+  background: var(--brand-middle);
 }
 
 fieldset {

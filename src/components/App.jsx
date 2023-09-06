@@ -79,6 +79,10 @@ export default function App() {
               element: <ProductDetail />,
             },
             {
+              path: 'products/:id/deleted',
+              element: <ProductDetail deleted />,
+            },
+            {
               path: 'products/:id/edit',
               element: <ProductDetail editing />,
             },

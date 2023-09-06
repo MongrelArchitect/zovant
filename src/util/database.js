@@ -3,6 +3,7 @@ import {
   arrayRemove,
   arrayUnion,
   collection,
+  deleteDoc,
   doc,
   getCountFromServer,
   getDoc,
@@ -78,6 +79,23 @@ async function checkProductExists(model) {
   const modelQuery = query(products, where('model', '==', model), limit(1));
   const snapshot = await getDocs(modelQuery);
   return !snapshot.empty;
+}
+
+async function removeProductFromAccessories(id, products) {
+  const productRef = doc(database, 'products', id);
+  if (products.length) {
+    products.forEach(async (product) => {
+      const updateRef = doc(database, 'products', product);
+      await updateDoc(updateRef, {
+        accessories: arrayRemove(productRef),
+      });
+    });
+  }
+}
+
+async function deleteSingleProduct(id, accessories) {
+  await deleteDoc(doc(database, 'products', id));
+  await removeProductFromAccessories(id, accessories);
 }
 
 async function getAllCategories() {
@@ -210,18 +228,6 @@ async function getSummaryCounts() {
   return result;
 }
 
-async function removeProductFromAccessories(id, products) {
-  const productRef = doc(database, 'products', id);
-  if (products.length) {
-    products.forEach(async (product) => {
-      const updateRef = doc(database, 'products', product);
-      await updateDoc(updateRef, {
-        accessories: arrayRemove(productRef),
-      });
-    });
-  }
-}
-
 async function updateCategory(id, name, description) {
   const categoryRef = doc(database, 'categories', id);
   await updateDoc(categoryRef, {
@@ -257,7 +263,7 @@ async function updateProduct(id, product) {
 }
 
 async function updateProductAccessories(productId) {
-  // add's a product to the accessories of it's own accessories
+  // adds a product to the accessories of it's own accessories
   const productRef = doc(database, 'products', productId);
   const productSnap = await getDoc(productRef);
   const { accessories } = productSnap.data();
@@ -276,6 +282,7 @@ export {
   addProductImage,
   checkCategoryExists,
   checkProductExists,
+  deleteSingleProduct,
   getAllCategories,
   getAllCategoryProducts,
   getAllProductAccessories,

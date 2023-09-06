@@ -368,7 +368,7 @@ export default function NewProduct() {
               </button>
             ) : null}
           </fieldset>
-          <button onClick={submit} type="button">
+          <button className="submit" onClick={submit} type="button">
             Submit
           </button>
         </form>

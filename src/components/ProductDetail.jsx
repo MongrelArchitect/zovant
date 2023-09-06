@@ -4,6 +4,7 @@ import { v4 as uuid } from 'uuid';
 
 import {
   addProductImage,
+  deleteSingleProduct,
   getAllCategories,
   getAllProductAccessories,
   getAllProductCategories,
@@ -11,9 +12,10 @@ import {
   getSingleProduct,
   removeProductFromAccessories,
   updateProduct,
+  updateProductAccessories,
 } from '../util/database';
 
-export default function ProductDetail({ editing }) {
+export default function ProductDetail({ deleted, editing }) {
   const fileInputRef = useRef(null);
 
   const { id } = useParams();
@@ -22,6 +24,7 @@ export default function ProductDetail({ editing }) {
 
   const [attempted, setAttempted] = useState(false);
   const [categories, setCategories] = useState([]);
+  const [confirmingDelete, setConfirmingDelete] = useState(false);
   const [error, setError] = useState(false);
   const [newImage, setNewImage] = useState(null);
   const [originalAccessories, setOriginalAccessories] = useState([]);
@@ -315,8 +318,10 @@ export default function ProductDetail({ editing }) {
         // then update the rest of the product info
         await updateProduct(id, updatedProduct);
 
-        // now we need to remove any reference to this product from any other
-        // products that have it in their 'accessories' array
+        // add the product to any new accessories
+        await updateProductAccessories(id);
+
+        // remove the product from any accessories that we've removed
         const noMoreAccessory = [];
         originalAccessories.forEach((accessory) => {
           if (!updatedProduct.accessories.includes(accessory)) {
@@ -335,6 +340,52 @@ export default function ProductDetail({ editing }) {
     } else {
       setError('Something went wrong - check each input');
     }
+  };
+
+  const toggleDelete = () => {
+    setConfirmingDelete(!confirmingDelete);
+  };
+
+  const deleteProduct = async () => {
+    setLoading(true);
+    try {
+      const cleanedAccessories = [];
+      productDetails.accessories.forEach((accessory) => {
+        cleanedAccessories.push(accessory.id);
+      });
+      await deleteSingleProduct(id, cleanedAccessories);
+      navigate(`/dashboard/products/${id}/deleted`);
+    } catch (err) {
+      console.error(err);
+      setError(err.message);
+    }
+    setLoading(false);
+  };
+
+  const deleteSection = () => {
+    if (!confirmingDelete) {
+      return (
+        <button onClick={toggleDelete} type="button">
+          Delete Product
+        </button>
+      );
+    }
+    return (
+      <>
+        <div className="error">
+          Are you sure you want to delete
+          {' '}
+          {productDetails.model}
+          ? This cannot be undone!
+        </div>
+        <button onClick={toggleDelete} type="button">
+          Cancel
+        </button>
+        <button className="error" onClick={deleteProduct} type="button">
+          Confirm Delete
+        </button>
+      </>
+    );
   };
 
   const displayForm = () => {
@@ -382,7 +433,7 @@ export default function ProductDetail({ editing }) {
               type="checkbox"
             />
             {/* eslint-disable-next-line */}
-              <label htmlFor="inStock">In Stock</label>
+            <label htmlFor="inStock">In Stock</label>
           </div>
 
           <fieldset>
@@ -402,10 +453,8 @@ export default function ProductDetail({ editing }) {
               alt={productDetails.model}
               className="image-preview"
               src={
-                  newImage
-                    ? URL.createObjectURL(newImage)
-                    : productDetails.image
-                }
+                newImage ? URL.createObjectURL(newImage) : productDetails.image
+              }
             />
             <div>{newImage ? newImage.name : 'using original image'}</div>
             <input
@@ -451,9 +500,11 @@ export default function ProductDetail({ editing }) {
             {displayAccessories()}
           </fieldset>
 
-          <button onClick={submit} type="button">
+          <button className="submit" onClick={submit} type="button">
             Submit
           </button>
+          {error ? <div className="error">{error}</div> : null}
+          {deleteSection()}
           <Link to={`/dashboard/products/${id}`}>Back to details</Link>
         </form>
       );
@@ -510,14 +561,25 @@ export default function ProductDetail({ editing }) {
       }
       setLoading(false);
     };
-    getDetails();
+    if (!deleted) {
+      getDetails();
+    }
   }, [editing]);
+
+  if (deleted) {
+    return (
+      <>
+        <h2>Product Deleted</h2>
+        <div>Delete successful.</div>
+        <Link to="/dashboard/products">Return to products list</Link>
+      </>
+    );
+  }
 
   return (
     <>
       <h2>{editing ? 'Edit Product' : 'Product Detail'}</h2>
       {editing ? displayForm() : displayDetails()}
-      {error ? <div className="error">{error}</div> : null}
     </>
   );
 }

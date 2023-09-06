@@ -65,7 +65,9 @@ export default function NewCategory() {
           />
         </label>
         {error ? <span className="error">{error}</span> : null}
-        <button onClick={submit} type="button">Submit</button>
+        <button className="submit" onClick={submit} type="button">
+          Submit
+        </button>
       </form>
     </>
   );

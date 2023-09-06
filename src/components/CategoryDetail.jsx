@@ -108,7 +108,7 @@ export default function CategoryDetail({ editing }) {
               value={categoryDetails.description || ''}
             />
           </label>
-          <button onClick={submitEdit} type="button">
+          <button className="submit" onClick={submitEdit} type="button">
             Submit
           </button>
           <Link to={`/dashboard/categories/${id}`}>Cancel edit</Link>
