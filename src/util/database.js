@@ -13,7 +13,12 @@ import {
   updateDoc,
   where,
 } from 'firebase/firestore';
-import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
+import {
+  deleteObject,
+  getDownloadURL,
+  ref,
+  uploadBytes,
+} from 'firebase/storage';
 import { database, storage } from './firebase';
 
 async function addNewCategory(name, description) {
@@ -55,14 +60,16 @@ async function addProductImage(id, file) {
   const fileName = file.name;
   const lastDot = fileName.lastIndexOf('.');
   const extension = fileName.slice(lastDot + 1);
-  const imageRef = ref(storage, `products/${id}.${extension}`);
+  const path = `products/${id}.${extension}`;
+  const imageRef = ref(storage, path);
   await uploadBytes(imageRef, file);
   const imageURL = await getDownloadURL(imageRef);
 
-  // update the product with image location
+  // update the product with image location & reference
   const productRef = doc(database, 'products', id);
   const updatedProduct = await updateDoc(productRef, {
     image: imageURL,
+    imageRef: path,
   });
   return updatedProduct;
 }
@@ -93,8 +100,13 @@ async function removeProductFromAccessories(id, products) {
   }
 }
 
-async function deleteSingleProduct(id, accessories) {
+async function deleteSingleProduct(id, imagePath, accessories) {
+  const imageRef = ref(storage, imagePath);
+  // first delete the image
+  await deleteObject(imageRef);
+  // then the product itself
   await deleteDoc(doc(database, 'products', id));
+  // finally remove any reference to the product from its accessories
   await removeProductFromAccessories(id, accessories);
 }
 
@@ -183,8 +195,8 @@ async function getAllProductCategories(categoryRefs) {
   const categories = [];
   if (categoryRefs.length) {
     // eslint-disable-next-line
-    for(const cat of categoryRefs) {
-    // eslint-disable-next-line
+    for (const cat of categoryRefs) {
+      // eslint-disable-next-line
       const category = await getSingleCategory(cat.id);
       categories.push({ ...category, id: cat.id });
     }

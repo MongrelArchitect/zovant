@@ -353,7 +353,11 @@ export default function ProductDetail({ deleted, editing }) {
       productDetails.accessories.forEach((accessory) => {
         cleanedAccessories.push(accessory.id);
       });
-      await deleteSingleProduct(id, cleanedAccessories);
+      await deleteSingleProduct(
+        id,
+        productDetails.imageRef,
+        cleanedAccessories,
+      );
       navigate(`/dashboard/products/${id}/deleted`);
     } catch (err) {
       console.error(err);
@@ -376,7 +380,8 @@ export default function ProductDetail({ deleted, editing }) {
           Are you sure you want to delete
           {' '}
           {productDetails.model}
-          ? This cannot be undone!
+          ? This cannot be
+          undone!
         </div>
         <button onClick={toggleDelete} type="button">
           Cancel
