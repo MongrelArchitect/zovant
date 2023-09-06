@@ -4,6 +4,7 @@ import { v4 as uuid } from 'uuid';
 
 import {
   addProductImage,
+  deleteOldImage,
   deleteSingleProduct,
   getAllCategories,
   getAllProductAccessories,
@@ -312,6 +313,7 @@ export default function ProductDetail({ deleted, editing }) {
 
         // first update the image (if there's a new one)
         if (newImage) {
+          await deleteOldImage(productDetails.imageRef);
           await addProductImage(id, newImage);
         }
 

@@ -100,6 +100,11 @@ async function removeProductFromAccessories(id, products) {
   }
 }
 
+async function deleteOldImage(imagePath) {
+  const imageRef = ref(storage, imagePath);
+  await deleteObject(imageRef);
+}
+
 async function deleteSingleProduct(id, imagePath, accessories) {
   const imageRef = ref(storage, imagePath);
   // first delete the image
@@ -294,6 +299,7 @@ export {
   addProductImage,
   checkCategoryExists,
   checkProductExists,
+  deleteOldImage,
   deleteSingleProduct,
   getAllCategories,
   getAllCategoryProducts,
