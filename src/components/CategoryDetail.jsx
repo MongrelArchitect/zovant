@@ -1,17 +1,19 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import {
+  deleteSingleCategory,
   getAllCategoryProducts,
   getSingleCategory,
   updateCategory,
 } from '../util/database';
 
-export default function CategoryDetail({ editing }) {
+export default function CategoryDetail({ deleted, editing }) {
   const { id } = useParams();
 
   const navigate = useNavigate();
 
   const [categoryDetails, setCategoryDetails] = useState(null);
+  const [confirmingDelete, setConfirmingDelete] = useState(false);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
   const [products, setProducts] = useState([]);
@@ -30,6 +32,77 @@ export default function CategoryDetail({ editing }) {
     setError(null);
     setValidDescription(event.target.validity.valid);
     setCategoryDetails(newDetails);
+  };
+
+  const toggleDelete = () => {
+    setConfirmingDelete(!confirmingDelete);
+  };
+
+  const deleteCategory = async () => {
+    setLoading(true);
+    try {
+      await deleteSingleCategory(id);
+      navigate(`/dashboard/categories/${id}/deleted`);
+    } catch (err) {
+      console.error(err);
+      setError(err.message);
+    }
+    setLoading(false);
+  };
+
+  const deleteSection = () => {
+    if (!confirmingDelete) {
+      return (
+        <button onClick={toggleDelete} type="button">
+          Delete Category
+        </button>
+      );
+    }
+    if (products.length) {
+      return (
+        <>
+          <div className="error">
+            {`Cannot delete ${categoryDetails.name}: `}
+            {`contains ${products.length} product${
+              products.length > 1 ? 's' : ''
+            }.`}
+          </div>
+          <div>
+            Please remove the following products from this category (or delete
+            them):
+            <ul>
+              {products.map((product) => (
+                <li key={product.id}>
+                  <Link to={`/dashboard/products/${product.id}`}>
+                    {product.model}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <button onClick={toggleDelete} type="button">
+            Cancel
+          </button>
+        </>
+      );
+    }
+    return (
+      <>
+        <div className="error">
+          Are you sure you want to delete
+          {' '}
+          {categoryDetails.name}
+          ? This cannot be
+          undone!
+        </div>
+        <button onClick={toggleDelete} type="button">
+          Cancel
+        </button>
+        <button className="error" onClick={deleteCategory} type="button">
+          Confirm Delete
+        </button>
+      </>
+    );
   };
 
   const displayDetails = () => {
@@ -112,6 +185,7 @@ export default function CategoryDetail({ editing }) {
           <button className="submit" onClick={submitEdit} type="button">
             Submit
           </button>
+          {deleteSection()}
           <Link to={`/dashboard/categories/${id}`}>Cancel edit</Link>
         </form>
       );
@@ -132,7 +206,9 @@ export default function CategoryDetail({ editing }) {
       }
       setLoading(false);
     };
-    getDetails();
+    if (!deleted) {
+      getDetails();
+    }
   }, [editing]);
 
   useEffect(() => {
@@ -146,8 +222,20 @@ export default function CategoryDetail({ editing }) {
         setError(err.message);
       }
     };
-    getProducts();
+    if (!deleted) {
+      getProducts();
+    }
   }, []);
+
+  if (deleted) {
+    return (
+      <>
+        <h2>Category Deleted</h2>
+        <div>Delete successful.</div>
+        <Link to="/dashboard/categories">Return to categories list</Link>
+      </>
+    );
+  }
 
   return (
     <>

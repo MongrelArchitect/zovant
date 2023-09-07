@@ -63,6 +63,10 @@ export default function App() {
               element: <CategoryDetail />,
             },
             {
+              path: 'categories/:id/deleted',
+              element: <CategoryDetail deleted />,
+            },
+            {
               path: 'categories/:id/edit',
               element: <CategoryDetail editing />,
             },

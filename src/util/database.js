@@ -105,6 +105,26 @@ async function deleteOldImage(imagePath) {
   await deleteObject(imageRef);
 }
 
+async function deleteSingleCategory(categoryId) {
+  const products = collection(database, 'products');
+  const categoryRef = doc(database, 'categories', categoryId);
+  const productsQuery = query(
+    products,
+    where('categories', 'array-contains', categoryRef),
+  );
+  const snapshot = await getCountFromServer(productsQuery);
+  const { count } = snapshot.data();
+  if (count) {
+    throw new Error(
+      `Cannot delete category: contains ${count} product${
+        count > 1 ? 's' : ''
+      }.`,
+    );
+  } else {
+    await deleteDoc(doc(database, 'categories', categoryId));
+  }
+}
+
 async function deleteSingleProduct(id, imagePath, accessories) {
   const imageRef = ref(storage, imagePath);
   // first delete the image
@@ -300,6 +320,7 @@ export {
   checkCategoryExists,
   checkProductExists,
   deleteOldImage,
+  deleteSingleCategory,
   deleteSingleProduct,
   getAllCategories,
   getAllCategoryProducts,
