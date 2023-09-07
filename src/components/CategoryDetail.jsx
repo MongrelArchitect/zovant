@@ -64,6 +64,7 @@ export default function CategoryDetail({ editing }) {
   };
 
   const submitEdit = async () => {
+    setLoading(true);
     try {
       if (validName && validDescription) {
         await updateCategory(
@@ -121,6 +122,7 @@ export default function CategoryDetail({ editing }) {
   useEffect(() => {
     const getDetails = async () => {
       setLoading(true);
+      setError(null);
       try {
         const details = await getSingleCategory(id);
         setCategoryDetails(details);

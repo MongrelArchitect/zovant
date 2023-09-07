@@ -1,9 +1,13 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { addNewCategory, checkCategoryExists } from '../util/database';
 
 export default function NewCategory() {
+  const navigate = useNavigate();
+
   const [description, setDescription] = useState('');
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
   const [name, setName] = useState('');
   const [validDescription, setValidDescription] = useState(false);
   const [validName, setValidName] = useState(false);
@@ -21,11 +25,13 @@ export default function NewCategory() {
   };
 
   const submit = async () => {
+    setLoading(true);
     try {
       if (validDescription && validName) {
         const categoryExists = await checkCategoryExists(name);
         if (!categoryExists) {
-          await addNewCategory(name, description);
+          const newCategory = await addNewCategory(name, description);
+          navigate(`/dashboard/categories/${newCategory.id}`);
         } else {
           setError(`Category "${name}" already exists`);
         }
@@ -36,7 +42,12 @@ export default function NewCategory() {
       console.error(err);
       setError('Error submitting to database');
     }
+    setLoading(false);
   };
+
+  if (loading) {
+    return (<div>Loading...</div>);
+  }
 
   return (
     <>
