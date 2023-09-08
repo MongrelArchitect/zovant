@@ -451,6 +451,42 @@ input[type="checkbox"] {
   width: 100%;
 }
 
+.toggle-collapse {
+  display: none;
+}
+
+.toggle-collapse img {
+  height: 32px;
+}
+
+@media screen and (max-width: 700px) {
+  .nav .nav-list {
+    align-items: flex-start;
+    display: none;
+  }
+
+  .nav .nav-list.show {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .toggle-collapse {
+    align-self: center;
+    display: flex;
+  }
+
+  .toggle-collapse.flex-start {
+    align-self: flex-start;
+    position: relative;
+    top: 8px;
+  }
+
+  .header .header-content {
+    align-items: flex-start;
+    justify-content: space-between;
+  }
+}
+
 .product-detail {
   background: #eee;
   border: 2px solid #ccc;
