@@ -27,11 +27,12 @@ export default function ProductDetail({ deleted, editing }) {
   const [categories, setCategories] = useState([]);
   const [confirmingDelete, setConfirmingDelete] = useState(false);
   const [error, setError] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [newImage, setNewImage] = useState(null);
   const [originalAccessories, setOriginalAccessories] = useState([]);
+  const [placeholder, setPlaceholder] = useState(true);
   const [productDetails, setProductDetails] = useState(null);
   const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [validCategories, setValidCategories] = useState(true);
   const [validDescription, setValidDescription] = useState(true);
   const [validFeatures, setValidFeatures] = useState(true);
@@ -275,11 +276,16 @@ export default function ProductDetail({ deleted, editing }) {
         <div className="product-detail">
           <h3>{productDetails.model}</h3>
           <div className={productDetails.inStock ? 'in-stock' : 'out-of-stock'}>
-            {productDetails.inStock ? 'In stock' : 'Out of stock'}
+            {productDetails.inStock ? '✓ In stock' : '⚠ Out of stock'}
           </div>
+          <div hidden={!placeholder} className="image-placeholder" />
           <img
             alt={productDetails.model}
             className="product-image"
+            hidden={placeholder}
+            onLoad={() => {
+              setPlaceholder(false);
+            }}
             src={productDetails.image}
           />
           <div>{productDetails.description}</div>
