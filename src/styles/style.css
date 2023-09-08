@@ -55,6 +55,18 @@ button.error {
   background: var(--text-error);
 }
 
+button.sign-out {
+  background: none;
+  color: var(--text-light);
+  opacity: 0.6;
+  padding: 0;
+}
+
+button.sign-out:hover,
+button.sign-out:focus {
+  opacity: 1;
+}
+
 button:hover,
 button:focus {
   filter: contrast(150%);
@@ -222,7 +234,7 @@ input[type="checkbox"] {
   background: none;
   border: none;
   cursor: pointer;
-  font-size: 1rem;
+  font-size: 1.2rem;
   font-family: "Noto Sans", Arial, sans-serif;
   outline: none;
 }
@@ -336,7 +348,7 @@ input[type="checkbox"] {
 
 .header a {
   color: var(--text-light);
-  opacity: 0.5;
+  opacity: 0.6;
   text-decoration: none;
   transition: opacity 200ms;
 }
@@ -355,7 +367,7 @@ input[type="checkbox"] {
   background: var(--bg-dark);
   color: var(--text-light);
   display: flex;
-  font-size: 1.1rem;
+  font-size: 1.2rem;
   gap: 32px;
   padding: 8px;
 }
@@ -436,6 +448,7 @@ input[type="checkbox"] {
   display: flex;
   flex-wrap: wrap;
   gap: 16px;
+  width: 100%;
 }
 
 .product-detail {

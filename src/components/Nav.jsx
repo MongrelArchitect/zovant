@@ -10,7 +10,7 @@ export default function Nav({ user }) {
           <NavLink to="/">Home</NavLink>
         </li>
         <li>
-          <NavLink to="/products">Products</NavLink>
+          <NavLink to="/catalog">Products</NavLink>
         </li>
         <li>
           <NavLink to="/about">About</NavLink>
@@ -19,16 +19,22 @@ export default function Nav({ user }) {
           <NavLink to="/contact">Contact</NavLink>
         </li>
         {user ? (
-          <li>
-            <button
-              onClick={() => {
-                signOut(auth);
-              }}
-              type="button"
-            >
-              Sign Out
-            </button>
-          </li>
+          <>
+            <li>
+              <NavLink to="/dashboard">Dashboard</NavLink>
+            </li>
+            <li>
+              <button
+                className="sign-out"
+                onClick={() => {
+                  signOut(auth);
+                }}
+                type="button"
+              >
+                Sign Out
+              </button>
+            </li>
+          </>
         ) : null}
       </ul>
     </nav>

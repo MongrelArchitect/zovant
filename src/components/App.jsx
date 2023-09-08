@@ -111,7 +111,7 @@ export default function App() {
           },
         },
         {
-          path: '/products',
+          path: '/catalog',
           element: <Products />,
         },
       ],
