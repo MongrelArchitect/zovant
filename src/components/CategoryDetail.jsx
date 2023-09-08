@@ -111,10 +111,12 @@ export default function CategoryDetail({ deleted, editing }) {
     }
     if (categoryDetails) {
       return (
-        <>
-          <div>{categoryDetails.name}</div>
+        <div className="product-detail">
+          <h3>{categoryDetails.name}</h3>
           <div>{categoryDetails.description}</div>
-          <Link to={`/dashboard/categories/${id}/edit`}>Edit</Link>
+          <Link className="edit-button" to={`/dashboard/categories/${id}/edit`}>
+            Edit
+          </Link>
           <Link to="/dashboard/categories/">Back to category list</Link>
           <ul>
             <span>
@@ -126,11 +128,15 @@ export default function CategoryDetail({ deleted, editing }) {
             </span>
             {products.length
               ? products.map((product) => (
-                <li key={product.id}>{product.model}</li>
+                <li key={product.id}>
+                  <Link to={`/dashboard/products/${product.id}`}>
+                    {product.model}
+                  </Link>
+                </li>
               ))
               : null}
           </ul>
-        </>
+        </div>
       );
     }
     return null;
@@ -161,7 +167,7 @@ export default function CategoryDetail({ deleted, editing }) {
     }
     if (categoryDetails) {
       return (
-        <form>
+        <form className="product-detail">
           <label htmlFor="name">
             Name
             <input

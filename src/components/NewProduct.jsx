@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { v4 as uuid } from 'uuid';
 import {
@@ -12,6 +12,8 @@ import {
 
 export default function NewProduct() {
   const navigate = useNavigate();
+
+  const fileInputRef = useRef(null);
 
   const [accessories, setAccessories] = useState([]);
   const [addingAccessories, setAddingAccessories] = useState(false);
@@ -164,23 +166,28 @@ export default function NewProduct() {
   const displayFeatures = () => {
     const keys = Object.keys(features);
     if (keys.length) {
-      return keys.map((featureId) => (
-        <div key={featureId}>
-          <input
-            data-featureid={featureId}
-            onChange={changeFeature}
-            type="text"
-            value={features[featureId] || ''}
-          />
-          <button
-            data-featureid={featureId}
-            onClick={deleteFeature}
-            type="button"
-          >
-            X
-          </button>
+      return (
+        <div className="feature-inputs">
+          {keys.map((featureId) => (
+            <div key={featureId}>
+              <input
+                data-featureid={featureId}
+                onChange={changeFeature}
+                type="text"
+                value={features[featureId] || ''}
+              />
+              <button
+                className="error"
+                data-featureid={featureId}
+                onClick={deleteFeature}
+                type="button"
+              >
+                X
+              </button>
+            </div>
+          ))}
         </div>
-      ));
+      );
     }
     return null;
   };
@@ -273,7 +280,7 @@ export default function NewProduct() {
       {loading ? (
         <div>Loading...</div>
       ) : (
-        <form>
+        <form className="product-detail">
           <label htmlFor="model">
             Model (required)
             <input
@@ -335,12 +342,23 @@ export default function NewProduct() {
                 src={URL.createObjectURL(image)}
               />
             ) : null}
+            <div>{image ? image.name : 'no file chosen'}</div>
             <input
               accept="image/*"
+              hidden
               id="image"
               onChange={changeImage}
+              ref={fileInputRef}
               type="file"
             />
+            <button
+              onClick={() => {
+                fileInputRef.current.click();
+              }}
+              type="button"
+            >
+              Upload Image
+            </button>
             {attempted && !validImage ? (
               <div className="error">Image required (5MB limit)</div>
             ) : null}

@@ -52,7 +52,7 @@ export default function NewCategory() {
   return (
     <>
       <h2>New Category</h2>
-      <form>
+      <form className="product-detail">
         <label htmlFor="name">
           Name
           <input

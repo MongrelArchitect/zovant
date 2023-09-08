@@ -180,10 +180,14 @@ export default function ProductDetail({ deleted, editing }) {
     }
     return (
       <div>
-        <h3>Accessories / Related Products:</h3>
+        <h4>Accessories / Related Products:</h4>
         <ul>
           {productDetails.accessories.map((accessory) => (
-            <li key={accessory.id}>{accessory.model}</li>
+            <li key={accessory.id}>
+              <Link to={`/dashboard/products/${accessory.id}`}>
+                {accessory.model}
+              </Link>
+            </li>
           ))}
         </ul>
       </div>
@@ -207,10 +211,14 @@ export default function ProductDetail({ deleted, editing }) {
     }
     return (
       <div>
-        <h3>Categories:</h3>
+        <h4>Categories:</h4>
         <ul>
           {productDetails.categories.map((category) => (
-            <li key={category.id}>{category.name}</li>
+            <li key={category.id}>
+              <Link to={`/dashboard/categories/${category.id}`}>
+                {category.name}
+              </Link>
+            </li>
           ))}
         </ul>
       </div>
@@ -221,27 +229,32 @@ export default function ProductDetail({ deleted, editing }) {
     const keys = Object.keys(productDetails.features);
     if (keys.length) {
       if (editing) {
-        return keys.map((featureId) => (
-          <div key={featureId}>
-            <input
-              data-featureid={featureId}
-              onChange={changeFeature}
-              type="text"
-              value={productDetails.features[featureId] || ''}
-            />
-            <button
-              data-featureid={featureId}
-              onClick={deleteFeature}
-              type="button"
-            >
-              X
-            </button>
+        return (
+          <div className="feature-inputs">
+            {keys.map((featureId) => (
+              <div key={featureId}>
+                <input
+                  data-featureid={featureId}
+                  onChange={changeFeature}
+                  type="text"
+                  value={productDetails.features[featureId] || ''}
+                />
+                <button
+                  className="error"
+                  data-featureid={featureId}
+                  onClick={deleteFeature}
+                  type="button"
+                >
+                  X
+                </button>
+              </div>
+            ))}
           </div>
-        ));
+        );
       }
       return (
         <div>
-          <h3>Features:</h3>
+          <h4>Features:</h4>
           <ul>
             {keys.map((key) => (
               <li key={key}>{productDetails.features[key]}</li>
@@ -259,9 +272,11 @@ export default function ProductDetail({ deleted, editing }) {
     }
     if (productDetails) {
       return (
-        <>
-          <div>{productDetails.model}</div>
-          <div>{productDetails.inStock ? 'In stock' : 'Out of stock'}</div>
+        <div className="product-detail">
+          <h3>{productDetails.model}</h3>
+          <div className={productDetails.inStock ? 'in-stock' : 'out-of-stock'}>
+            {productDetails.inStock ? 'In stock' : 'Out of stock'}
+          </div>
           <img
             alt={productDetails.model}
             className="product-image"
@@ -271,9 +286,11 @@ export default function ProductDetail({ deleted, editing }) {
           {displayFeatures()}
           {displayCategories()}
           {displayAccessories()}
-          <Link to={`/dashboard/products/${id}/edit`}>Edit</Link>
+          <Link className="edit-button" to={`/dashboard/products/${id}/edit`}>
+            Edit
+          </Link>
           <Link to="/dashboard/products/">Back to products list</Link>
-        </>
+        </div>
       );
     }
     return null;
@@ -401,7 +418,7 @@ export default function ProductDetail({ deleted, editing }) {
     }
     if (productDetails) {
       return (
-        <form>
+        <form className="product-detail">
           <label htmlFor="name">
             Model (required)
             <input
@@ -571,7 +588,7 @@ export default function ProductDetail({ deleted, editing }) {
     if (!deleted) {
       getDetails();
     }
-  }, [editing]);
+  }, [editing, id]);
 
   if (deleted) {
     return (

@@ -7,8 +7,10 @@
   --bg-dark: #212529;
   --bg-error: #ff5c5c;
   --bg-light: #f8f9fa;
-  --text-dark: #111;
+  --text-dark: #232323;
+  --text-error: #cc2b2a;
   --text-light: #eee;
+  --text-valid: #01933b;
 }
 
 * {
@@ -19,11 +21,23 @@ html {
   height: 100%;
 }
 
+a {
+  color: #07a;
+  text-decoration: none;
+}
+
+a:focus,
+a:hover {
+  color: #037;
+}
 
 body {
   background: var(--bg-light);
-  height: 100%;
+  color: var(--text-dark);
   font-family: "Noto Sans", Arial, sans-serif;
+  font-size: 1.2rem;
+  height: 100%;
+  line-height: 1.4;
 }
 
 button {
@@ -31,8 +45,19 @@ button {
   border: none;
   cursor: pointer;
   font-family: "Noto Sans", Arial, sans-serif;
-  font-size: 1rem;
+  font-size: 1.2rem;
   padding: 8px;
+  width: max-content;
+}
+
+button.error {
+  color: var(--text-light);
+  background: var(--text-error);
+}
+
+button:hover,
+button:focus {
+  filter: contrast(150%);
 }
 
 button.submit {
@@ -42,6 +67,7 @@ button.submit {
 fieldset {
   display: flex;
   flex-direction: column;
+  gap: 8px;
 }
 
 form {
@@ -60,8 +86,9 @@ form label {
 
 form input,
 form textarea {
+  border-radius: 0;
   font-family: "Noto Sans", Arial, sans-serif;
-  font-size: 1rem;
+  font-size: 1.2rem;
   padding: 8px;
 }
 
@@ -248,6 +275,16 @@ input[type="checkbox"] {
   padding: 8px;
 }
 
+.feature-inputs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.feature-inputs > div {
+  display: flex;
+}
+
 .footer {
   align-items: center;
   background: var(--bg-dark);
@@ -372,7 +409,52 @@ input[type="checkbox"] {
   gap: 16px;
 }
 
+.product-detail {
+  background: #eee;
+  border: 2px solid #ccc;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 8px;
+}
+
+.product-detail ul {
+  list-style: circle inside;
+}
+
+.product-detail h3 {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.product-detail h4 {
+  font-size: 1.4rem;
+  font-weight: bold;
+}
+
+.product-detail .edit-button {
+  color: #111;
+  background: var(--brand-blue);
+  padding: 8px;
+  width: max-content;
+}
+
+.product-detail .edit-button:focus,
+.product-detail .edit-button:hover {
+  filter: contrast(150%);
+}
+
+.product-detail .in-stock {
+  color: var(--text-valid);
+}
+
+.product-detail .out-of-stock {
+  color: var(--text-error);
+}
+
 .product-image {
+  border: 2px solid var(--brand-blue);
+  border-radius: 5px;
   height: auto;
   max-width: 320px;
   width: 100%;
