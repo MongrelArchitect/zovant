@@ -269,6 +269,11 @@ input[type="checkbox"] {
   width: 100%;
 }
 
+.dashboard .dashboard-control h3 {
+  font-size: 1.3rem;
+  font-weight: bold;
+}
+
 .error {
   background: var(--bg-error);
   color: var(--text-dark);

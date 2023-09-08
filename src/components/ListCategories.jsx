@@ -38,7 +38,7 @@ export default function ListCategories() {
     <>
       <h2>Choose Category to View &amp; Edit</h2>
       {loading ? <div>Loading...</div> : null}
-      <ul>{listAllCategories()}</ul>
+      <ul className="product-detail">{listAllCategories()}</ul>
       {error ? <div className="error">{error}</div> : null}
     </>
   );

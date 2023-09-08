@@ -15,12 +15,16 @@ export default function Dashboard({ user }) {
                 <li>
                   <Link to="/dashboard">Summary</Link>
                 </li>
+                <br />
+                <h3>Categories</h3>
                 <li>
                   <Link to="/dashboard/categories/new">New Category</Link>
                 </li>
                 <li>
                   <Link to="/dashboard/categories/">Edit Category</Link>
                 </li>
+                <br />
+                <h3>Products</h3>
                 <li>
                   <Link to="/dashboard/products/new">New Product</Link>
                 </li>

@@ -45,7 +45,11 @@ export default function Summary() {
   return (
     <>
       <h2>Summary</h2>
-      {loading ? <div>Loading...</div> : <ul>{displaySummary()}</ul>}
+      {loading ? (
+        <div>Loading...</div>
+      ) : (
+        <ul className="product-detail">{displaySummary()}</ul>
+      )}
       {error ? <div className="error">{error}</div> : null}
     </>
   );

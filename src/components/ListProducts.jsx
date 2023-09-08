@@ -38,7 +38,7 @@ export default function ListProducts() {
     <>
       <h2>Choose Product to View &amp; Edit</h2>
       {loading ? <div>Loading...</div> : null}
-      <ul>{listAllProducts()}</ul>
+      <ul className="product-detail">{listAllProducts()}</ul>
       {error ? <div className="error">{error}</div> : null}
     </>
   );
