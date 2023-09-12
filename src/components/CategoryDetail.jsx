@@ -5,8 +5,6 @@ import { deleteSingleCategory, updateCategory } from '../util/database';
 export default function CategoryDetail({
   allCategories,
   allProducts,
-  deleted,
-  editing,
 }) {
   const { id } = useParams();
 
@@ -14,6 +12,8 @@ export default function CategoryDetail({
 
   const [categoryDetails, setCategoryDetails] = useState(null);
   const [confirmingDelete, setConfirmingDelete] = useState(false);
+  const [deleted, setDeleted] = useState(false);
+  const [editing, setEditing] = useState(false);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const [products, setProducts] = useState([]);
@@ -43,6 +43,8 @@ export default function CategoryDetail({
     try {
       await deleteSingleCategory(id);
       navigate(`/dashboard/categories/${id}/deleted`);
+      setEditing(false);
+      setDeleted(true);
     } catch (err) {
       console.error(err);
       setError(err.message);
@@ -114,7 +116,13 @@ export default function CategoryDetail({
         <div className="product-detail">
           <h3>{categoryDetails.name}</h3>
           <div>{categoryDetails.description}</div>
-          <Link className="edit-button" to={`/dashboard/categories/${id}/edit`}>
+          <Link
+            className="edit-button"
+            onClick={() => {
+              setEditing(true);
+            }}
+            to={`/dashboard/categories/${id}/edit`}
+          >
             Edit
           </Link>
           <Link to="/dashboard/categories/">Back to category list</Link>
@@ -151,8 +159,9 @@ export default function CategoryDetail({
           categoryDetails.name,
           categoryDetails.description,
         );
-        setLoading(false);
         navigate(`/dashboard/categories/${id}`);
+        setEditing(false);
+        setLoading(false);
       } else {
         setLoading(false);
         setError('Name and description required');
@@ -194,7 +203,14 @@ export default function CategoryDetail({
             Submit
           </button>
           {deleteSection()}
-          <Link to={`/dashboard/categories/${id}`}>Cancel edit</Link>
+          <Link
+            onClick={() => {
+              setEditing(false);
+            }}
+            to={`/dashboard/categories/${id}`}
+          >
+            Cancel edit
+          </Link>
         </form>
       );
     }
@@ -205,7 +221,7 @@ export default function CategoryDetail({
     const productIds = Object.keys(allProducts);
     const categoryProducts = productIds
       .filter((prodId) => allProducts[prodId].categories.includes(id))
-      .map((prodId) => (allProducts[prodId]));
+      .map((prodId) => allProducts[prodId]);
     return categoryProducts;
   };
 

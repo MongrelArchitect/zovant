@@ -47,7 +47,7 @@ export default function App() {
   useEffect(() => {
     const productsQuery = query(collection(database, 'products'));
     onSnapshot(productsQuery, (querySnapshot) => {
-      const products = { ...allProducts };
+      const products = {};
       querySnapshot.forEach((docu) => {
         products[docu.id] = {
           ...docu.data(),
@@ -61,7 +61,7 @@ export default function App() {
 
     const categoriesQuery = query(collection(database, 'categories'));
     onSnapshot(categoriesQuery, (querySnapshot) => {
-      const categories = { ...allCategories };
+      const categories = {};
       querySnapshot.forEach((docu) => {
         categories[docu.id] = {
           ...docu.data(),
@@ -119,6 +119,7 @@ export default function App() {
           element: <Dashboard user={user} />,
           children: [
             {
+              // XXX
               index: true,
               element: (
                 <Summary
@@ -144,7 +145,6 @@ export default function App() {
                 <CategoryDetail
                   allCategories={allCategories}
                   allProducts={allProducts}
-                  deleted
                 />
               ),
             },
@@ -155,7 +155,6 @@ export default function App() {
                 <CategoryDetail
                   allCategories={allCategories}
                   allProducts={allProducts}
-                  editing
                 />
               ),
             },
@@ -170,16 +169,36 @@ export default function App() {
               element: <NewCategory allCategories={allCategories} />,
             },
             {
+              // XXX
               path: 'products/:id',
-              element: <ProductDetail />,
+              element: (
+                <ProductDetail
+                  allCategories={allCategories}
+                  allProducts={allProducts}
+                />
+              ),
             },
             {
+              // XXX
               path: 'products/:id/deleted',
-              element: <ProductDetail deleted />,
+              element: (
+                <ProductDetail
+                  allCategories={allCategories}
+                  allProducts={allProducts}
+                  deleted
+                />
+              ),
             },
             {
+              // XXX
               path: 'products/:id/edit',
-              element: <ProductDetail editing />,
+              element: (
+                <ProductDetail
+                  allCategories={allCategories}
+                  allProducts={allProducts}
+                  editing
+                />
+              ),
             },
             {
               // XXX

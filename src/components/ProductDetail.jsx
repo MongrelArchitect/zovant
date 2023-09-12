@@ -6,17 +6,17 @@ import {
   addProductImage,
   deleteOldImage,
   deleteSingleProduct,
-  getAllCategories,
-  getAllProductAccessories,
-  getAllProductCategories,
-  getAllProducts,
-  getSingleProduct,
   removeProductFromAccessories,
   updateProduct,
   updateProductAccessories,
 } from '../util/database';
 
-export default function ProductDetail({ deleted, editing }) {
+export default function ProductDetail({
+  allCategories,
+  allProducts,
+  deleted,
+  editing,
+}) {
   const fileInputRef = useRef(null);
 
   const { id } = useParams();
@@ -27,7 +27,7 @@ export default function ProductDetail({ deleted, editing }) {
   const [categories, setCategories] = useState([]);
   const [confirmingDelete, setConfirmingDelete] = useState(false);
   const [error, setError] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [newImage, setNewImage] = useState(null);
   const [originalAccessories, setOriginalAccessories] = useState([]);
   const [placeholder, setPlaceholder] = useState(true);
@@ -210,20 +210,23 @@ export default function ProductDetail({ deleted, editing }) {
         </div>
       ));
     }
-    return (
-      <div>
-        <h4>Categories:</h4>
-        <ul>
-          {productDetails.categories.map((category) => (
-            <li key={category.id}>
-              <Link to={`/dashboard/categories/${category.id}`}>
-                {category.name}
-              </Link>
-            </li>
-          ))}
-        </ul>
-      </div>
-    );
+    if (productDetails.categories.length) {
+      return (
+        <div>
+          <h4>Categories:</h4>
+          <ul>
+            {productDetails.categories.map((category) => (
+              <li key={category.id}>
+                <Link to={`/dashboard/categories/${category.id}`}>
+                  {category.name}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+      );
+    }
+    return null;
   };
 
   const displayFeatures = () => {
@@ -542,57 +545,113 @@ export default function ProductDetail({ deleted, editing }) {
     return null;
   };
 
-  useEffect(() => {
-    const getDetails = async () => {
-      setLoading(true);
-      try {
-        const details = await getSingleProduct(id);
-        details.categories = await getAllProductCategories(details.categories);
-        details.accessories = await getAllProductAccessories(
-          details.accessories,
-        );
-        if (editing) {
-          // keep track of the product's pre-edit accessories, so we can remove
-          // any reference to this product for any removed accessories
-          const originalIds = [];
-          details.accessories.forEach((accessory) => {
-            originalIds.push(accessory.id);
-          });
-          setOriginalAccessories(originalIds);
-          // add "include" to those categories that the product belongs to
-          const allCategories = await getAllCategories();
-          allCategories.forEach((category) => {
-            if (details.categories.some((item) => item.id === category.id)) {
-              // eslint-disable-next-line
-              category.include = true;
-            } else {
-              // eslint-disable-next-line
-              category.include = false;
-            }
-          });
-          setCategories(allCategories);
-          // get all products so we can add / remove accessories
-          const allProducts = await getAllProducts();
-          allProducts.forEach((product) => {
-            if (details.accessories.some((item) => item.id === product.id)) {
-              // eslint-disable-next-line
-              product.include = true;
-            } else {
-              // eslint-disable-next-line
-              product.include = false;
-            }
-          });
-          setProducts(allProducts);
+  const getAllProductAccessories = () => {
+    const result = allProducts[id].accessories
+      .map((accId) => allProducts[accId])
+      .sort((a, b) => {
+        const modelA = a.model.toLowerCase();
+        const modelB = b.model.toLowerCase();
+        if (modelA < modelB) {
+          return -1;
         }
-        setProductDetails(details);
-      } catch (err) {
-        console.error(err);
-        setError(err.message);
-      }
-      setLoading(false);
-    };
+        if (modelA > modelB) {
+          return 1;
+        }
+        return 0;
+      });
+    return result;
+  };
+
+  const getAllProductCategories = () => {
+    const result = allProducts[id].categories
+      .map((catId) => allCategories[catId])
+      .sort((a, b) => {
+        const modelA = a.name.toLowerCase();
+        const modelB = b.name.toLowerCase();
+        if (modelA < modelB) {
+          return -1;
+        }
+        if (modelA > modelB) {
+          return 1;
+        }
+        return 0;
+      });
+    return result;
+  };
+
+  const getAllCategories = () => {
+    const result = Object.keys(allCategories)
+      .map((catId) => allCategories[catId])
+      .sort((a, b) => {
+        const modelA = a.name.toLowerCase();
+        const modelB = b.name.toLowerCase();
+        if (modelA < modelB) {
+          return -1;
+        }
+        if (modelA > modelB) {
+          return 1;
+        }
+        return 0;
+      });
+    return result;
+  };
+
+  const getAllProducts = () => {
+    const result = Object.keys(allProducts)
+      .map((prodId) => allProducts[prodId])
+      .sort((a, b) => {
+        const modelA = a.model.toLowerCase();
+        const modelB = b.model.toLowerCase();
+        if (modelA < modelB) {
+          return -1;
+        }
+        if (modelA > modelB) {
+          return 1;
+        }
+        return 0;
+      });
+    return result;
+  };
+
+  useEffect(() => {
     if (!deleted) {
-      getDetails();
+      const details = { ...allProducts[id] };
+      details.categories = getAllProductCategories();
+      details.accessories = getAllProductAccessories();
+      if (editing) {
+        // keep track of the product's pre-edit accessories, so we can remove
+        // any reference to this product for any removed accessories
+        const originalIds = [];
+        details.accessories.forEach((accessory) => {
+          originalIds.push(accessory.id);
+        });
+        setOriginalAccessories(originalIds);
+        // add "include" to those categories that the product belongs to
+        const allCategoriesCopy = getAllCategories();
+        allCategoriesCopy.forEach((category) => {
+          if (details.categories.some((item) => item.id === category.id)) {
+            // eslint-disable-next-line
+            category.include = true;
+          } else {
+            // eslint-disable-next-line
+            category.include = false;
+          }
+        });
+        setCategories(allCategoriesCopy);
+        // get all products so we can add / remove accessories
+        const allProductsCopy = getAllProducts();
+        allProductsCopy.forEach((product) => {
+          if (details.accessories.some((item) => item.id === product.id)) {
+            // eslint-disable-next-line
+            product.include = true;
+          } else {
+            // eslint-disable-next-line
+            product.include = false;
+          }
+        });
+        setProducts(allProductsCopy);
+      }
+      setProductDetails(details);
     }
   }, [editing, id]);
 
