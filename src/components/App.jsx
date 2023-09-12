@@ -119,7 +119,6 @@ export default function App() {
           element: <Dashboard user={user} />,
           children: [
             {
-              // XXX
               index: true,
               element: (
                 <Summary
@@ -129,7 +128,6 @@ export default function App() {
               ),
             },
             {
-              // XXX
               path: 'categories/:id',
               element: (
                 <CategoryDetail
@@ -139,7 +137,6 @@ export default function App() {
               ),
             },
             {
-              // XXX
               path: 'categories/:id/deleted',
               element: (
                 <CategoryDetail
@@ -149,7 +146,6 @@ export default function App() {
               ),
             },
             {
-              // XXX
               path: 'categories/:id/edit',
               element: (
                 <CategoryDetail
@@ -160,16 +156,13 @@ export default function App() {
             },
             {
               path: 'categories/',
-              // XXX
               element: <ListCategories allCategories={allCategories} />,
             },
             {
-              // XXX
               path: 'categories/new',
               element: <NewCategory allCategories={allCategories} />,
             },
             {
-              // XXX
               path: 'products/:id',
               element: (
                 <ProductDetail
@@ -179,7 +172,6 @@ export default function App() {
               ),
             },
             {
-              // XXX
               path: 'products/:id/deleted',
               element: (
                 <ProductDetail
@@ -189,7 +181,6 @@ export default function App() {
               ),
             },
             {
-              // XXX
               path: 'products/:id/edit',
               element: (
                 <ProductDetail
@@ -199,7 +190,6 @@ export default function App() {
               ),
             },
             {
-              // XXX
               path: 'products/new',
               element: (
                 <NewProduct
@@ -209,7 +199,6 @@ export default function App() {
               ),
             },
             {
-              // XXX
               path: 'products/',
               element: <ListProducts allProducts={allProducts} />,
             },

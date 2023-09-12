@@ -7,8 +7,6 @@ import {
   doc,
   getCountFromServer,
   getDoc,
-  getDocs,
-  limit,
   query,
   updateDoc,
   where,
@@ -74,20 +72,6 @@ async function addProductImage(id, file) {
   return updatedProduct;
 }
 
-async function checkCategoryExists(name) {
-  const categories = collection(database, 'categories');
-  const nameQuery = query(categories, where('name', '==', name), limit(1));
-  const snapshot = await getDocs(nameQuery);
-  return !snapshot.empty;
-}
-
-async function checkProductExists(model) {
-  const products = collection(database, 'products');
-  const modelQuery = query(products, where('model', '==', model), limit(1));
-  const snapshot = await getDocs(modelQuery);
-  return !snapshot.empty;
-}
-
 async function removeProductFromAccessories(id, products) {
   const productRef = doc(database, 'products', id);
   if (products.length) {
@@ -133,136 +117,6 @@ async function deleteSingleProduct(id, imagePath, accessories) {
   await deleteDoc(doc(database, 'products', id));
   // finally remove any reference to the product from its accessories
   await removeProductFromAccessories(id, accessories);
-}
-
-async function getAllCategories() {
-  const querySnapshot = await getDocs(collection(database, 'categories'));
-  const categories = [];
-  if (!querySnapshot.empty) {
-    querySnapshot.forEach((docu) => {
-      categories.push({ ...docu.data(), id: docu.id });
-    });
-    categories.sort((a, b) => {
-      const nameA = a.name.toLowerCase();
-      const nameB = b.name.toLowerCase();
-      if (nameA < nameB) {
-        return -1;
-      }
-      if (nameA > nameB) {
-        return 1;
-      }
-      return 0;
-    });
-  }
-  return categories;
-}
-
-async function getAllCategoryProducts(categoryId) {
-  const categoryRef = doc(database, 'categories', categoryId);
-  const productsRef = collection(database, 'products');
-  const productsQuery = query(
-    productsRef,
-    where('categories', 'array-contains', categoryRef),
-  );
-  const snapshot = await getDocs(productsQuery);
-  const result = [];
-  if (!snapshot.empty) {
-    snapshot.forEach((docu) => {
-      result.push({ ...docu.data(), id: docu.id });
-    });
-    result.sort((a, b) => {
-      const modelA = a.model.toLowerCase();
-      const modelB = b.model.toLowerCase();
-      if (modelA < modelB) {
-        return -1;
-      }
-      if (modelA < modelB) {
-        return 1;
-      }
-      return 0;
-    });
-  }
-  return result;
-}
-
-async function getSingleCategory(id) {
-  const categoryRef = doc(database, 'categories', id);
-  const categorySnap = await getDoc(categoryRef);
-  if (categorySnap.exists()) {
-    return categorySnap.data();
-  }
-  throw new Error(`Category id "${id}" not found`);
-}
-
-async function getSingleProduct(id) {
-  const productRef = doc(database, 'products', id);
-  const productSnap = await getDoc(productRef);
-  if (productSnap.exists()) {
-    return productSnap.data();
-  }
-  throw new Error(`Product id "${id}" not found`);
-}
-
-async function getAllProductAccessories(accessoryRefs) {
-  const accessories = [];
-  if (accessoryRefs.length) {
-    // eslint-disable-next-line
-    for (const acc of accessoryRefs) {
-      // eslint-disable-next-line
-      const accessory = await getSingleProduct(acc.id);
-      accessories.push({ ...accessory, id: acc.id });
-    }
-  }
-  return accessories;
-}
-
-async function getAllProductCategories(categoryRefs) {
-  const categories = [];
-  if (categoryRefs.length) {
-    // eslint-disable-next-line
-    for (const cat of categoryRefs) {
-      // eslint-disable-next-line
-      const category = await getSingleCategory(cat.id);
-      categories.push({ ...category, id: cat.id });
-    }
-  }
-  return categories;
-}
-
-async function getAllProducts() {
-  const querySnapshot = await getDocs(collection(database, 'products'));
-  const products = [];
-  if (!querySnapshot.empty) {
-    querySnapshot.forEach((docu) => {
-      products.push({ ...docu.data(), id: docu.id });
-    });
-    products.sort((a, b) => {
-      const modelA = a.model.toLowerCase();
-      const modelB = b.model.toLowerCase();
-      if (modelA < modelB) {
-        return -1;
-      }
-      if (modelA > modelB) {
-        return 1;
-      }
-      return 0;
-    });
-  }
-  return products;
-}
-
-async function getSummaryCounts() {
-  const result = {};
-
-  const categoriesRef = collection(database, 'categories');
-  const categoriesSnap = await getCountFromServer(categoriesRef);
-  result.categories = categoriesSnap.data().count;
-
-  const productsRef = collection(database, 'products');
-  const productsSnap = await getCountFromServer(productsRef);
-  result.products = productsSnap.data().count;
-
-  return result;
 }
 
 async function updateCategory(id, name, description) {
@@ -317,19 +171,9 @@ export {
   addNewCategory,
   addNewProduct,
   addProductImage,
-  checkCategoryExists,
-  checkProductExists,
   deleteOldImage,
   deleteSingleCategory,
   deleteSingleProduct,
-  getAllCategories,
-  getAllCategoryProducts,
-  getAllProductAccessories,
-  getAllProductCategories,
-  getAllProducts,
-  getSingleCategory,
-  getSingleProduct,
-  getSummaryCounts,
   removeProductFromAccessories,
   updateCategory,
   updateProduct,
