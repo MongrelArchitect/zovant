@@ -545,6 +545,11 @@ input[type="checkbox"] {
   height: 32px;
 }
 
+.success {
+  background: var(--brand-middle);
+  padding: 8px;
+}
+
 #root {
   height: 100%;
 }

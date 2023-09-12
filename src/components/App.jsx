@@ -16,6 +16,7 @@ import CategoryDetail from './CategoryDetail';
 import Contact from './Contact';
 import Dashboard from './Dashboard';
 import ErrorPage from './ErrorPage';
+import ForgotPassword from './ForgotPassword';
 import Home from './Home';
 import ListCategories from './ListCategories';
 import ListProducts from './ListProducts';
@@ -46,7 +47,6 @@ export default function App() {
   useEffect(() => {
     const productsQuery = query(collection(database, 'products'));
     onSnapshot(productsQuery, (querySnapshot) => {
-      console.log('PRODUCTS CHANGED - DB SNAPSHOT');
       const products = { ...allProducts };
       querySnapshot.forEach((docu) => {
         products[docu.id] = {
@@ -61,7 +61,6 @@ export default function App() {
 
     const categoriesQuery = query(collection(database, 'categories'));
     onSnapshot(categoriesQuery, (querySnapshot) => {
-      console.log('CATEGORIES CHANGED - DB SNAPSHOT');
       const categories = { ...allCategories };
       querySnapshot.forEach((docu) => {
         categories[docu.id] = {
@@ -158,6 +157,10 @@ export default function App() {
               element: <ListProducts />,
             },
           ],
+        },
+        {
+          path: '/forgot',
+          element: <ForgotPassword />,
         },
         {
           path: '/login',

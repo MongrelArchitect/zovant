@@ -1,17 +1,20 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../util/firebase';
 
 export default function Login() {
   const [email, setEmail] = useState('');
+  const [error, setError] = useState(null);
   const [password, setPassword] = useState('');
 
   const changeEmail = (event) => {
+    setError(null);
     setEmail(event.target.value);
   };
 
   const changePassword = (event) => {
+    setError(null);
     setPassword(event.target.value);
   };
 
@@ -22,8 +25,7 @@ export default function Login() {
       await signInWithEmailAndPassword(auth, email, password);
       navigate('/dashboard');
     } catch (err) {
-      // XXX show some sort of error to user
-      console.error(err);
+      setError('Incorrect email or password');
     }
   };
 
@@ -52,9 +54,11 @@ export default function Login() {
               value={password || ''}
             />
           </label>
+          {error ? <div className="error">{error}</div> : null}
           <button onClick={submitLogin} type="button">
             Log in
           </button>
+          <Link to="/forgot">Forgot password?</Link>
         </form>
       </div>
     </div>
