@@ -76,7 +76,7 @@ export default function App() {
     {
       path: '/',
       element: <Root user={user} />,
-      errorElement: <ErrorPage />,
+      errorElement: <ErrorPage user={user} />,
       children: [
         { index: true, element: <Home /> },
         {
