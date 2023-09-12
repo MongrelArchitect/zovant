@@ -90,7 +90,10 @@ export default function App() {
             { index: true, element: <Products allProducts={allProducts} /> },
             {
               element: <Products allProducts={allProducts} />,
-              loader: ({ params }) => allCategories[params.categoryid].name,
+              loader: ({ params }) => ({
+                description: allCategories[params.categoryid].description,
+                title: allCategories[params.categoryid].name,
+              }),
               path: 'categories/:categoryid',
             },
             {

@@ -289,6 +289,12 @@ input[type="checkbox"] {
   gap: 8px;
 }
 
+.dashboard-detail {
+  align-content: start;
+  display: grid;
+  gap: 8px;
+}
+
 .error {
   background: var(--bg-error);
   color: var(--text-dark);

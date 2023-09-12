@@ -4,6 +4,10 @@ import { Link } from 'react-router-dom';
 export default function ProductSummary({ product }) {
   const [placeholder, setPlaceholder] = useState(true);
 
+  if (!product) {
+    return null;
+  }
+
   return (
     <div className="product-detail">
       <h3>{product.model}</h3>

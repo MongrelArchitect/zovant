@@ -2,7 +2,8 @@ import { useLoaderData, useParams } from 'react-router-dom';
 import ProductSummary from './ProductSummary';
 
 export default function Products({ allProducts }) {
-  const title = useLoaderData();
+  const categoryData = useLoaderData();
+  console.log(categoryData);
 
   const products = { ...allProducts };
   const { categoryid } = useParams();
@@ -34,15 +35,23 @@ export default function Products({ allProducts }) {
   if (!productKeys.length) {
     return (
       <div className="dashboard-detail">
-        <h2>Empty</h2>
-        <div>No products found</div>
+        <h2>{categoryData ? categoryData.title : 'Empty'}</h2>
+        <div>This category has no products</div>
+        <div className="catalog-products">
+          <ProductSummary />
+        </div>
       </div>
     );
   }
 
   return (
     <div className="dashboard-detail">
-      <h2>{title || 'All Products'}</h2>
+      <h2>{categoryData ? categoryData.title : 'All Products'}</h2>
+      <div>
+        {categoryData
+          ? categoryData.description
+          : 'Explore our entire catalog.'}
+      </div>
       <div className="catalog-products">
         {productKeys.map((key) => (
           <ProductSummary key={key} product={products[key]} />
