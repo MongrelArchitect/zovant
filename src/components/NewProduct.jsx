@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { v4 as uuid } from 'uuid';
 import {
   addNewProduct,
@@ -8,8 +8,6 @@ import {
 } from '../util/database';
 
 export default function NewProduct({ allCategories, allProducts }) {
-  const navigate = useNavigate();
-
   const fileInputRef = useRef(null);
 
   const [accessories, setAccessories] = useState([]);
@@ -23,6 +21,7 @@ export default function NewProduct({ allCategories, allProducts }) {
   const [loading, setLoading] = useState(false);
   const [model, setModel] = useState('');
   const [productCategories, setProductCategories] = useState([]);
+  const [successId, setSuccessId] = useState('');
   const [validCategories, setValidCategories] = useState(false);
   const [validDescription, setValidDescription] = useState(false);
   const [validFeatures, setValidFeatures] = useState(true);
@@ -204,6 +203,7 @@ export default function NewProduct({ allCategories, allProducts }) {
   };
 
   const submit = async () => {
+    setLoading(true);
     setAttempted(true);
     if (
       validCategories
@@ -215,7 +215,6 @@ export default function NewProduct({ allCategories, allProducts }) {
       if (checkProductExists(model)) {
         setError(`Product model ${model} already in database`);
       } else {
-        setLoading(true);
         try {
           const newProduct = {
             accessories,
@@ -231,8 +230,8 @@ export default function NewProduct({ allCategories, allProducts }) {
           await addProductImage(product.id, image);
           // add product to "accessories" arrays of its own accessories
           await updateProductAccessories(product.id);
-          // navigate to product detail after success
-          navigate(`/dashboard/products/${product.id}`);
+          // show success message with link to product detail
+          setSuccessId(product.id);
         } catch (err) {
           setLoading(false);
           console.error(err);
@@ -242,7 +241,24 @@ export default function NewProduct({ allCategories, allProducts }) {
     } else {
       setError('Something went wrong - check each input');
     }
+    setLoading(false);
   };
+
+  if (successId) {
+    return (
+      <>
+        <h2>Product Created</h2>
+        <div className="product-detail">
+          <div>
+            {model}
+            {' '}
+            created successfully.
+          </div>
+          <Link to={`/dashboard/products/${successId}`}>View details</Link>
+        </div>
+      </>
+    );
+  }
 
   return (
     <>

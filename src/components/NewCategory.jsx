@@ -1,14 +1,13 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { addNewCategory } from '../util/database';
 
 export default function NewCategory({ allCategories }) {
-  const navigate = useNavigate();
-
   const [description, setDescription] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [name, setName] = useState('');
+  const [successId, setSuccessId] = useState('');
   const [validDescription, setValidDescription] = useState(false);
   const [validName, setValidName] = useState(false);
 
@@ -35,7 +34,7 @@ export default function NewCategory({ allCategories }) {
         const categoryExists = checkCategoryExists(name);
         if (!categoryExists) {
           const newCategory = await addNewCategory(name, description);
-          navigate(`/dashboard/categories/${newCategory.id}`);
+          setSuccessId(newCategory.id);
         } else {
           setError(`Category "${name}" already exists`);
         }
@@ -43,6 +42,7 @@ export default function NewCategory({ allCategories }) {
         setError('Name and description required');
       }
     } catch (err) {
+      setLoading(false);
       console.error(err);
       setError('Error submitting to database');
     }
@@ -51,6 +51,22 @@ export default function NewCategory({ allCategories }) {
 
   if (loading) {
     return <div>Loading...</div>;
+  }
+
+  if (successId) {
+    return (
+      <>
+        <h2>Category Created</h2>
+        <div className="product-detail">
+          <div>
+            {name}
+            {' '}
+            created successfully.
+          </div>
+          <Link to={`/dashboard/categories/${successId}`}>View details</Link>
+        </div>
+      </>
+    );
   }
 
   return (

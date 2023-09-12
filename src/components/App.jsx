@@ -185,7 +185,6 @@ export default function App() {
                 <ProductDetail
                   allCategories={allCategories}
                   allProducts={allProducts}
-                  deleted
                 />
               ),
             },
@@ -196,7 +195,6 @@ export default function App() {
                 <ProductDetail
                   allCategories={allCategories}
                   allProducts={allProducts}
-                  editing
                 />
               ),
             },

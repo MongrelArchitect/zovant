@@ -11,12 +11,7 @@ import {
   updateProductAccessories,
 } from '../util/database';
 
-export default function ProductDetail({
-  allCategories,
-  allProducts,
-  deleted,
-  editing,
-}) {
+export default function ProductDetail({ allCategories, allProducts }) {
   const fileInputRef = useRef(null);
 
   const { id } = useParams();
@@ -26,6 +21,8 @@ export default function ProductDetail({
   const [attempted, setAttempted] = useState(false);
   const [categories, setCategories] = useState([]);
   const [confirmingDelete, setConfirmingDelete] = useState(false);
+  const [deleted, setDeleted] = useState(false);
+  const [editing, setEditing] = useState(false);
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(false);
   const [newImage, setNewImage] = useState(null);
@@ -294,8 +291,14 @@ export default function ProductDetail({
           <div>{productDetails.description}</div>
           {displayFeatures()}
           {displayCategories()}
-          {displayAccessories()}
-          <Link className="edit-button" to={`/dashboard/products/${id}/edit`}>
+          {productDetails.accessories.length ? displayAccessories() : null}
+          <Link
+            className="edit-button"
+            onClick={() => {
+              setEditing(true);
+            }}
+            to={`/dashboard/products/${id}/edit`}
+          >
             Edit
           </Link>
           <Link to="/dashboard/products/">Back to products list</Link>
@@ -307,6 +310,7 @@ export default function ProductDetail({
 
   const submit = async () => {
     setAttempted(true);
+    setLoading(true);
     if (
       validCategories
       && validDescription
@@ -314,7 +318,6 @@ export default function ProductDetail({
       && validImage
       && validModel
     ) {
-      setLoading(true);
       try {
         // just need the ids
         const cleanedAccessories = [];
@@ -360,6 +363,8 @@ export default function ProductDetail({
 
         // finally redirect to the new product details page
         navigate(`/dashboard/products/${id}`);
+        setEditing(false);
+        setLoading(false);
       } catch (err) {
         setLoading(false);
         console.error(err);
@@ -368,6 +373,7 @@ export default function ProductDetail({
     } else {
       setError('Something went wrong - check each input');
     }
+    setLoading(false);
   };
 
   const toggleDelete = () => {
@@ -387,6 +393,8 @@ export default function ProductDetail({
         cleanedAccessories,
       );
       navigate(`/dashboard/products/${id}/deleted`);
+      setEditing(false);
+      setDeleted(true);
     } catch (err) {
       console.error(err);
       setError(err.message);
@@ -538,7 +546,14 @@ export default function ProductDetail({
           </button>
           {error ? <div className="error">{error}</div> : null}
           {deleteSection()}
-          <Link to={`/dashboard/products/${id}`}>Back to details</Link>
+          <Link
+            onClick={() => {
+              setEditing(false);
+            }}
+            to={`/dashboard/products/${id}`}
+          >
+            Cancel edit
+          </Link>
         </form>
       );
     }
@@ -659,8 +674,10 @@ export default function ProductDetail({
     return (
       <>
         <h2>Product Deleted</h2>
-        <div>Delete successful.</div>
-        <Link to="/dashboard/products">Return to products list</Link>
+        <div className="product-detail">
+          <div>Delete successful.</div>
+          <Link to="/dashboard/products">Return to products list</Link>
+        </div>
       </>
     );
   }

@@ -243,8 +243,10 @@ export default function CategoryDetail({
     return (
       <>
         <h2>Category Deleted</h2>
-        <div>Delete successful.</div>
-        <Link to="/dashboard/categories">Return to categories list</Link>
+        <div className="product-detail">
+          <div>Delete successful.</div>
+          <Link to="/dashboard/categories">Return to categories list</Link>
+        </div>
       </>
     );
   }
