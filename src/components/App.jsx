@@ -133,11 +133,13 @@ export default function App() {
             },
             {
               path: 'categories/',
-              element: <ListCategories />,
+              // XXX
+              element: <ListCategories allCategories={allCategories} />,
             },
             {
+              // XXX
               path: 'categories/new',
-              element: <NewCategory />,
+              element: <NewCategory allCategories={allCategories} />,
             },
             {
               path: 'products/:id',
@@ -156,8 +158,9 @@ export default function App() {
               element: <NewProduct />,
             },
             {
+              // XXX
               path: 'products/',
-              element: <ListProducts />,
+              element: <ListProducts allProducts={allProducts} />,
             },
           ],
         },

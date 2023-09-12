@@ -3,7 +3,6 @@ import ProductSummary from './ProductSummary';
 
 export default function Products({ allProducts }) {
   const categoryData = useLoaderData();
-  console.log(categoryData);
 
   const products = { ...allProducts };
   const { categoryid } = useParams();
