@@ -121,15 +121,32 @@ export default function App() {
             { index: true, element: <Summary /> },
             {
               path: 'categories/:id',
-              element: <CategoryDetail />,
+              element: (
+                <CategoryDetail
+                  allCategories={allCategories}
+                  allProducts={allProducts}
+                />
+              ),
             },
             {
               path: 'categories/:id/deleted',
-              element: <CategoryDetail deleted />,
+              element: (
+                <CategoryDetail
+                  allCategories={allCategories}
+                  allProducts={allProducts}
+                  deleted
+                />
+              ),
             },
             {
               path: 'categories/:id/edit',
-              element: <CategoryDetail editing />,
+              element: (
+                <CategoryDetail
+                  allCategories={allCategories}
+                  allProducts={allProducts}
+                  editing
+                />
+              ),
             },
             {
               path: 'categories/',

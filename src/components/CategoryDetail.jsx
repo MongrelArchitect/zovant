@@ -1,13 +1,13 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import {
-  deleteSingleCategory,
-  getAllCategoryProducts,
-  getSingleCategory,
-  updateCategory,
-} from '../util/database';
+import { deleteSingleCategory, updateCategory } from '../util/database';
 
-export default function CategoryDetail({ deleted, editing }) {
+export default function CategoryDetail({
+  allCategories,
+  allProducts,
+  deleted,
+  editing,
+}) {
   const { id } = useParams();
 
   const navigate = useNavigate();
@@ -15,7 +15,7 @@ export default function CategoryDetail({ deleted, editing }) {
   const [categoryDetails, setCategoryDetails] = useState(null);
   const [confirmingDelete, setConfirmingDelete] = useState(false);
   const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [products, setProducts] = useState([]);
   const [validName, setValidName] = useState(true);
   const [validDescription, setValidDescription] = useState(true);
@@ -143,16 +143,18 @@ export default function CategoryDetail({ deleted, editing }) {
   };
 
   const submitEdit = async () => {
-    setLoading(true);
     try {
+      setLoading(true);
       if (validName && validDescription) {
         await updateCategory(
           id,
           categoryDetails.name,
           categoryDetails.description,
         );
+        setLoading(false);
         navigate(`/dashboard/categories/${id}`);
       } else {
+        setLoading(false);
         setError('Name and description required');
       }
     } catch (err) {
@@ -199,37 +201,25 @@ export default function CategoryDetail({ deleted, editing }) {
     return null;
   };
 
+  const getAllCategoryProducts = () => {
+    const productIds = Object.keys(allProducts);
+    const categoryProducts = productIds
+      .filter((prodId) => allProducts[prodId].categories.includes(id))
+      .map((prodId) => (allProducts[prodId]));
+    return categoryProducts;
+  };
+
   useEffect(() => {
-    const getDetails = async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        const details = await getSingleCategory(id);
-        setCategoryDetails(details);
-      } catch (err) {
-        console.error(err);
-        setError(err.message);
-      }
-      setLoading(false);
-    };
     if (!deleted) {
-      getDetails();
+      const details = allCategories[id];
+      setCategoryDetails(details);
     }
   }, [editing]);
 
   useEffect(() => {
-    const getProducts = async () => {
-      setLoading(true);
-      try {
-        const categoryProducts = await getAllCategoryProducts(id);
-        setProducts(categoryProducts);
-      } catch (err) {
-        console.error(err);
-        setError(err.message);
-      }
-    };
     if (!deleted) {
-      getProducts();
+      const categoryProducts = getAllCategoryProducts();
+      setProducts(categoryProducts);
     }
   }, []);
 
