@@ -154,8 +154,14 @@ export default function App() {
               element: <ProductDetail editing />,
             },
             {
+              // XXX
               path: 'products/new',
-              element: <NewProduct />,
+              element: (
+                <NewProduct
+                  allCategories={allCategories}
+                  allProducts={allProducts}
+                />
+              ),
             },
             {
               // XXX

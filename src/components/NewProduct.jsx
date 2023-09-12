@@ -1,16 +1,13 @@
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { v4 as uuid } from 'uuid';
 import {
   addNewProduct,
   addProductImage,
-  checkProductExists,
-  getAllCategories,
-  getAllProducts,
   updateProductAccessories,
 } from '../util/database';
 
-export default function NewProduct() {
+export default function NewProduct({ allCategories, allProducts }) {
   const navigate = useNavigate();
 
   const fileInputRef = useRef(null);
@@ -18,16 +15,14 @@ export default function NewProduct() {
   const [accessories, setAccessories] = useState([]);
   const [addingAccessories, setAddingAccessories] = useState(false);
   const [attempted, setAttempted] = useState(false);
-  const [categories, setCategories] = useState([]);
   const [description, setDescription] = useState('');
   const [error, setError] = useState(null);
   const [features, setFeatures] = useState({});
   const [image, setImage] = useState(null);
   const [inStock, setInStock] = useState(true);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [model, setModel] = useState('');
   const [productCategories, setProductCategories] = useState([]);
-  const [products, setProducts] = useState([]);
   const [validCategories, setValidCategories] = useState(false);
   const [validDescription, setValidDescription] = useState(false);
   const [validFeatures, setValidFeatures] = useState(true);
@@ -115,6 +110,10 @@ export default function NewProduct() {
     setValidModel(event.target.validity.valid);
   };
 
+  const checkProductExists = (checkModel) => Object.values(checkModel).some(
+    (product) => product.model === checkModel,
+  );
+
   const deleteFeature = (event) => {
     const { featureid } = event.target.dataset;
     const newFeatures = { ...features };
@@ -124,16 +123,18 @@ export default function NewProduct() {
   };
 
   const displayAccessories = () => {
-    if (addingAccessories && products.length) {
-      return products.map((product) => (
-        <div className="category-choice" key={product.id}>
+    const productIds = Object.keys(allProducts);
+
+    if (addingAccessories && productIds.length) {
+      return productIds.map((id) => (
+        <div className="category-choice" key={id}>
           <input
-            data-id={product.id}
-            id={`product${product.id}`}
+            data-id={id}
+            id={`product${id}`}
             onChange={changeAccessories}
             type="checkbox"
           />
-          <label htmlFor={`product${product.id}`}>{product.model}</label>
+          <label htmlFor={`product${id}`}>{allProducts[id].model}</label>
         </div>
       ));
     }
@@ -141,16 +142,18 @@ export default function NewProduct() {
   };
 
   const displayCategories = () => {
-    if (categories.length) {
-      return categories.map((category) => (
-        <div className="category-choice" key={category.id}>
+    const categoryIds = Object.keys(allCategories);
+
+    if (categoryIds.length) {
+      return categoryIds.map((id) => (
+        <div className="category-choice" key={id}>
           <input
-            data-categoryid={category.id}
-            id={`category${category.id}`}
+            data-categoryid={id}
+            id={`category${id}`}
             onChange={changeCategories}
             type="checkbox"
           />
-          <label htmlFor={`category${category.id}`}>{category.name}</label>
+          <label htmlFor={`category${id}`}>{allCategories[id].name}</label>
         </div>
       ));
     }
@@ -209,7 +212,7 @@ export default function NewProduct() {
       && validImage
       && validModel
     ) {
-      if (await checkProductExists(model)) {
+      if (checkProductExists(model)) {
         setError(`Product model ${model} already in database`);
       } else {
         setLoading(true);
@@ -240,39 +243,6 @@ export default function NewProduct() {
       setError('Something went wrong - check each input');
     }
   };
-
-  useEffect(() => {
-    const loadCategories = async () => {
-      try {
-        const allCategories = await getAllCategories();
-        allCategories.forEach((category) => {
-          // eslint-disable-next-line
-          category.include = false;
-        });
-        setCategories(allCategories);
-      } catch (err) {
-        console.error(err);
-        setError(err.message);
-      }
-      setLoading(false);
-    };
-    loadCategories();
-  }, []);
-
-  useEffect(() => {
-    const loadProducts = async () => {
-      if (addingAccessories) {
-        try {
-          const allProducts = await getAllProducts();
-          setProducts(allProducts);
-        } catch (err) {
-          console.error(err);
-          setError(err.message);
-        }
-      }
-    };
-    loadProducts();
-  }, [addingAccessories]);
 
   return (
     <>
