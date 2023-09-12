@@ -1,10 +1,7 @@
 import { useEffect, useState } from 'react';
-import { getSummaryCounts } from '../util/database';
 
-export default function Summary() {
+export default function Summary({ allCategories, allProducts }) {
   const [counts, setCounts] = useState({});
-  const [error, setError] = useState(false);
-  const [loading, setLoading] = useState(true);
 
   const displaySummary = () => {
     const keys = Object.keys(counts);
@@ -28,29 +25,17 @@ export default function Summary() {
   };
 
   useEffect(() => {
-    const getCounts = async () => {
-      setLoading(true);
-      try {
-        const summary = await getSummaryCounts();
-        setCounts(summary);
-      } catch (err) {
-        console.error(err);
-        setError(err.message);
-      }
-      setLoading(false);
+    const summary = {
+      categories: Object.keys(allCategories).length,
+      products: Object.keys(allProducts).length,
     };
-    getCounts();
+    setCounts(summary);
   }, []);
 
   return (
     <>
       <h2>Summary</h2>
-      {loading ? (
-        <div>Loading...</div>
-      ) : (
-        <ul className="product-detail">{displaySummary()}</ul>
-      )}
-      {error ? <div className="error">{error}</div> : null}
+      <ul className="product-detail">{displaySummary()}</ul>
     </>
   );
 }

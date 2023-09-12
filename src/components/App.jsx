@@ -118,8 +118,17 @@ export default function App() {
           path: '/dashboard',
           element: <Dashboard user={user} />,
           children: [
-            { index: true, element: <Summary /> },
             {
+              index: true,
+              element: (
+                <Summary
+                  allCategories={allCategories}
+                  allProducts={allProducts}
+                />
+              ),
+            },
+            {
+              // XXX
               path: 'categories/:id',
               element: (
                 <CategoryDetail
@@ -129,6 +138,7 @@ export default function App() {
               ),
             },
             {
+              // XXX
               path: 'categories/:id/deleted',
               element: (
                 <CategoryDetail
@@ -139,6 +149,7 @@ export default function App() {
               ),
             },
             {
+              // XXX
               path: 'categories/:id/edit',
               element: (
                 <CategoryDetail
