@@ -224,6 +224,10 @@ input[type="checkbox"] {
   gap: 8px;
 }
 
+.catalog-detail-image.product-image {
+  max-width: 500px;
+}
+
 .catalog-products {
   display: flex;
   flex-wrap: wrap;

@@ -50,7 +50,7 @@ export default function CatalogProductDetail({ allCategories, allProducts }) {
       <div hidden={!placeholder} className="image-placeholder" />
       <img
         alt={product.model}
-        className="product-image"
+        className="catalog-detail-image product-image"
         hidden={placeholder}
         onLoad={() => {
           setPlaceholder(false);
