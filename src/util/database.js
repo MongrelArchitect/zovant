@@ -242,7 +242,7 @@ async function getAllProducts() {
       if (modelA < modelB) {
         return -1;
       }
-      if (modelA < modelB) {
+      if (modelA > modelB) {
         return 1;
       }
       return 0;

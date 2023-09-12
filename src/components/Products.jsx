@@ -1,95 +1,52 @@
-import { useEffect, useState } from 'react';
-import { getAllCategories, getAllProducts } from '../util/database';
+import { useLoaderData, useParams } from 'react-router-dom';
+import ProductSummary from './ProductSummary';
 
-import HeroStatic from './HeroStatic';
+export default function Products({ allProducts }) {
+  const title = useLoaderData();
 
-import heroImage from '../assets/images/products.jpg';
+  const products = { ...allProducts };
+  const { categoryid } = useParams();
 
-export default function Products() {
-  const [categories, setCategories] = useState([]);
-  const [categoryTitle, setCategoryTitle] = useState(null);
-  const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [products, setProducts] = useState([]);
-
-  const populateCategories = () => {
-    if (categories.length) {
-      // we have some categories
-      return (
-        <div className="categories card">
-          <h2>Categories</h2>
-          <ul>
-            <li>
-              <button type="button">All products</button>
-            </li>
-            {categories.map((category) => (
-              <li key={category.id}>
-                <button type="button">{category.name}</button>
-              </li>
-            ))}
-          </ul>
-        </div>
-      );
+  // only need certain products if we've got a category id in the url
+  const getCategoryKeys = (keys) => {
+    if (categoryid) {
+      return keys
+        .filter((key) => allProducts[key].categories.includes(categoryid));
     }
-    // no categories means no products
-    return <div className="card">No products available. Check back soon!</div>;
+    return keys;
   };
 
-  const populateProducts = () => {
-    // card products-list
-    if (products.length) {
-      return (
-        <div className="card products-list">
-          <h2>{categoryTitle || 'All Products'}</h2>
-          <div className="products-list-contents">
-            {products.map((product) => (
-              <div className="single-product" key={product.id}>
-                <h3>{product.model}</h3>
-                <img
-                  alt={product.model}
-                  className="product-image"
-                  src={product.image}
-                />
-              </div>
-            ))}
-          </div>
-        </div>
-      );
-    }
-    // no products
-    return <div className="card">No products available. Check back soon!</div>;
-  };
-
-  useEffect(() => {
-    const queryDatabase = async () => {
-      setLoading(true);
-      try {
-        const categoriesQuery = await getAllCategories();
-        setCategories(categoriesQuery);
-        const productsQuery = await getAllProducts();
-        setProducts(productsQuery);
-        setLoading(false);
-      } catch (err) {
-        setLoading(false);
-        setError(err);
+  const productKeys = getCategoryKeys(Object.keys(allProducts));
+  if (productKeys.length) {
+    productKeys.sort((a, b) => {
+      const nameA = allProducts[a].model.toLowerCase();
+      const nameB = allProducts[b].model.toLowerCase();
+      if (nameA < nameB) {
+        return -1;
       }
-    };
-    queryDatabase();
-  }, []);
+      if (nameA > nameB) {
+        return 1;
+      }
+      return 0;
+    });
+  }
+
+  if (!productKeys.length) {
+    return (
+      <div className="dashboard-detail">
+        <h2>Empty</h2>
+        <div>No products found</div>
+      </div>
+    );
+  }
 
   return (
-    <div className="products">
-      <HeroStatic image={heroImage} />
-      <div className="info products-page">
-        {error ? <div className="card">{error}</div> : null}
-
-        {loading ? (
-          <div className="card">Loading...</div>
-        ) : (
-          populateCategories()
-        )}
-
-        {loading ? <div className="card">Loading...</div> : populateProducts()}
+    <div className="dashboard-detail">
+      <h2>{title || 'All Products'}</h2>
+      <div className="catalog-products">
+        {productKeys.map((key) => (
+          <ProductSummary key={key} product={products[key]} />
+        ))}
       </div>
     </div>
   );

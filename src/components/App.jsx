@@ -1,14 +1,17 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   createBrowserRouter,
   redirect,
   RouterProvider,
 } from 'react-router-dom';
 
+import { collection, onSnapshot, query } from 'firebase/firestore';
 import { onAuthStateChanged } from 'firebase/auth';
-import { auth } from '../util/firebase';
+import { auth, database } from '../util/firebase';
 
 import About from './About';
+import Catalog from './Catalog';
+import CatalogProductDetail from './CatalogProductDetail';
 import CategoryDetail from './CategoryDetail';
 import Contact from './Contact';
 import Dashboard from './Dashboard';
@@ -28,6 +31,8 @@ import '../styles/reset.css';
 import '../styles/style.css';
 
 export default function App() {
+  const [allCategories, setAllCategories] = useState({});
+  const [allProducts, setAllProducts] = useState({});
   const [user, setUser] = useState(null);
 
   onAuthStateChanged(auth, (tryUser) => {
@@ -37,6 +42,36 @@ export default function App() {
       setUser(null);
     }
   });
+
+  useEffect(() => {
+    const productsQuery = query(collection(database, 'products'));
+    onSnapshot(productsQuery, (querySnapshot) => {
+      console.log('PRODUCTS CHANGED - DB SNAPSHOT');
+      const products = { ...allProducts };
+      querySnapshot.forEach((docu) => {
+        products[docu.id] = {
+          ...docu.data(),
+          accessories: docu.data().accessories.map((accessory) => accessory.id),
+          categories: docu.data().categories.map((category) => category.id),
+          id: docu.id,
+        };
+      });
+      setAllProducts(products);
+    });
+
+    const categoriesQuery = query(collection(database, 'categories'));
+    onSnapshot(categoriesQuery, (querySnapshot) => {
+      console.log('CATEGORIES CHANGED - DB SNAPSHOT');
+      const categories = { ...allCategories };
+      querySnapshot.forEach((docu) => {
+        categories[docu.id] = {
+          ...docu.data(),
+          id: docu.id,
+        };
+      });
+      setAllCategories(categories);
+    });
+  }, []);
 
   const router = createBrowserRouter([
     {
@@ -48,6 +83,30 @@ export default function App() {
         {
           path: '/about',
           element: <About />,
+        },
+        {
+          path: '/catalog',
+          element: <Catalog allCategories={allCategories} />,
+          children: [
+            { index: true, element: <Products allProducts={allProducts} /> },
+            {
+              element: <Products allProducts={allProducts} />,
+              loader: ({ params }) => allCategories[params.categoryid].name,
+              path: 'categories/:categoryid',
+            },
+            {
+              element: (
+                <CatalogProductDetail
+                  allCategories={allCategories}
+                  allProducts={allProducts}
+                />
+              ),
+              loader: ({ params }) => ({
+                product: allProducts[params.productid],
+              }),
+              path: 'products/:productid',
+            },
+          ],
         },
         {
           path: '/contact',
@@ -109,10 +168,6 @@ export default function App() {
             }
             return null;
           },
-        },
-        {
-          path: '/catalog',
-          element: <Products />,
         },
       ],
     },

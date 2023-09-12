@@ -18,27 +18,38 @@ export default function Nav({ user }) {
       <nav className="nav">
         <ul className={visible ? 'nav-list show' : 'nav-list'} id="navigation">
           <li>
-            <NavLink to="/">Home</NavLink>
+            <NavLink onClick={toggleCollapse} to="/">
+              Home
+            </NavLink>
           </li>
           <li>
-            <NavLink to="/catalog">Products</NavLink>
+            <NavLink onClick={toggleCollapse} to="/catalog">
+              Products
+            </NavLink>
           </li>
           <li>
-            <NavLink to="/about">About</NavLink>
+            <NavLink onClick={toggleCollapse} to="/about">
+              About
+            </NavLink>
           </li>
           <li>
-            <NavLink to="/contact">Contact</NavLink>
+            <NavLink onClick={toggleCollapse} to="/contact">
+              Contact
+            </NavLink>
           </li>
           {user ? (
             <>
               <li>
-                <NavLink to="/dashboard">Dashboard</NavLink>
+                <NavLink onClick={toggleCollapse} to="/dashboard">
+                  Dashboard
+                </NavLink>
               </li>
               <li>
                 <button
                   className="sign-out"
                   onClick={() => {
                     signOut(auth);
+                    toggleCollapse();
                   }}
                   type="button"
                 >
@@ -57,10 +68,7 @@ export default function Nav({ user }) {
         onClick={toggleCollapse}
         type="button"
       >
-        <img
-          alt=""
-          src={visible ? closeIcon : menuIcon}
-        />
+        <img alt="" src={visible ? closeIcon : menuIcon} />
       </button>
     </>
   );
