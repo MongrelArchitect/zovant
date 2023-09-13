@@ -285,7 +285,7 @@ input[type="checkbox"] {
 }
 
 .dashboard .dashboard-content.catalog {
-  max-width: 1200px;
+  max-width: 1600px;
 }
 
 .dashboard .dashboard-control h3 {
@@ -554,6 +554,17 @@ input[type="checkbox"] {
   font-size: 1rem;
 }
 
+.catalog .product-detail {
+  max-width: 900px;
+}
+
+.catalog .catalog-products .product-detail {
+  flex-grow: 1;
+  flex-shrink: 1;
+  flex-basis: 240px;
+  max-width: 320px;
+}
+
 .product-detail {
   background: #eee;
   border: 2px solid #ccc;
@@ -631,6 +642,10 @@ input[type="checkbox"] {
 
   .carousel {
     height: 200px;
+  }
+
+  .catalog .catalog-products .product-detail {
+    max-width: 100%;
   }
 
   .dashboard .dashboard-content {
