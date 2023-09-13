@@ -267,10 +267,6 @@ input[type="checkbox"] {
   filter: invert(1);
 }
 
-.copyright {
-  text-align: center;
-}
-
 .dashboard .card {
   align-items: center;
   flex-direction: column;
@@ -358,7 +354,7 @@ input[type="checkbox"] {
   flex-wrap: wrap;
   gap: 16px;
   justify-content: space-between;
-  max-width: 900px;
+  max-width: 1200px;
   width: 100%;
 }
 
@@ -382,6 +378,7 @@ input[type="checkbox"] {
 }
 
 .header {
+  background: var(--bg-dark);
   position: sticky;
   top: 0;
   z-index: 9;
@@ -405,11 +402,12 @@ input[type="checkbox"] {
 
 .header-content {
   align-items: center;
-  background: var(--bg-dark);
   color: var(--text-light);
   display: flex;
   font-size: 1.2rem;
   gap: 32px;
+  max-width: 1200px;
+  margin: auto;
   padding: 8px;
 }
 
