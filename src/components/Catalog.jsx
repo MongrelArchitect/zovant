@@ -1,10 +1,11 @@
+import { useState } from 'react';
 import { Link, Outlet } from 'react-router-dom';
 
-import HeroStatic from './HeroStatic';
-
-import heroImage from '../assets/images/products.jpg';
+import triangleIcon from '../assets/images/triangle-down.svg';
 
 export default function Catalog({ allCategories }) {
+  const [dropdownVisible, setDropdownVisible] = useState(false);
+
   const categoryIds = allCategories ? Object.keys(allCategories) : [];
   if (categoryIds.length) {
     categoryIds.sort((a, b) => {
@@ -30,14 +31,33 @@ export default function Catalog({ allCategories }) {
       );
     }
 
+    const toggleDropdown = () => {
+      setDropdownVisible(!dropdownVisible);
+    };
+
     return (
-      <div className="dashboard-control">
-        <h2>Categories</h2>
-        <ul>
+      <div className="dashboard-control catalog-dashboard">
+        <div className="catalog-control">
+          <h2>Categories</h2>
+          <button
+            className="catalog-menu-button"
+            onClick={toggleDropdown}
+            type="button"
+          >
+            <img
+              alt=""
+              className={dropdownVisible ? 'show' : ''}
+              src={triangleIcon}
+            />
+          </button>
+        </div>
+        <ul
+          className={
+            dropdownVisible ? 'catalog-categories show' : 'catalog-categories'
+          }
+        >
           <li>
-            <Link to="/catalog">
-              All Products
-            </Link>
+            <Link to="/catalog">All Products</Link>
           </li>
           {categoryIds.map((id) => (
             <li key={id}>
@@ -53,7 +73,6 @@ export default function Catalog({ allCategories }) {
 
   return (
     <div className="products">
-      <HeroStatic image={heroImage} />
       <div className="dashboard info">
         <div className="card">
           <h1>Catalog</h1>
