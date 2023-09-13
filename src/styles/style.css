@@ -555,13 +555,18 @@ input[type="checkbox"] {
     gap: 8px;
   }
 
+  .dashboard .dashboard-control.catalog-dashboard {
+    background: #fff;
+    position: sticky;
+    top: 84px;
+  }
+
   .dashboard .dashboard-control ul.catalog-categories {
     display: none;
     max-height: 0;
   }
 
   .dashboard .dashboard-control ul.catalog-categories.show {
-    background: #fff;
     display: flex;
     max-height: 1000px;
   }
