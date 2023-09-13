@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useLoaderData } from 'react-router-dom';
 
 export default function CatalogProductDetail({
@@ -9,6 +9,10 @@ export default function CatalogProductDetail({
   const { product } = useLoaderData();
 
   const [placeholder, setPlaceholder] = useState(true);
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   const displayAccessories = () => {
     if (product.accessories.length) {
@@ -63,7 +67,7 @@ export default function CatalogProductDetail({
   };
 
   return (
-    <div className="product-detail">
+    <div id="catalog-detail" className="product-detail">
       <div>
         <h3>{product.model}</h3>
         {displayCategories()}

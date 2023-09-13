@@ -35,6 +35,11 @@ export default function Catalog({ allCategories }) {
       setDropdownVisible(!dropdownVisible);
     };
 
+    const closeDropdown = () => {
+      window.scrollTo(0, 0);
+      setDropdownVisible(false);
+    };
+
     return (
       <div className="dashboard-control catalog-dashboard">
         <div className="catalog-control">
@@ -57,11 +62,11 @@ export default function Catalog({ allCategories }) {
           }
         >
           <li>
-            <Link to="/catalog">All Products</Link>
+            <Link onClick={closeDropdown} to="/catalog">All Products</Link>
           </li>
           {categoryIds.map((id) => (
             <li key={id}>
-              <Link to={`/catalog/categories/${id}`}>
+              <Link onClick={closeDropdown} to={`/catalog/categories/${id}`}>
                 {allCategories[id].name}
               </Link>
             </li>
