@@ -113,6 +113,7 @@ export default function App() {
                 <CatalogProductDetail
                   allCategories={allCategories}
                   allProducts={allProducts}
+                  user={user}
                 />
               ),
               loader: ({ params }) => ({
@@ -203,6 +204,7 @@ export default function App() {
                 <ProductDetail
                   allCategories={allCategories}
                   allProducts={allProducts}
+                  editingMode
                 />
               ),
             },

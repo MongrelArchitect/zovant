@@ -1,7 +1,11 @@
 import { useState } from 'react';
 import { Link, useLoaderData } from 'react-router-dom';
 
-export default function CatalogProductDetail({ allCategories, allProducts }) {
+export default function CatalogProductDetail({
+  allCategories,
+  allProducts,
+  user,
+}) {
   const { product } = useLoaderData();
 
   const [placeholder, setPlaceholder] = useState(true);
@@ -44,6 +48,14 @@ export default function CatalogProductDetail({ allCategories, allProducts }) {
   return (
     <div className="product-detail">
       <h3>{product.model}</h3>
+      {user ? (
+        <Link
+          className="edit-button"
+          to={`/dashboard/products/${product.id}/edit`}
+        >
+          Edit
+        </Link>
+      ) : null}
       <div className={product.inStock ? 'in-stock' : 'out-of-stock'}>
         {product.inStock ? '✓ In stock' : '⚠ Out of stock'}
       </div>

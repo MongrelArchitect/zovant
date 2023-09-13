@@ -11,7 +11,11 @@ import {
   updateProductAccessories,
 } from '../util/database';
 
-export default function ProductDetail({ allCategories, allProducts }) {
+export default function ProductDetail({
+  allCategories,
+  allProducts,
+  editingMode,
+}) {
   const fileInputRef = useRef(null);
 
   const { id } = useParams();
@@ -712,7 +716,7 @@ export default function ProductDetail({ allCategories, allProducts }) {
   return (
     <>
       <h2>{editing ? 'Edit Product' : 'Product Detail'}</h2>
-      {editing ? displayForm() : displayDetails()}
+      {editing || editingMode ? displayForm() : displayDetails()}
     </>
   );
 }
