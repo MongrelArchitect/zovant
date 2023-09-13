@@ -429,6 +429,22 @@ export default function ProductDetail({ allCategories, allProducts }) {
     );
   };
 
+  const dropFile = (event) => {
+    setError(null);
+    event.preventDefault();
+    const file = event.dataTransfer.files[0];
+    if (file) {
+      if (file.type.split('/')[0] !== 'image' || file.size > 5000000) {
+        setValidImage(false);
+      } else {
+        setValidImage(true);
+      }
+    } else {
+      setValidImage(true);
+    }
+    setNewImage(file);
+  };
+
   const displayForm = () => {
     if (loading) {
       return <div>Loading...</div>;
@@ -488,15 +504,26 @@ export default function ProductDetail({ allCategories, allProducts }) {
             ) : null}
           </fieldset>
 
-          <label htmlFor="image">
+          <label className="image-label" htmlFor="image">
             Image (required)
-            <img
-              alt={productDetails.model}
-              className="image-preview"
-              src={
-                newImage ? URL.createObjectURL(newImage) : productDetails.image
-              }
-            />
+            <div
+              className="drop-file"
+              onDragOver={(e) => {
+                e.stopPropagation();
+                e.preventDefault();
+              }}
+              onDrop={dropFile}
+            >
+              <img
+                alt={productDetails.model}
+                className="image-preview"
+                src={
+                  newImage
+                    ? URL.createObjectURL(newImage)
+                    : productDetails.image
+                }
+              />
+            </div>
             <div>{newImage ? newImage.name : 'using original image'}</div>
             <input
               accept="image/*"
