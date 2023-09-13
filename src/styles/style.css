@@ -586,6 +586,12 @@ input[type="checkbox"] {
   font-weight: bold;
 }
 
+.product-detail .details-categories {
+  display: flex;
+  gap: 8px;
+  list-style: none;
+}
+
 .product-detail .edit-button {
   color: #111;
   background: var(--brand-blue);

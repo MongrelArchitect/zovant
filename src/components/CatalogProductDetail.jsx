@@ -31,29 +31,49 @@ export default function CatalogProductDetail({
   };
 
   const displayCategories = () => (
-    <div>
-      <h4>Categories:</h4>
-      <ul>
-        {product.categories.map((category) => (
-          <li key={category}>
-            <Link to={`/catalog/categories/${category}`}>
-              {allCategories[category].name}
-            </Link>
-          </li>
-        ))}
-      </ul>
-    </div>
+    <ul className="details-categories">
+      {product.categories.map((category) => (
+        <li key={category}>
+          <Link to={`/catalog/categories/${category}`}>
+            {allCategories[category].name}
+          </Link>
+          {product.categories.indexOf(category)
+          === product.categories.length - 1
+            ? null
+            : ','}
+        </li>
+      ))}
+    </ul>
   );
+
+  const displayFeatures = () => {
+    if (Object.keys(product.features).length) {
+      return (
+        <div>
+          <h4>Features:</h4>
+          <ul>
+            {Object.keys(product.features).map((key) => (
+              <li key={key}>{product.features[key]}</li>
+            ))}
+          </ul>
+        </div>
+      );
+    }
+    return null;
+  };
 
   return (
     <div className="product-detail">
-      <h3>{product.model}</h3>
+      <div>
+        <h3>{product.model}</h3>
+        {displayCategories()}
+      </div>
       {user ? (
         <Link
           className="edit-button"
-          to={`/dashboard/products/${product.id}/edit`}
+          to={`/dashboard/products/${product.id}/`}
         >
-          Edit
+          View in dashboard
         </Link>
       ) : null}
       <div className={product.inStock ? 'in-stock' : 'out-of-stock'}>
@@ -70,15 +90,7 @@ export default function CatalogProductDetail({
         src={product.image}
       />
       <div>{product.description}</div>
-      <div>
-        <h4>Features:</h4>
-        <ul>
-          {Object.keys(product.features).map((key) => (
-            <li key={key}>{product.features[key]}</li>
-          ))}
-        </ul>
-      </div>
-      {displayCategories()}
+      {displayFeatures()}
       {displayAccessories()}
     </div>
   );

@@ -204,7 +204,6 @@ export default function App() {
                 <ProductDetail
                   allCategories={allCategories}
                   allProducts={allProducts}
-                  editingMode
                 />
               ),
             },

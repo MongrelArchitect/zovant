@@ -14,7 +14,6 @@ import {
 export default function ProductDetail({
   allCategories,
   allProducts,
-  editingMode,
 }) {
   const fileInputRef = useRef(null);
 
@@ -716,7 +715,7 @@ export default function ProductDetail({
   return (
     <>
       <h2>{editing ? 'Edit Product' : 'Product Detail'}</h2>
-      {editing || editingMode ? displayForm() : displayDetails()}
+      {editing ? displayForm() : displayDetails()}
     </>
   );
 }
