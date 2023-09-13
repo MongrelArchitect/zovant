@@ -305,6 +305,28 @@ input[type="checkbox"] {
   gap: 8px;
 }
 
+.drop-file {
+  color: #444;
+  display: flex;
+  flex-direction: column;
+  font-size: 1rem;
+  gap: 8px;
+}
+
+.drop-file.empty {
+  align-items: center;
+  border: 4px dashed #aaa;
+  display: flex;
+  height: 200px;
+  justify-content: center;
+  width: 200px;
+}
+
+.drop-image {
+  height: 64px;
+  opacity: 30%;
+}
+
 .error {
   background: var(--bg-error);
   color: var(--text-dark);
@@ -417,6 +439,10 @@ input[type="checkbox"] {
   width: 100%;
 }
 
+.image-label {
+  align-self: flex-start;
+}
+
 .image-placeholder {
   animation: gradient 2s ease infinite;
   aspect-ratio: 1;
@@ -466,7 +492,7 @@ input[type="checkbox"] {
 }
 
 .image-preview {
-  width: 128px;
+  width: 200px;
 }
 
 .info {

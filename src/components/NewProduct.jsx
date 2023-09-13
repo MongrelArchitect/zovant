@@ -7,6 +7,8 @@ import {
   updateProductAccessories,
 } from '../util/database';
 
+import dropIcon from '../assets/images/drop-file.svg';
+
 export default function NewProduct({ allCategories, allProducts }) {
   const fileInputRef = useRef(null);
 
@@ -109,9 +111,8 @@ export default function NewProduct({ allCategories, allProducts }) {
     setValidModel(event.target.validity.valid);
   };
 
-  const checkProductExists = (checkModel) => Object.values(checkModel).some(
-    (product) => product.model === checkModel,
-  );
+  const checkProductExists = (checkModel) => Object.values(checkModel)
+    .some((product) => product.model === checkModel);
 
   const deleteFeature = (event) => {
     const { featureid } = event.target.dataset;
@@ -192,6 +193,18 @@ export default function NewProduct({ allCategories, allProducts }) {
       );
     }
     return null;
+  };
+
+  const dropFile = (event) => {
+    setError(null);
+    event.preventDefault();
+    const file = event.dataTransfer.files[0];
+    if (!file || file.type.split('/')[0] !== 'image' || file.size > 5000000) {
+      setValidImage(false);
+    } else {
+      setValidImage(true);
+    }
+    setImage(file);
   };
 
   const newFeature = () => {
@@ -319,16 +332,34 @@ export default function NewProduct({ allCategories, allProducts }) {
             ) : null}
           </fieldset>
 
-          <label htmlFor="image">
+          <label className="image-label" htmlFor="image">
             Image (required)
-            {image ? (
-              <img
-                alt=""
-                className="image-preview"
-                src={URL.createObjectURL(image)}
-              />
-            ) : null}
-            <div>{image ? image.name : 'no file chosen'}</div>
+            <div
+              className={image ? 'drop-file' : 'drop-file empty'}
+              onDragOver={(e) => {
+                e.stopPropagation();
+                e.preventDefault();
+              }}
+              onDrop={dropFile}
+            >
+              {image ? (
+                <img
+                  alt=""
+                  className="image-preview"
+                  src={URL.createObjectURL(image)}
+                />
+              ) : (
+                <>
+                  <img
+                    alt=""
+                    className="drop-image"
+                    src={dropIcon}
+                  />
+                  <div>Drop file here</div>
+                </>
+              )}
+            </div>
+            {image ? image.name : 'no file chosen'}
             <input
               accept="image/*"
               hidden
