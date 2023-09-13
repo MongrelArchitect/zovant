@@ -168,7 +168,12 @@ export default function App() {
             },
             {
               path: 'categories/',
-              element: <ListCategories allCategories={allCategories} />,
+              element: (
+                <ListCategories
+                  allCategories={allCategories}
+                  allProducts={allProducts}
+                />
+              ),
             },
             {
               path: 'categories/new',
@@ -235,7 +240,7 @@ export default function App() {
   ]);
 
   if (loading) {
-    return <LoadingScreen />
+    return <LoadingScreen />;
   }
 
   return <RouterProvider router={router} />;

@@ -2,6 +2,17 @@ import { Link } from 'react-router-dom';
 
 export default function ListProducts({ allProducts }) {
   const productIds = Object.keys(allProducts);
+  productIds.sort((a, b) => {
+    const nameA = allProducts[a].model.toLowerCase();
+    const nameB = allProducts[b].model.toLowerCase();
+    if (nameA < nameB) {
+      return -1;
+    }
+    if (nameA > nameB) {
+      return 1;
+    }
+    return 0;
+  });
 
   const listAllProducts = () => {
     if (productIds.length) {
