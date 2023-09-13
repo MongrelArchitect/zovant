@@ -20,6 +20,7 @@ import ForgotPassword from './ForgotPassword';
 import Home from './Home';
 import ListCategories from './ListCategories';
 import ListProducts from './ListProducts';
+import LoadingScreen from './LoadingScreen';
 import Login from './Login';
 import NewCategory from './NewCategory';
 import NewProduct from './NewProduct';
@@ -34,6 +35,9 @@ import '../styles/style.css';
 export default function App() {
   const [allCategories, setAllCategories] = useState({});
   const [allProducts, setAllProducts] = useState({});
+  const [loadedCategories, setLoadedCategories] = useState(false);
+  const [loadedProducts, setLoadedProducts] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(null);
 
   onAuthStateChanged(auth, (tryUser) => {
@@ -57,6 +61,7 @@ export default function App() {
         };
       });
       setAllProducts(products);
+      setLoadedProducts(true);
     });
 
     const categoriesQuery = query(collection(database, 'categories'));
@@ -69,8 +74,15 @@ export default function App() {
         };
       });
       setAllCategories(categories);
+      setLoadedCategories(true);
     });
   }, []);
+
+  useEffect(() => {
+    if (loadedCategories && loadedProducts) {
+      setLoading(false);
+    }
+  }, [loadedCategories, loadedProducts]);
 
   const router = createBrowserRouter([
     {
@@ -221,6 +233,10 @@ export default function App() {
       ],
     },
   ]);
+
+  if (loading) {
+    return <LoadingScreen />
+  }
 
   return <RouterProvider router={router} />;
 }

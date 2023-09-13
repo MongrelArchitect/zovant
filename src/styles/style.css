@@ -429,6 +429,30 @@ input[type="checkbox"] {
   width: 100%;
 }
 
+.loading-image {
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.loading-image img {
+  max-width: 400px;
+  width: 100%;
+}
+
+.loading-screen {
+  align-items: center;
+  animation: gradient 2s ease infinite;
+  aspect-ratio: 1;
+  background: linear-gradient(90deg, var(--brand-green), var(--brand-blue));
+  background-size: 400% 400%;
+  display: flex;
+  height: 100vh;
+  justify-content: center;
+  width: 100vw;
+}
+
 @keyframes gradient {
   0% {
     background-position: 0% 50%;
