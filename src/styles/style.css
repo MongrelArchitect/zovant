@@ -255,6 +255,15 @@ input[type="checkbox"] {
   gap: 8px;
 }
 
+.catalog-products .product-detail {
+  cursor: pointer;
+}
+
+.catalog-products .product-detail:hover {
+  cursor: pointer;
+  outline: 2px solid black;
+}
+
 .catalog-products .product-image {
   max-width: 300px;
 }

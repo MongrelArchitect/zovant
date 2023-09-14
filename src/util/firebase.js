@@ -4,7 +4,6 @@ import { getAuth } from 'firebase/auth';
 import { getStorage } from 'firebase/storage';
 
 /*
-// XXX
 // This is the actual production project
 const firebaseConfig = {
   apiKey: 'AIzaSyCEP4qgFc1xNF9GABvl-w0I6rcatbjwagU',
