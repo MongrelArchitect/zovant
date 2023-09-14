@@ -3,20 +3,6 @@ import { getFirestore } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
 import { getStorage } from 'firebase/storage';
 
-/*
-// This is the actual production project
-const firebaseConfig = {
-  apiKey: 'AIzaSyCEP4qgFc1xNF9GABvl-w0I6rcatbjwagU',
-  authDomain: 'zovant-security.firebaseapp.com',
-  projectId: 'zovant-security',
-  storageBucket: 'zovant-security.appspot.com',
-  messagingSenderId: '401450610124',
-  appId: '1:401450610124:web:55009c41f6476e697e4169',
-  measurementId: 'G-RSZTDVNHWX',
-};
-*/
-
-// This is the development / testing project
 const firebaseConfig = {
   apiKey: 'AIzaSyBKtxmwdAU-fUYcIHN7hcf0HLyay40toFc',
   authDomain: 'test-zovant.firebaseapp.com',
