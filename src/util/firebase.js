@@ -3,6 +3,7 @@ import { getFirestore } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
 import { getStorage } from 'firebase/storage';
 
+// This is the development / testing project
 const firebaseConfig = {
   apiKey: 'AIzaSyBKtxmwdAU-fUYcIHN7hcf0HLyay40toFc',
   authDomain: 'test-zovant.firebaseapp.com',

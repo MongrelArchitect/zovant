@@ -19,10 +19,11 @@ import {
 } from 'firebase/storage';
 import { database, storage } from './firebase';
 
-async function addNewCategory(name, description) {
+async function addNewCategory(name, description, features) {
   const docRef = await addDoc(collection(database, 'categories'), {
     description,
     name,
+    features,
   });
   return docRef;
 }
@@ -119,11 +120,12 @@ async function deleteSingleProduct(id, imagePath, accessories) {
   await removeProductFromAccessories(id, accessories);
 }
 
-async function updateCategory(id, name, description) {
+async function updateCategory(id, name, description, features) {
   const categoryRef = doc(database, 'categories', id);
   await updateDoc(categoryRef, {
     description,
     name,
+    features,
   });
 }
 
