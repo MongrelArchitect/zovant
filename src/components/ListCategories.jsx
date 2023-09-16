@@ -17,7 +17,7 @@ export default function ListCategories({ allCategories, allProducts }) {
   const countProducts = (id) => {
     const productIds = Object.keys(allProducts);
     const count = productIds.reduce((acc, curr) => {
-      if (allProducts[curr].categories.includes(id)) {
+      if (allProducts[curr].category === id) {
         return acc + 1;
       }
       return acc;

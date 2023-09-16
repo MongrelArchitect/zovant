@@ -56,7 +56,7 @@ export default function App() {
         products[docu.id] = {
           ...docu.data(),
           accessories: docu.data().accessories.map((accessory) => accessory.id),
-          categories: docu.data().categories.map((category) => category.id),
+          category: docu.data().category.id,
           id: docu.id,
         };
       });

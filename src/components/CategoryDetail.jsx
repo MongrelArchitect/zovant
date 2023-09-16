@@ -181,7 +181,7 @@ export default function CategoryDetail({ allCategories, allProducts }) {
         </ul>
       );
     }
-    return (<div>No features / filters</div>);
+    return (<div>None</div>);
   };
 
   const displayDetails = () => {
@@ -315,7 +315,7 @@ export default function CategoryDetail({ allCategories, allProducts }) {
   const getAllCategoryProducts = () => {
     const productIds = Object.keys(allProducts);
     const categoryProducts = productIds
-      .filter((prodId) => allProducts[prodId].categories.includes(id))
+      .filter((prodId) => allProducts[prodId].categories === id)
       .map((prodId) => allProducts[prodId]);
     return categoryProducts;
   };

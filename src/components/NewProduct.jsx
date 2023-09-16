@@ -1,6 +1,5 @@
 import { useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { v4 as uuid } from 'uuid';
 import {
   addNewProduct,
   addProductImage,
@@ -15,20 +14,21 @@ export default function NewProduct({ allCategories, allProducts }) {
   const [accessories, setAccessories] = useState([]);
   const [addingAccessories, setAddingAccessories] = useState(false);
   const [attempted, setAttempted] = useState(false);
+  const [category, setCategory] = useState(null);
   const [description, setDescription] = useState('');
   const [error, setError] = useState(null);
-  const [features, setFeatures] = useState({});
+  const [features, setFeatures] = useState([]);
   const [image, setImage] = useState(null);
-  const [inStock, setInStock] = useState(true);
   const [loading, setLoading] = useState(false);
   const [model, setModel] = useState('');
-  const [productCategories, setProductCategories] = useState([]);
+  const [ndaa, setNdaa] = useState(true);
+  const [specs, setSpecs] = useState('');
   const [successId, setSuccessId] = useState('');
-  const [validCategories, setValidCategories] = useState(false);
+  const [validCategory, setValidCategory] = useState(false);
   const [validDescription, setValidDescription] = useState(false);
-  const [validFeatures, setValidFeatures] = useState(true);
   const [validImage, setValidImage] = useState(false);
   const [validModel, setValidModel] = useState(false);
+  const [validSpecs, setValidSpecs] = useState(false);
 
   const changeAccessories = (event) => {
     const newAccessories = [...accessories];
@@ -44,20 +44,14 @@ export default function NewProduct({ allCategories, allProducts }) {
     }
   };
 
-  const changeCategories = (event) => {
-    const { categoryid } = event.target.dataset;
-    const { checked } = event.target;
-
-    const newProductCategories = [...productCategories];
-    if (checked) {
-      newProductCategories.push(categoryid);
+  const changeCategory = (event) => {
+    setError(null);
+    setCategory(event.target.value);
+    if (Object.keys(allCategories).includes(event.target.value)) {
+      setValidCategory(true);
     } else {
-      const index = newProductCategories.indexOf(categoryid);
-      newProductCategories.splice(index, 1);
+      setValidCategory(false);
     }
-
-    setValidCategories(newProductCategories.length);
-    setProductCategories(newProductCategories);
   };
 
   const changeDescription = (event) => {
@@ -66,29 +60,15 @@ export default function NewProduct({ allCategories, allProducts }) {
     setValidDescription(event.target.validity.valid);
   };
 
-  const checkValidFeatures = (copy) => {
-    const keys = Object.keys(copy);
-    let valid = true;
-    if (!keys.length) {
-      // no features = valid, since they're optional
-      return valid;
-    }
-    for (let i = 0; i < keys.length; i += 1) {
-      if (!copy[keys[i]]) {
-        valid = false;
-        break;
-      }
-    }
-    return valid;
-  };
-
-  const changeFeature = (event) => {
-    const feature = event.target.value;
+  const changeFeatures = (event) => {
     const { featureid } = event.target.dataset;
-    const newFeatures = { ...features };
-    newFeatures[featureid] = feature;
-    setFeatures(newFeatures);
-    setValidFeatures(checkValidFeatures(newFeatures));
+    const featuresCopy = [...features];
+    if (!featuresCopy.includes(featureid)) {
+      featuresCopy.push(featureid);
+    } else {
+      featuresCopy.splice(featuresCopy.indexOf(featureid), 1);
+    }
+    setFeatures(featuresCopy);
   };
 
   const changeImage = (event) => {
@@ -101,8 +81,8 @@ export default function NewProduct({ allCategories, allProducts }) {
     setImage(file);
   };
 
-  const changeInStock = (event) => {
-    setInStock(event.target.checked);
+  const changeNdaa = (event) => {
+    setNdaa(event.target.checked);
   };
 
   const changeModel = (event) => {
@@ -111,16 +91,13 @@ export default function NewProduct({ allCategories, allProducts }) {
     setValidModel(event.target.validity.valid);
   };
 
-  const checkProductExists = (checkModel) => Object.values(checkModel)
-    .some((product) => product.model === checkModel);
-
-  const deleteFeature = (event) => {
-    const { featureid } = event.target.dataset;
-    const newFeatures = { ...features };
-    delete newFeatures[featureid];
-    setFeatures(newFeatures);
-    setValidFeatures(checkValidFeatures(newFeatures));
+  const changeSpecs = (event) => {
+    setError(null);
+    setSpecs(event.target.value);
+    setValidSpecs(event.target.validity.valid);
   };
+
+  const checkProductExists = (checkModel) => Object.values(checkModel).some((product) => product.model === checkModel);
 
   const displayAccessories = () => {
     const productIds = Object.keys(allProducts);
@@ -138,6 +115,11 @@ export default function NewProduct({ allCategories, allProducts }) {
         </div>
       ));
     }
+    if (addingAccessories && productIds.length <= 1) {
+      return (
+        <div className="error">No other products in catalog. Add some!</div>
+      );
+    }
     return null;
   };
 
@@ -145,17 +127,26 @@ export default function NewProduct({ allCategories, allProducts }) {
     const categoryIds = Object.keys(allCategories);
 
     if (categoryIds.length) {
-      return categoryIds.map((id) => (
-        <div className="category-choice" key={id}>
-          <input
-            data-categoryid={id}
-            id={`category${id}`}
-            onChange={changeCategories}
-            type="checkbox"
-          />
-          <label htmlFor={`category${id}`}>{allCategories[id].name}</label>
-        </div>
-      ));
+      return (
+        <label htmlFor="categories">
+          Category (required)
+          <select
+            defaultValue="DEFAULT"
+            id="categories"
+            name="categories"
+            onChange={changeCategory}
+          >
+            <option value="DEFAULT" disabled>
+              CHOOSE A CATEGORY
+            </option>
+            {categoryIds.map((categoryId) => (
+              <option key={categoryId} value={categoryId}>
+                {allCategories[categoryId].name}
+              </option>
+            ))}
+          </select>
+        </label>
+      );
     }
     return (
       <div>
@@ -167,32 +158,44 @@ export default function NewProduct({ allCategories, allProducts }) {
   };
 
   const displayFeatures = () => {
-    const keys = Object.keys(features);
-    if (keys.length) {
-      return (
-        <div className="feature-inputs">
-          {keys.map((featureId) => (
-            <div key={featureId}>
-              <input
-                data-featureid={featureId}
-                onChange={changeFeature}
-                type="text"
-                value={features[featureId] || ''}
-              />
-              <button
-                className="error"
-                data-featureid={featureId}
-                onClick={deleteFeature}
-                type="button"
-              >
-                X
-              </button>
-            </div>
-          ))}
-        </div>
-      );
+    if (category) {
+      const categoryFeatures = allCategories[category].features;
+      const featureIds = Object.keys(categoryFeatures)
+        .sort((a, b) => {
+          const modelA = categoryFeatures[a].toLowerCase();
+          const modelB = categoryFeatures[b].toLowerCase();
+          if (modelA < modelB) {
+            return -1;
+          }
+          if (modelA > modelB) {
+            return 1;
+          }
+          return 0;
+        });
+
+      if (featureIds.length) {
+        return (
+          <div className="feature-inputs">
+            {featureIds.map((featureId) => (
+              <div className="feature-choice" key={featureId}>
+                <input
+                  data-featureid={featureId}
+                  id={featureId}
+                  onChange={changeFeatures}
+                  type="checkbox"
+                  value={categoryFeatures[featureId]}
+                />
+                <label htmlFor={featureId}>
+                  {categoryFeatures[featureId]}
+                </label>
+              </div>
+            ))}
+          </div>
+        );
+      }
+      return <div>This category has no features / filters</div>;
     }
-    return null;
+    return <div>Please choose a category to view its features / filters</div>;
   };
 
   const dropFile = (event) => {
@@ -207,35 +210,22 @@ export default function NewProduct({ allCategories, allProducts }) {
     setImage(file);
   };
 
-  const newFeature = () => {
-    setValidFeatures(false);
-    const newFeatures = { ...features };
-    const featureId = uuid();
-    newFeatures[featureId] = '';
-    setFeatures(newFeatures);
-  };
-
   const submit = async () => {
     setLoading(true);
     setAttempted(true);
-    if (
-      validCategories
-      && validDescription
-      && validFeatures
-      && validImage
-      && validModel
-    ) {
+    if (validCategory && validDescription && validImage && validModel) {
       if (checkProductExists(model)) {
         setError(`Product model ${model} already in database`);
       } else {
         try {
           const newProduct = {
             accessories,
-            categories: productCategories,
+            category,
             description,
             features,
-            inStock,
             model,
+            ndaa,
+            specs,
           };
           // upload new product to database
           const product = await addNewProduct(newProduct);
@@ -280,6 +270,13 @@ export default function NewProduct({ allCategories, allProducts }) {
         <div>Loading...</div>
       ) : (
         <form className="product-detail">
+          <div>
+            {displayCategories()}
+            {attempted && !validCategory ? (
+              <div className="error">Category required</div>
+            ) : null}
+          </div>
+
           <label htmlFor="model">
             Model (required)
             <input
@@ -310,26 +307,35 @@ export default function NewProduct({ allCategories, allProducts }) {
             ) : null}
           </label>
 
+          <label htmlFor="specs">
+            Specifications (required)
+            <textarea
+              id="specs"
+              onChange={changeSpecs}
+              placeholder="Enter the product specifications"
+              required
+              rows="5"
+              value={specs || ''}
+            />
+            {attempted && !validSpecs ? (
+              <div className="error">Specifications required</div>
+            ) : null}
+          </label>
+
           <div className="category-choice">
             <input
-              checked={inStock}
-              id="inStock"
-              onChange={changeInStock}
+              checked={ndaa}
+              id="ndaa"
+              onChange={changeNdaa}
               type="checkbox"
             />
             {/* eslint-disable-next-line */}
-            <label htmlFor="inStock">In Stock</label>
+            <label htmlFor="ndaa">NDAA Compliant</label>
           </div>
 
           <fieldset>
-            <legend>Features</legend>
+            <legend>Features / Filters</legend>
             {displayFeatures()}
-            <button onClick={newFeature} type="button">
-              + add feature
-            </button>
-            {attempted && !validFeatures ? (
-              <div className="error">No empty features</div>
-            ) : null}
           </fieldset>
 
           <label className="image-label" htmlFor="image">
@@ -350,11 +356,7 @@ export default function NewProduct({ allCategories, allProducts }) {
                 />
               ) : (
                 <>
-                  <img
-                    alt=""
-                    className="drop-image"
-                    src={dropIcon}
-                  />
+                  <img alt="" className="drop-image" src={dropIcon} />
                   <div>Drop file here</div>
                 </>
               )}
@@ -382,14 +384,6 @@ export default function NewProduct({ allCategories, allProducts }) {
           </label>
 
           <fieldset>
-            <legend>Select categories (at least 1 required)</legend>
-            {displayCategories()}
-            {attempted && !validCategories ? (
-              <div className="error">At least 1 category required</div>
-            ) : null}
-          </fieldset>
-
-          <fieldset>
             <legend>Accessories / related products</legend>
             {displayAccessories()}
             {!addingAccessories ? (
@@ -406,9 +400,9 @@ export default function NewProduct({ allCategories, allProducts }) {
           <button className="submit" onClick={submit} type="button">
             Submit
           </button>
+          {error ? <div className="error">{error}</div> : null}
         </form>
       )}
-      {error ? <div className="error">{error}</div> : null}
     </>
   );
 }

@@ -197,36 +197,16 @@ export default function ProductDetail({
 
   const displayCategories = () => {
     if (editing) {
-      return categories.map((category) => (
-        <div className="category-choice" key={category.id}>
-          <input
-            checked={category.include}
-            data-categoryid={category.id}
-            id={`category${category.id}`}
-            onChange={changeCategories}
-            type="checkbox"
-          />
-          <label htmlFor={`category${category.id}`}>{category.name}</label>
-        </div>
-      ));
+      return 'EDITING';
     }
-    if (productDetails.categories.length) {
-      return (
-        <div>
-          <h4>Categories:</h4>
-          <ul>
-            {productDetails.categories.map((category) => (
-              <li key={category.id}>
-                <Link to={`/dashboard/categories/${category.id}`}>
-                  {category.name}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </div>
-      );
-    }
-    return null;
+    return (
+      <div>
+        <span>Category: </span>
+        <Link to={`/dashboard/categories/${productDetails.category}`}>
+          {allCategories[productDetails.category].name}
+        </Link>
+      </div>
+    );
   };
 
   const displayFeatures = () => {
@@ -277,6 +257,7 @@ export default function ProductDetail({
     if (productDetails) {
       return (
         <div className="product-detail">
+          {displayCategories()}
           <h3>{productDetails.model}</h3>
           <div className={productDetails.inStock ? 'in-stock' : 'out-of-stock'}>
             {productDetails.inStock ? '✓ In stock' : '⚠ Out of stock'}
@@ -293,7 +274,6 @@ export default function ProductDetail({
           />
           <div>{productDetails.description}</div>
           {displayFeatures()}
-          {displayCategories()}
           {productDetails.accessories.length ? displayAccessories() : null}
           <Link
             className="edit-button"
@@ -607,23 +587,6 @@ export default function ProductDetail({
     return result;
   };
 
-  const getAllProductCategories = () => {
-    const result = allProducts[id].categories
-      .map((catId) => allCategories[catId])
-      .sort((a, b) => {
-        const modelA = a.name.toLowerCase();
-        const modelB = b.name.toLowerCase();
-        if (modelA < modelB) {
-          return -1;
-        }
-        if (modelA > modelB) {
-          return 1;
-        }
-        return 0;
-      });
-    return result;
-  };
-
   const getAllCategories = () => {
     const result = Object.keys(allCategories)
       .map((catId) => allCategories[catId])
@@ -661,7 +624,6 @@ export default function ProductDetail({
   useEffect(() => {
     if (!deleted) {
       const details = { ...allProducts[id] };
-      details.categories = getAllProductCategories();
       details.accessories = getAllProductAccessories();
       if (editing) {
         // keep track of the product's pre-edit accessories, so we can remove
@@ -673,15 +635,6 @@ export default function ProductDetail({
         setOriginalAccessories(originalIds);
         // add "include" to those categories that the product belongs to
         const allCategoriesCopy = getAllCategories();
-        allCategoriesCopy.forEach((category) => {
-          if (details.categories.some((item) => item.id === category.id)) {
-            // eslint-disable-next-line
-            category.include = true;
-          } else {
-            // eslint-disable-next-line
-            category.include = false;
-          }
-        });
         setCategories(allCategoriesCopy);
         // get all products so we can add / remove accessories
         const allProductsCopy = getAllProducts();
