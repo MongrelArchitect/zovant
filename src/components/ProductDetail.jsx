@@ -11,10 +11,9 @@ import {
   updateProductAccessories,
 } from '../util/database';
 
-export default function ProductDetail({
-  allCategories,
-  allProducts,
-}) {
+import ndaaIcon from '../assets/images/ndaa.png';
+
+export default function ProductDetail({ allCategories, allProducts }) {
   const fileInputRef = useRef(null);
 
   const { id } = useParams();
@@ -201,7 +200,6 @@ export default function ProductDetail({
     }
     return (
       <div>
-        <span>Category: </span>
         <Link to={`/dashboard/categories/${productDetails.category}`}>
           {allCategories[productDetails.category].name}
         </Link>
@@ -210,12 +208,12 @@ export default function ProductDetail({
   };
 
   const displayFeatures = () => {
-    const keys = Object.keys(productDetails.features);
-    if (keys.length) {
+    const categoryId = productDetails.category;
+    if (productDetails.features.length) {
       if (editing) {
         return (
           <div className="feature-inputs">
-            {keys.map((featureId) => (
+            {productDetails.features.map((featureId) => (
               <div key={featureId}>
                 <input
                   data-featureid={featureId}
@@ -238,10 +236,10 @@ export default function ProductDetail({
       }
       return (
         <div>
-          <h4>Features:</h4>
-          <ul>
-            {keys.map((key) => (
-              <li key={key}>{productDetails.features[key]}</li>
+          <h4>Features / Filters:</h4>
+          <ul className="product-features">
+            {productDetails.features.map((key) => (
+              <li key={key}>{allCategories[categoryId].features[key]}</li>
             ))}
           </ul>
         </div>
@@ -257,11 +255,16 @@ export default function ProductDetail({
     if (productDetails) {
       return (
         <div className="product-detail">
-          {displayCategories()}
-          <h3>{productDetails.model}</h3>
-          <div className={productDetails.inStock ? 'in-stock' : 'out-of-stock'}>
-            {productDetails.inStock ? '✓ In stock' : '⚠ Out of stock'}
+          <div className="detail-heading">
+            <div>
+              <h3>{productDetails.model}</h3>
+              {displayCategories()}
+            </div>
+            {productDetails.ndaa ? (
+              <img alt="NDAA Compliant" className="ndaa-icon" src={ndaaIcon} />
+            ) : null}
           </div>
+
           <div hidden={!placeholder} className="image-placeholder" />
           <img
             alt={productDetails.model}
@@ -272,9 +275,21 @@ export default function ProductDetail({
             }}
             src={productDetails.image}
           />
-          <div>{productDetails.description}</div>
+
           {displayFeatures()}
+
+          <div>
+            <h4>Description:</h4>
+            <pre>{productDetails.description}</pre>
+          </div>
+
+          <div>
+            <h4>Specifications:</h4>
+            <pre>{productDetails.specs}</pre>
+          </div>
+
           {productDetails.accessories.length ? displayAccessories() : null}
+
           <Link
             className="edit-button"
             onClick={() => {
@@ -284,6 +299,7 @@ export default function ProductDetail({
           >
             Edit
           </Link>
+
           <Link to="/dashboard/products/">Back to products list</Link>
         </div>
       );

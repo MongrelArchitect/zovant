@@ -327,6 +327,11 @@ input[type="checkbox"] {
   gap: 8px;
 }
 
+.detail-heading {
+  display: flex;
+  justify-content: space-between;
+}
+
 .drop-file {
   color: #444;
   display: flex;
@@ -622,6 +627,10 @@ input[type="checkbox"] {
   max-width: 900px;
 }
 
+.ndaa-icon {
+  height: 100px;
+}
+
 .catalog .catalog-products .product-detail {
   flex-grow: 1;
   flex-shrink: 1;
@@ -652,12 +661,6 @@ input[type="checkbox"] {
   font-weight: bold;
 }
 
-.product-detail .details-categories {
-  display: flex;
-  gap: 8px;
-  list-style: none;
-}
-
 .product-detail .edit-button {
   color: #111;
   background: var(--brand-blue);
@@ -668,14 +671,6 @@ input[type="checkbox"] {
 .product-detail .edit-button:focus,
 .product-detail .edit-button:hover {
   filter: contrast(150%);
-}
-
-.product-detail .in-stock {
-  color: var(--text-valid);
-}
-
-.product-detail .out-of-stock {
-  color: var(--text-error);
 }
 
 .product-image {
