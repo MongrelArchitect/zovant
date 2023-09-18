@@ -11,7 +11,7 @@ export default function Products({ allProducts }) {
   const getCategoryKeys = (keys) => {
     if (categoryid) {
       return keys
-        .filter((key) => allProducts[key].categories.includes(categoryid));
+        .filter((key) => allProducts[key].category === categoryid);
     }
     return keys;
   };

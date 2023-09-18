@@ -211,6 +211,11 @@ export default function ProductDetail({ allCategories, allProducts }) {
       const featureIds = Object.keys(
         allCategories[productDetails.category].features,
       );
+      featureIds.sort((a, b) => {
+        const featureA = allCategories[productDetails.category].features[a];
+        const featureB = allCategories[productDetails.category].features[b];
+        return featureA.localeCompare(featureB, 'en-us', { numeric: true });
+      });
       return (
         <div className="feature-inputs">
           {featureIds.map((featureId) => (

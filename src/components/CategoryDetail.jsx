@@ -148,6 +148,11 @@ export default function CategoryDetail({ allCategories, allProducts }) {
 
   const displayFeatures = () => {
     const featureIds = Object.keys(categoryDetails.features);
+    featureIds.sort((a, b) => {
+      const featureA = categoryDetails.features[a];
+      const featureB = categoryDetails.features[b];
+      return featureA.localeCompare(featureB, 'en-us', { numeric: true });
+    });
     if (featureIds.length) {
       if (editing) {
         return (

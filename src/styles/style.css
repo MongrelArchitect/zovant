@@ -110,6 +110,10 @@ input[type="checkbox"] {
   transform: scale(1.5);
 }
 
+pre {
+  white-space: pre-wrap;
+}
+
 .banner {
   align-items: center;
   background: linear-gradient(90deg, var(--brand-green), var(--brand-blue));
@@ -329,7 +333,13 @@ input[type="checkbox"] {
 
 .detail-heading {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
+}
+
+.detail-heading > div {
+  display: flex;
+  flex-direction: column;
 }
 
 .drop-file {
@@ -628,7 +638,9 @@ input[type="checkbox"] {
 }
 
 .ndaa-icon {
-  height: 100px;
+  align-self: flex-start;
+  max-width: 200px;
+  width: 100%;
 }
 
 .catalog .catalog-products .product-detail {
@@ -649,6 +661,13 @@ input[type="checkbox"] {
 
 .product-detail ul {
   list-style: circle inside;
+}
+
+.product-detail ul.product-features {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  list-style: none;
 }
 
 .product-detail h3 {

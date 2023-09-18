@@ -163,15 +163,9 @@ export default function NewProduct({ allCategories, allProducts }) {
       const categoryFeatures = allCategories[category].features;
       const featureIds = Object.keys(categoryFeatures)
         .sort((a, b) => {
-          const modelA = categoryFeatures[a].toLowerCase();
-          const modelB = categoryFeatures[b].toLowerCase();
-          if (modelA < modelB) {
-            return -1;
-          }
-          if (modelA > modelB) {
-            return 1;
-          }
-          return 0;
+          const featureA = categoryFeatures[a];
+          const featureB = categoryFeatures[b];
+          return featureA.localeCompare(featureB, 'en-us', { numeric: true });
         });
 
       if (featureIds.length) {

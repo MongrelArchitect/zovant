@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Link, useLoaderData } from 'react-router-dom';
 
+import ndaaIcon from '../assets/images/ndaa.png';
+
 export default function CatalogProductDetail({
   allCategories,
   allProducts,
@@ -34,33 +36,21 @@ export default function CatalogProductDetail({
     return null;
   };
 
-  const displayCategories = () => (
-    <ul className="details-categories">
-      {product.categories.map((category) => (
-        <li key={category}>
-          <Link to={`/catalog/categories/${category}`}>
-            {allCategories[category].name}
-          </Link>
-          {product.categories.indexOf(category)
-          === product.categories.length - 1
-            ? null
-            : ','}
-        </li>
-      ))}
-    </ul>
-  );
-
   const displayFeatures = () => {
-    if (Object.keys(product.features).length) {
+    const productCategory = allCategories[product.category];
+    const categoryFeatures = productCategory.features;
+    if (product.features.length) {
       return (
-        <div>
-          <h4>Features:</h4>
-          <ul>
-            {Object.keys(product.features).map((key) => (
-              <li key={key}>{product.features[key]}</li>
-            ))}
-          </ul>
-        </div>
+        <ul className="product-features">
+          {product.features.map((key) => (
+            <li key={key}>
+              {categoryFeatures[key]}
+              {product.features.indexOf(key) === product.features.length - 1
+                ? null
+                : ', '}
+            </li>
+          ))}
+        </ul>
       );
     }
     return null;
@@ -68,21 +58,27 @@ export default function CatalogProductDetail({
 
   return (
     <div id="catalog-detail" className="product-detail">
-      <div>
-        <h3>{product.model}</h3>
-        {displayCategories()}
+      <div className="detail-heading">
+        <div>
+          <h3>{product.model}</h3>
+          <Link to={`/catalog/categories/${product.category}`}>
+            {allCategories[product.category].name}
+          </Link>
+          {displayFeatures()}
+          {user ? (
+            <Link
+              className="edit-button"
+              to={`/dashboard/products/${product.id}/`}
+            >
+              View in dashboard
+            </Link>
+          ) : null}
+        </div>
+        {product.ndaa ? (
+          <img alt="NDAA Compliant" className="ndaa-icon" src={ndaaIcon} />
+        ) : null}
       </div>
-      {user ? (
-        <Link
-          className="edit-button"
-          to={`/dashboard/products/${product.id}/`}
-        >
-          View in dashboard
-        </Link>
-      ) : null}
-      <div className={product.inStock ? 'in-stock' : 'out-of-stock'}>
-        {product.inStock ? '✓ In stock' : '⚠ Out of stock'}
-      </div>
+
       <div hidden={!placeholder} className="image-placeholder" />
       <img
         alt={product.model}
@@ -93,8 +89,17 @@ export default function CatalogProductDetail({
         }}
         src={product.image}
       />
-      <div>{product.description}</div>
-      {displayFeatures()}
+
+      <div>
+        <h4>Description:</h4>
+        <pre>{product.description}</pre>
+      </div>
+
+      <div>
+        <h4>Specifications:</h4>
+        <pre>{product.specs}</pre>
+      </div>
+
       {displayAccessories()}
     </div>
   );

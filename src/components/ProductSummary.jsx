@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
+import ndaaIcon from '../assets/images/ndaa.png';
+
 export default function ProductSummary({ product }) {
   const navigate = useNavigate();
 
@@ -18,9 +20,7 @@ export default function ProductSummary({ product }) {
     // eslint-disable-next-line
     <div onClick={goToDetail} className="product-detail">
       <h3>{product.model}</h3>
-      <div className={product.inStock ? 'in-stock' : 'out-of-stock'}>
-        {product.inStock ? '✓ In stock' : '⚠ Out of stock'}
-      </div>
+      <pre>{product.description}</pre>
       <div hidden={!placeholder} className="image-placeholder" />
       <img
         alt={product.model}
@@ -31,6 +31,9 @@ export default function ProductSummary({ product }) {
         }}
         src={product.image}
       />
+      {product.ndaa ? (
+        <img alt="NDAA Complaint" className="ndaa-icon" src={ndaaIcon} />
+      ) : null}
       <Link className="detail-link" to={`/catalog/products/${product.id}`}>
         View Details
       </Link>
