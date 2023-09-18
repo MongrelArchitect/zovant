@@ -28,7 +28,6 @@ export default function NewProduct({ allCategories, allProducts }) {
   const [validDescription, setValidDescription] = useState(false);
   const [validImage, setValidImage] = useState(false);
   const [validModel, setValidModel] = useState(false);
-  const [validSpecs, setValidSpecs] = useState(false);
 
   const changeAccessories = (event) => {
     const newAccessories = [...accessories];
@@ -94,10 +93,12 @@ export default function NewProduct({ allCategories, allProducts }) {
   const changeSpecs = (event) => {
     setError(null);
     setSpecs(event.target.value);
-    setValidSpecs(event.target.validity.valid);
   };
 
-  const checkProductExists = (checkModel) => Object.values(checkModel).some((product) => product.model === checkModel);
+  const checkProductExists = (checkModel) => {
+    const check = Object.values(checkModel);
+    return check.some((product) => product.model === checkModel);
+  };
 
   const displayAccessories = () => {
     const productIds = Object.keys(allProducts);
@@ -308,18 +309,14 @@ export default function NewProduct({ allCategories, allProducts }) {
           </label>
 
           <label htmlFor="specs">
-            Specifications (required)
+            Specifications
             <textarea
               id="specs"
               onChange={changeSpecs}
               placeholder="Enter the product specifications"
-              required
               rows="5"
               value={specs || ''}
             />
-            {attempted && !validSpecs ? (
-              <div className="error">Specifications required</div>
-            ) : null}
           </label>
 
           <div className="category-choice">

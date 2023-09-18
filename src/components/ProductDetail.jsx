@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { v4 as uuid } from 'uuid';
 
 import {
   addProductImage,
@@ -21,7 +20,6 @@ export default function ProductDetail({ allCategories, allProducts }) {
   const navigate = useNavigate();
 
   const [attempted, setAttempted] = useState(false);
-  const [categories, setCategories] = useState([]);
   const [confirmingDelete, setConfirmingDelete] = useState(false);
   const [deleted, setDeleted] = useState(false);
   const [editing, setEditing] = useState(false);
@@ -32,32 +30,20 @@ export default function ProductDetail({ allCategories, allProducts }) {
   const [placeholder, setPlaceholder] = useState(true);
   const [productDetails, setProductDetails] = useState(null);
   const [products, setProducts] = useState([]);
-  const [validCategories, setValidCategories] = useState(true);
+  const [validCategory, setValidCategory] = useState(true);
   const [validDescription, setValidDescription] = useState(true);
-  const [validFeatures, setValidFeatures] = useState(true);
   const [validImage, setValidImage] = useState(true);
   const [validModel, setValidModel] = useState(true);
-
-  const addNewFeature = () => {
-    const featuresCopy = { ...productDetails.features };
-    const newId = uuid();
-    featuresCopy[newId] = '';
-    setProductDetails({ ...productDetails, features: featuresCopy });
-    setValidFeatures(false);
-  };
 
   const changeAccessories = (event) => {
     const { productid } = event.target.dataset;
     const { checked } = event.target;
     const newProducts = [...products];
-    const product = newProducts.find((item) => item.id === productid);
     const newProductAccessories = [...productDetails.accessories];
     if (checked) {
-      product.include = true;
-      newProductAccessories.push({ id: productid });
+      newProductAccessories.push(productid);
     } else {
-      product.include = false;
-      newProductAccessories.splice(newProductAccessories.indexOf(product), 1);
+      newProductAccessories.splice(newProductAccessories.indexOf(productid), 1);
     }
     setProductDetails({
       ...productDetails,
@@ -66,52 +52,10 @@ export default function ProductDetail({ allCategories, allProducts }) {
     setProducts(newProducts);
   };
 
-  const changeCategories = (event) => {
-    const { categoryid } = event.target.dataset;
-    const { checked } = event.target;
-    const newCategories = [...categories];
-    const category = newCategories.find((item) => item.id === categoryid);
-    const newProductCategories = [...productDetails.categories];
-    if (checked) {
-      category.include = true;
-      newProductCategories.push({ id: categoryid });
-    } else {
-      category.include = false;
-      newProductCategories.splice(newProductCategories.indexOf(category), 1);
-    }
-    setProductDetails({ ...productDetails, categories: newProductCategories });
-    setCategories(newCategories);
-    setValidCategories(newProductCategories.length);
-  };
-
   const changeDescription = (event) => {
     setError(null);
     setProductDetails({ ...productDetails, description: event.target.value });
     setValidDescription(event.target.validity.valid);
-  };
-
-  const checkValidFeatures = (copy) => {
-    const keys = Object.keys(copy);
-    let valid = true;
-    if (!keys.length) {
-      // no features = valid, since they're optional
-      return valid;
-    }
-    for (let i = 0; i < keys.length; i += 1) {
-      if (!copy[keys[i]]) {
-        valid = false;
-        break;
-      }
-    }
-    return valid;
-  };
-
-  const changeFeature = (event) => {
-    setError(null);
-    const featuresCopy = { ...productDetails.features };
-    featuresCopy[event.target.dataset.featureid] = event.target.value;
-    setProductDetails({ ...productDetails, features: featuresCopy });
-    setValidFeatures(checkValidFeatures(featuresCopy));
   };
 
   const changeImage = (event) => {
@@ -140,43 +84,41 @@ export default function ProductDetail({ allCategories, allProducts }) {
     return null;
   };
 
-  const changeInStock = (event) => {
-    setProductDetails({ ...productDetails, inStock: event.target.checked });
-  };
-
   const changeModel = (event) => {
     setError(null);
     setProductDetails({ ...productDetails, model: event.target.value });
     setValidModel(event.target.validity.valid);
   };
 
-  const deleteFeature = (event) => {
-    setError(null);
-    const featuresCopy = { ...productDetails.features };
-    delete featuresCopy[event.target.dataset.featureid];
-    setProductDetails({ ...productDetails, features: featuresCopy });
-    setValidFeatures(checkValidFeatures(featuresCopy));
-  };
-
   const displayAccessories = () => {
     if (editing) {
-      return products.map((product) => {
-        if (product.id !== id) {
+      const productIds = Object.keys(allProducts);
+
+      if (productIds.length) {
+        return productIds.map((prodId) => {
+          console.log(productDetails.accessories);
+          console.log(prodId);
           return (
-            <div className="category-choice" key={product.id}>
+            <div className="category-choice" key={prodId}>
               <input
-                checked={product.include}
-                data-productid={product.id}
-                id={`product${product.id}`}
+                data-id={prodId}
+                id={`product${prodId}`}
                 onChange={changeAccessories}
                 type="checkbox"
               />
-              <label htmlFor={`product${product.id}`}>{product.model}</label>
+              <label htmlFor={`product${prodId}`}>
+                {allProducts[prodId].model}
+              </label>
             </div>
           );
-        }
-        return null;
-      });
+        });
+      }
+      if (productIds.length <= 1) {
+        return (
+          <div className="error">No other products in catalog. Add some!</div>
+        );
+      }
+      return null;
     }
     return (
       <div>
@@ -194,9 +136,52 @@ export default function ProductDetail({ allCategories, allProducts }) {
     );
   };
 
+  const changeCategory = (event) => {
+    setError(null);
+    const categoryId = event.target.value;
+    if (Object.keys(allCategories).includes(categoryId)) {
+      setValidCategory(true);
+    } else {
+      setValidCategory(false);
+    }
+    setProductDetails({
+      ...productDetails,
+      category: categoryId,
+      // need to reset features too
+      features: [],
+    });
+  };
+
   const displayCategories = () => {
     if (editing) {
-      return 'EDITING';
+      const categoryIds = Object.keys(allCategories);
+
+      if (categoryIds.length) {
+        return (
+          <label htmlFor="categories">
+            Category (required)
+            <select
+              defaultValue={productDetails.category}
+              id="categories"
+              name="categories"
+              onChange={changeCategory}
+            >
+              {categoryIds.map((categoryId) => (
+                <option key={categoryId} value={categoryId}>
+                  {allCategories[categoryId].name}
+                </option>
+              ))}
+            </select>
+          </label>
+        );
+      }
+      return (
+        <div>
+          No categories found. Please
+          {' '}
+          <Link to="/dashboard/categories/new">create a new category</Link>
+        </div>
+      );
     }
     return (
       <div>
@@ -207,33 +192,45 @@ export default function ProductDetail({ allCategories, allProducts }) {
     );
   };
 
+  const changeFeatures = (event) => {
+    const { checked } = event.target;
+    const { featureid } = event.target.dataset;
+    const productFeatures = [...productDetails.features];
+    if (checked && !productFeatures.includes(featureid)) {
+      productFeatures.push(featureid);
+    } else if (productFeatures.includes(featureid)) {
+      productFeatures.splice(productFeatures.indexOf(featureid), 1);
+    }
+    setProductDetails({ ...productDetails, features: productFeatures });
+  };
+
   const displayFeatures = () => {
     const categoryId = productDetails.category;
+    if (editing) {
+      const featureIds = Object.keys(
+        allCategories[productDetails.category].features,
+      );
+      return (
+        <div className="feature-inputs">
+          {featureIds.map((featureId) => (
+            <div className="feature-choice" key={featureId}>
+              <input
+                checked={productDetails.features.includes(featureId)}
+                data-featureid={featureId}
+                id={featureId}
+                onChange={changeFeatures}
+                type="checkbox"
+                value={featureId}
+              />
+              <label htmlFor={featureId}>
+                {allCategories[productDetails.category].features[featureId]}
+              </label>
+            </div>
+          ))}
+        </div>
+      );
+    }
     if (productDetails.features.length) {
-      if (editing) {
-        return (
-          <div className="feature-inputs">
-            {productDetails.features.map((featureId) => (
-              <div key={featureId}>
-                <input
-                  data-featureid={featureId}
-                  onChange={changeFeature}
-                  type="text"
-                  value={productDetails.features[featureId] || ''}
-                />
-                <button
-                  className="error"
-                  data-featureid={featureId}
-                  onClick={deleteFeature}
-                  type="button"
-                >
-                  X
-                </button>
-              </div>
-            ))}
-          </div>
-        );
-      }
       return (
         <div>
           <h4>Features / Filters:</h4>
@@ -310,13 +307,7 @@ export default function ProductDetail({ allCategories, allProducts }) {
   const submit = async () => {
     setAttempted(true);
     setLoading(true);
-    if (
-      validCategories
-      && validDescription
-      && validFeatures
-      && validImage
-      && validModel
-    ) {
+    if (validDescription && validCategory && validImage && validModel) {
       try {
         // just need the ids
         const cleanedAccessories = [];
@@ -324,15 +315,9 @@ export default function ProductDetail({ allCategories, allProducts }) {
           cleanedAccessories.push(accessory.id);
         });
 
-        // just need the ids
-        const cleanedCategories = [];
-        productDetails.categories.forEach((category) => {
-          cleanedCategories.push(category.id);
-        });
-
         const updatedProduct = {
           accessories: cleanedAccessories,
-          categories: cleanedCategories,
+          category: productDetails.category,
           description: productDetails.description,
           features: productDetails.features,
           inStock: productDetails.inStock,
@@ -444,6 +429,15 @@ export default function ProductDetail({ allCategories, allProducts }) {
     setNewImage(file);
   };
 
+  const changeSpecs = (event) => {
+    setError(null);
+    setProductDetails({ ...productDetails, specs: event.target.value });
+  };
+
+  const changeNDAA = (event) => {
+    setProductDetails({ ...productDetails, ndaa: event.target.checked });
+  };
+
   const displayForm = () => {
     if (loading) {
       return <div>Loading...</div>;
@@ -451,6 +445,8 @@ export default function ProductDetail({ allCategories, allProducts }) {
     if (productDetails) {
       return (
         <form className="product-detail">
+          <div>{displayCategories()}</div>
+
           <label htmlFor="name">
             Model (required)
             <input
@@ -481,26 +477,32 @@ export default function ProductDetail({ allCategories, allProducts }) {
             ) : null}
           </label>
 
+          <label htmlFor="description">
+            Specifications
+            <textarea
+              id="specs"
+              onChange={changeSpecs}
+              placeholder="Enter the product specifications"
+              required
+              rows="5"
+              value={productDetails.specs || ''}
+            />
+          </label>
+
           <div className="category-choice">
             <input
-              checked={productDetails.inStock}
-              id="inStock"
-              onChange={changeInStock}
+              checked={productDetails.ndaa}
+              id="ndaa"
+              onChange={changeNDAA}
               type="checkbox"
             />
             {/* eslint-disable-next-line */}
-            <label htmlFor="inStock">In Stock</label>
+            <label htmlFor="ndaa">NDAA Compliant</label>
           </div>
 
           <fieldset>
             <legend>Features</legend>
             {displayFeatures()}
-            <button onClick={addNewFeature} type="button">
-              + add feature
-            </button>
-            {attempted && !validFeatures ? (
-              <div className="error">No empty features</div>
-            ) : null}
           </fieldset>
 
           <label className="image-label" htmlFor="image">
@@ -555,14 +557,6 @@ export default function ProductDetail({ allCategories, allProducts }) {
           </label>
 
           <fieldset>
-            <legend>Select categories (at least 1 required)</legend>
-            {displayCategories()}
-            {attempted && !validCategories ? (
-              <div className="error">At least 1 category required</div>
-            ) : null}
-          </fieldset>
-
-          <fieldset>
             <legend>Accessories / related products</legend>
             {displayAccessories()}
           </fieldset>
@@ -603,23 +597,6 @@ export default function ProductDetail({ allCategories, allProducts }) {
     return result;
   };
 
-  const getAllCategories = () => {
-    const result = Object.keys(allCategories)
-      .map((catId) => allCategories[catId])
-      .sort((a, b) => {
-        const modelA = a.name.toLowerCase();
-        const modelB = b.name.toLowerCase();
-        if (modelA < modelB) {
-          return -1;
-        }
-        if (modelA > modelB) {
-          return 1;
-        }
-        return 0;
-      });
-    return result;
-  };
-
   const getAllProducts = () => {
     const result = Object.keys(allProducts)
       .map((prodId) => allProducts[prodId])
@@ -649,9 +626,6 @@ export default function ProductDetail({ allCategories, allProducts }) {
           originalIds.push(accessory.id);
         });
         setOriginalAccessories(originalIds);
-        // add "include" to those categories that the product belongs to
-        const allCategoriesCopy = getAllCategories();
-        setCategories(allCategoriesCopy);
         // get all products so we can add / remove accessories
         const allProductsCopy = getAllProducts();
         allProductsCopy.forEach((product) => {
