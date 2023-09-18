@@ -125,15 +125,9 @@ async function updateCategory(id, name, description, features) {
 }
 
 async function updateProduct(id, product) {
-  // first need to convert the array of category id strings into array
-  // of firestore references for those categories
+  // convert category id string to database reference
   const newProduct = { ...product };
-  const newCategories = [];
-  newProduct.categories.forEach((categoryId) => {
-    const categoryRef = doc(database, 'categories', categoryId);
-    newCategories.push(categoryRef);
-  });
-  newProduct.categories = newCategories;
+  newProduct.category = doc(database, 'categories', newProduct.category);
 
   // now do the same for any accessories
   if (product.accessories.length) {

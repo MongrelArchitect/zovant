@@ -29,27 +29,21 @@ export default function ProductDetail({ allCategories, allProducts }) {
   const [originalAccessories, setOriginalAccessories] = useState([]);
   const [placeholder, setPlaceholder] = useState(true);
   const [productDetails, setProductDetails] = useState(null);
-  const [products, setProducts] = useState([]);
   const [validCategory, setValidCategory] = useState(true);
   const [validDescription, setValidDescription] = useState(true);
   const [validImage, setValidImage] = useState(true);
   const [validModel, setValidModel] = useState(true);
 
   const changeAccessories = (event) => {
-    const { productid } = event.target.dataset;
+    const prodId = event.target.value;
     const { checked } = event.target;
-    const newProducts = [...products];
-    const newProductAccessories = [...productDetails.accessories];
+    const accessoriesCopy = [...productDetails.accessories];
     if (checked) {
-      newProductAccessories.push(productid);
+      accessoriesCopy.push(prodId);
     } else {
-      newProductAccessories.splice(newProductAccessories.indexOf(productid), 1);
+      accessoriesCopy.splice(accessoriesCopy.indexOf(prodId), 1);
     }
-    setProductDetails({
-      ...productDetails,
-      accessories: newProductAccessories,
-    });
-    setProducts(newProducts);
+    setProductDetails({ ...productDetails, accessories: accessoriesCopy });
   };
 
   const changeDescription = (event) => {
@@ -94,23 +88,27 @@ export default function ProductDetail({ allCategories, allProducts }) {
     if (editing) {
       const productIds = Object.keys(allProducts);
 
-      if (productIds.length) {
+      if (productIds.length && productIds.length > 1) {
         return productIds.map((prodId) => {
-          console.log(productDetails.accessories);
-          console.log(prodId);
-          return (
-            <div className="category-choice" key={prodId}>
-              <input
-                data-id={prodId}
-                id={`product${prodId}`}
-                onChange={changeAccessories}
-                type="checkbox"
-              />
-              <label htmlFor={`product${prodId}`}>
-                {allProducts[prodId].model}
-              </label>
-            </div>
-          );
+          if (prodId !== id) {
+            return (
+              <div className="category-choice" key={prodId}>
+                <input
+                  checked={productDetails.accessories.some(
+                    (accessory) => accessory === prodId,
+                  )}
+                  id={`product${prodId}`}
+                  onChange={changeAccessories}
+                  type="checkbox"
+                  value={prodId}
+                />
+                <label htmlFor={`product${prodId}`}>
+                  {allProducts[prodId].model}
+                </label>
+              </div>
+            );
+          }
+          return null;
         });
       }
       if (productIds.length <= 1) {
@@ -120,20 +118,23 @@ export default function ProductDetail({ allCategories, allProducts }) {
       }
       return null;
     }
-    return (
-      <div>
-        <h4>Accessories / Related Products:</h4>
-        <ul>
-          {productDetails.accessories.map((accessory) => (
-            <li key={accessory.id}>
-              <Link to={`/dashboard/products/${accessory.id}`}>
-                {accessory.model}
-              </Link>
-            </li>
-          ))}
-        </ul>
-      </div>
-    );
+    if (productDetails.accessories.length) {
+      return (
+        <div>
+          <h4>Accessories / Related Products:</h4>
+          <ul>
+            {productDetails.accessories.map((accessory) => (
+              <li key={accessory}>
+                <Link to={`/dashboard/products/${accessory}`}>
+                  {allProducts[accessory].model}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+      );
+    }
+    return null;
   };
 
   const changeCategory = (event) => {
@@ -309,19 +310,14 @@ export default function ProductDetail({ allCategories, allProducts }) {
     setLoading(true);
     if (validDescription && validCategory && validImage && validModel) {
       try {
-        // just need the ids
-        const cleanedAccessories = [];
-        productDetails.accessories.forEach((accessory) => {
-          cleanedAccessories.push(accessory.id);
-        });
-
         const updatedProduct = {
-          accessories: cleanedAccessories,
+          accessories: productDetails.accessories,
           category: productDetails.category,
           description: productDetails.description,
           features: productDetails.features,
-          inStock: productDetails.inStock,
+          ndaa: productDetails.ndaa,
           model: productDetails.model,
+          specs: productDetails.specs,
         };
 
         // first update the image (if there's a new one)
@@ -367,14 +363,10 @@ export default function ProductDetail({ allCategories, allProducts }) {
   const deleteProduct = async () => {
     setLoading(true);
     try {
-      const cleanedAccessories = [];
-      productDetails.accessories.forEach((accessory) => {
-        cleanedAccessories.push(accessory.id);
-      });
       await deleteSingleProduct(
         id,
         productDetails.imageRef,
-        cleanedAccessories,
+        productDetails.accessories,
       );
       navigate(`/dashboard/products/${id}/deleted`);
       setEditing(false);
@@ -501,7 +493,7 @@ export default function ProductDetail({ allCategories, allProducts }) {
           </div>
 
           <fieldset>
-            <legend>Features</legend>
+            <legend>Features / Filters</legend>
             {displayFeatures()}
           </fieldset>
 
@@ -580,64 +572,13 @@ export default function ProductDetail({ allCategories, allProducts }) {
     return null;
   };
 
-  const getAllProductAccessories = () => {
-    const result = allProducts[id].accessories
-      .map((accId) => allProducts[accId])
-      .sort((a, b) => {
-        const modelA = a.model.toLowerCase();
-        const modelB = b.model.toLowerCase();
-        if (modelA < modelB) {
-          return -1;
-        }
-        if (modelA > modelB) {
-          return 1;
-        }
-        return 0;
-      });
-    return result;
-  };
-
-  const getAllProducts = () => {
-    const result = Object.keys(allProducts)
-      .map((prodId) => allProducts[prodId])
-      .sort((a, b) => {
-        const modelA = a.model.toLowerCase();
-        const modelB = b.model.toLowerCase();
-        if (modelA < modelB) {
-          return -1;
-        }
-        if (modelA > modelB) {
-          return 1;
-        }
-        return 0;
-      });
-    return result;
-  };
-
   useEffect(() => {
     if (!deleted) {
       const details = { ...allProducts[id] };
-      details.accessories = getAllProductAccessories();
       if (editing) {
         // keep track of the product's pre-edit accessories, so we can remove
         // any reference to this product for any removed accessories
-        const originalIds = [];
-        details.accessories.forEach((accessory) => {
-          originalIds.push(accessory.id);
-        });
-        setOriginalAccessories(originalIds);
-        // get all products so we can add / remove accessories
-        const allProductsCopy = getAllProducts();
-        allProductsCopy.forEach((product) => {
-          if (details.accessories.some((item) => item.id === product.id)) {
-            // eslint-disable-next-line
-            product.include = true;
-          } else {
-            // eslint-disable-next-line
-            product.include = false;
-          }
-        });
-        setProducts(allProductsCopy);
+        setOriginalAccessories([...details.accessories]);
       }
       setProductDetails(details);
     }
