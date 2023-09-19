@@ -107,18 +107,6 @@ export default function Products({ allProducts }) {
     setProductIds(productKeys);
   }, [filters]);
 
-  const displayProducts = () => {
-    if (productIds.length) {
-      return productIds.map((key) => (
-        <ProductSummary key={key} product={allProducts[key]} />
-      ));
-    }
-    if (filters.length) {
-      return (<div>No products found that match the selected filters.</div>);
-    }
-    return (<div>No products found in this category</div>);
-  };
-
   return (
     <div className="dashboard-detail">
       <h2>{categoryData ? categoryData.title : 'All Products'}</h2>
@@ -129,7 +117,13 @@ export default function Products({ allProducts }) {
       </div>
       {displayFeatures()}
       <div className="catalog-products">
-        {displayProducts()}
+        {productIds.length ? (
+          productIds.map((key) => (
+            <ProductSummary key={key} product={allProducts[key]} />
+          ))
+        ) : (
+          null
+        )}
       </div>
     </div>
   );

@@ -148,11 +148,6 @@ export default function CategoryDetail({ allCategories, allProducts }) {
 
   const displayFeatures = () => {
     const featureIds = Object.keys(categoryDetails.features);
-    featureIds.sort((a, b) => {
-      const featureA = categoryDetails.features[a];
-      const featureB = categoryDetails.features[b];
-      return featureA.localeCompare(featureB, 'en-us', { numeric: true });
-    });
     if (featureIds.length) {
       if (editing) {
         return (
@@ -178,6 +173,11 @@ export default function CategoryDetail({ allCategories, allProducts }) {
           </div>
         );
       }
+      featureIds.sort((a, b) => {
+        const featureA = categoryDetails.features[a];
+        const featureB = categoryDetails.features[b];
+        return featureA.localeCompare(featureB, 'en-us', { numeric: true });
+      });
       return (
         <ul>
           {featureIds.map((featureId) => (
@@ -320,7 +320,7 @@ export default function CategoryDetail({ allCategories, allProducts }) {
   const getAllCategoryProducts = () => {
     const productIds = Object.keys(allProducts);
     const categoryProducts = productIds
-      .filter((prodId) => allProducts[prodId].categories === id)
+      .filter((prodId) => allProducts[prodId].category === id)
       .map((prodId) => allProducts[prodId]);
     return categoryProducts;
   };

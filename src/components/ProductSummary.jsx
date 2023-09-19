@@ -20,7 +20,6 @@ export default function ProductSummary({ product }) {
     // eslint-disable-next-line
     <div onClick={goToDetail} className="product-detail">
       <h3>{product.model}</h3>
-      <pre>{product.description}</pre>
       <div hidden={!placeholder} className="image-placeholder" />
       <img
         alt={product.model}
@@ -34,6 +33,7 @@ export default function ProductSummary({ product }) {
       {product.ndaa ? (
         <img alt="NDAA Complaint" className="ndaa-icon" src={ndaaIcon} />
       ) : null}
+      <pre>{product.description}</pre>
       <Link className="detail-link" to={`/catalog/products/${product.id}`}>
         View Details
       </Link>

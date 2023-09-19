@@ -379,6 +379,7 @@ pre {
   display: flex;
   flex-wrap: wrap;
   gap: 16px;
+  user-select: none;
 }
 
 .feature-inputs > div {

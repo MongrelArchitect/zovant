@@ -104,6 +104,7 @@ export default function App() {
               element: <Products allProducts={allProducts} />,
               loader: ({ params }) => ({
                 description: allCategories[params.categoryid].description,
+                features: allCategories[params.categoryid].features,
                 title: allCategories[params.categoryid].name,
               }),
               path: 'categories/:categoryid',
