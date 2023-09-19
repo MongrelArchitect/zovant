@@ -107,7 +107,9 @@ form textarea {
 }
 
 input[type="checkbox"] {
-  transform: scale(1.5);
+  accent-color: var(--brand-blue);
+  height: 24px;
+  width: 24px;
 }
 
 pre {
@@ -263,6 +265,11 @@ pre {
 
 .catalog-products .product-detail {
   cursor: pointer;
+  gap: 8px;
+}
+
+.catalog-products .image-container {
+  height: 240px;
 }
 
 .catalog-products .product-detail:hover {
@@ -271,7 +278,7 @@ pre {
 }
 
 .catalog-products .product-image {
-  max-width: 300px;
+  max-width: 240px;
 }
 
 .catalog-products .image-placeholder {
@@ -332,8 +339,10 @@ pre {
 }
 
 .detail-heading {
+  align-items: flex-start;
   display: flex;
   flex-wrap: wrap;
+  gap: 8px;
   justify-content: space-between;
 }
 
@@ -383,6 +392,7 @@ pre {
 }
 
 .feature-inputs > div {
+  align-items: center;
   display: flex;
 }
 
@@ -639,9 +649,12 @@ pre {
 }
 
 .ndaa-icon {
-  align-self: flex-start;
-  max-width: 200px;
+  max-width: 160px;
   width: 100%;
+}
+
+.ndaa-icon.summary {
+  max-width: 100px;
 }
 
 .catalog .catalog-products .product-detail {

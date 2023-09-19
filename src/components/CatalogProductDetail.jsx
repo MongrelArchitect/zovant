@@ -95,10 +95,12 @@ export default function CatalogProductDetail({
         <pre>{product.description}</pre>
       </div>
 
-      <div>
-        <h4>Specifications:</h4>
-        <pre>{product.specs}</pre>
-      </div>
+      {product.specs ? (
+        <div>
+          <h4>Specifications:</h4>
+          <pre>{product.specs}</pre>
+        </div>
+      ) : null}
 
       {displayAccessories()}
     </div>
