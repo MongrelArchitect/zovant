@@ -18,7 +18,7 @@ export default function ProductSummary({ product }) {
 
   return (
     // eslint-disable-next-line
-    <div onClick={goToDetail} className="product-detail">
+    <div onClick={goToDetail} className="product-detail summary">
       <h3>{product.model}</h3>
       {product.ndaa ? (
         <img
