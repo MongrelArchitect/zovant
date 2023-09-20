@@ -282,7 +282,11 @@ pre {
 }
 
 .catalog-products .image-placeholder {
-  min-width: 300px;
+  max-width: 300px;
+}
+
+.catalog-products .image-placeholder.summary {
+  max-width: 240px;
 }
 
 .catalog-products .detail-link {
@@ -506,7 +510,7 @@ pre {
   border: 2px solid var(--brand-blue);
   border-radius: 5px;
   height: auto;
-  max-width: 320px;
+  max-width: 500px;
   width: 100%;
 }
 

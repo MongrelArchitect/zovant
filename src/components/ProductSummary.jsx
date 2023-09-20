@@ -28,7 +28,7 @@ export default function ProductSummary({ product }) {
         />
       ) : null}
       <div className="image-container">
-        <div hidden={!placeholder} className="image-placeholder" />
+        <div hidden={!placeholder} className="image-placeholder summary" />
         <img
           alt={product.model}
           className="product-image"
