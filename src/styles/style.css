@@ -762,6 +762,24 @@ pre {
   position: relative;
 }
 
+.search-form input {
+  z-index: 9;
+}
+
+.search-form .overlay {
+  background: rgba(0, 0, 0, 0.8);
+  position: fixed;
+  height: 100vh;
+  left: 0;
+  top: 0;
+  width: 100vw;
+  z-index: 0;
+}
+
+.search-form .overlay.hidden {
+  display: none;
+}
+
 .search-results {
   background: #fff;
   border: 2px solid #111;
@@ -769,9 +787,15 @@ pre {
   display: flex;
   flex-direction: column;
   gap: 16px;
+  overflow: auto;
   position: absolute;
   top: 45px;
   width: 100%;
+  z-index: 9;
+}
+
+.search-results.hidden {
+  display: none;
 }
 
 .search-results figcaption {

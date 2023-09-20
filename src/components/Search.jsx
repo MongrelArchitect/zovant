@@ -4,23 +4,29 @@ import { useNavigate } from 'react-router-dom';
 export default function Search({ allCategories, allProducts }) {
   const navigate = useNavigate();
 
-  const [searchQuery, setSearchQuery] = useState('');
   const [categoryResults, setCategoryResults] = useState({});
   const [placeholder, setPlaceholder] = useState(true);
   const [productResults, setProductResults] = useState({});
+  const [hidden, setHidden] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
 
-  const changeQuery = (event) => {
-    setSearchQuery(event.target.value.toLowerCase().trim());
+  const closeSearch = () => {
+    setSearchQuery('');
+    setHidden(true);
+    setCategoryResults([]);
+    setProductResults([]);
   };
 
   const viewCategory = (event) => {
     const { categoryid } = event.target.dataset;
     navigate(`/catalog/categories/${categoryid}`);
+    closeSearch();
   };
 
   const viewProduct = (event) => {
     const { productid } = event.target.dataset;
     navigate(`/catalog/products/${productid}`);
+    closeSearch();
   };
 
   const displayCategoryResults = () => {
@@ -39,6 +45,7 @@ export default function Search({ allCategories, allProducts }) {
                   }
                   onClick={viewCategory}
                   data-categoryid={catId}
+                  role="link"
                   type="button"
                 >
                   {allCategories[catId].name}
@@ -62,11 +69,12 @@ export default function Search({ allCategories, allProducts }) {
               <li key={prodId}>
                 <button
                   className={
-                      productResults.indexOf(prodId) % 2 === 0
-                        ? 'product-list-item even'
-                        : 'product-list-item'
-                    }
+                    productResults.indexOf(prodId) % 2 === 0
+                      ? 'product-list-item even'
+                      : 'product-list-item'
+                  }
                   onClick={viewProduct}
+                  role="link"
                   data-productid={prodId}
                   type="button"
                 >
@@ -98,7 +106,7 @@ export default function Search({ allCategories, allProducts }) {
   const displayResults = () => {
     if (categoryResults.length || productResults.length) {
       return (
-        <div className="search-results">
+        <div className={hidden ? 'search-results hidden' : 'search-results'}>
           <div>
             Search returned
             {' '}
@@ -111,23 +119,25 @@ export default function Search({ allCategories, allProducts }) {
         </div>
       );
     }
-    return <div className="search-results">Search returned 0 results.</div>;
+    return (
+      <div className={hidden ? 'search-results hidden' : 'search-results'}>
+        Search returned 0 results.
+      </div>
+    );
   };
 
-  const search = (event) => {
-    // don't refresh page on submit
-    event.preventDefault();
-
-    if (searchQuery) {
+  const search = (query) => {
+    if (query) {
+      setHidden(false);
       // get ids of categories with matched query in name or description
       const categoryIds = Object.keys(allCategories);
       const categorySearch = categoryIds.filter((catId) => {
         const nameResult = allCategories[catId].name
           .toLowerCase()
-          .includes(searchQuery);
+          .includes(query);
         const descResult = allCategories[catId].description
           .toLowerCase()
-          .includes(searchQuery);
+          .includes(query);
         return nameResult || descResult;
       });
       setCategoryResults(categorySearch);
@@ -137,29 +147,47 @@ export default function Search({ allCategories, allProducts }) {
       const productSearch = productIds.filter((prodId) => {
         const modelResult = allProducts[prodId].model
           .toLowerCase()
-          .includes(searchQuery);
+          .includes(query);
         const descResult = allProducts[prodId].description
           .toLowerCase()
-          .includes(searchQuery);
+          .includes(query);
         const specResult = allProducts[prodId].specs
           .toLowerCase()
-          .includes(searchQuery);
+          .includes(query);
         return modelResult || descResult || specResult;
       });
       setProductResults(productSearch);
     } else {
-      setCategoryResults([]);
-      setProductResults([]);
+      closeSearch();
     }
+  };
 
-    // don't refresh page on submit
-    return false;
+  const changeQuery = (event) => {
+    const query = event.target.value.toLowerCase().trim();
+    setSearchQuery(query);
+    search(query);
   };
 
   return (
-    <form className="search-form" onSubmit={search}>
-      <input onChange={changeQuery} placeholder="search" type="text" />
+    <form
+      className="search-form"
+      onSubmit={(e) => {
+        e.preventDefault();
+        search();
+        return false;
+      }}
+    >
+      <input
+        onChange={changeQuery}
+        placeholder="search"
+        type="text"
+        value={searchQuery || ''}
+      />
       {displayResults()}
+      <div
+        className={hidden ? 'overlay hidden' : 'overlay'}
+        onClick={closeSearch}
+      />
     </form>
   );
 }
