@@ -87,7 +87,13 @@ export default function App() {
   const router = createBrowserRouter([
     {
       path: '/',
-      element: <Root user={user} />,
+      element: (
+        <Root
+          allCategories={allCategories}
+          allProducts={allProducts}
+          user={user}
+        />
+      ),
       errorElement: <ErrorPage user={user} />,
       children: [
         { index: true, element: <Home /> },

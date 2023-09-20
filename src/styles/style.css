@@ -758,6 +758,26 @@ pre {
   filter: none;
 }
 
+.search-form {
+  position: relative;
+}
+
+.search-results {
+  background: #fff;
+  border: 2px solid #111;
+  color: var(--text-dark);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  position: absolute;
+  top: 45px;
+  width: 100%;
+}
+
+.search-results figcaption {
+  font-weight: bold;
+}
+
 .socials {
   display: flex;
   gap: 16px;
