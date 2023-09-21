@@ -463,6 +463,7 @@ pre {
 
 .header-content {
   align-items: center;
+  background: var(--bg-dark);
   color: var(--text-light);
   display: flex;
   font-size: 1.2rem;
@@ -586,7 +587,7 @@ pre {
   height: 32px;
 }
 
-@media screen and (max-width: 700px) {
+@media screen and (max-width: 1000px) {
   .catalog-control {
     border-bottom: 2px solid #ccc;
     padding-bottom: 4px;
@@ -622,30 +623,46 @@ pre {
     max-height: 1000px;
   }
 
-  .nav .nav-list {
-    align-items: flex-start;
+  .header-content {
+    justify-content: space-between;
+  }
+
+  .nav,
+  .search-form  {
     display: none;
   }
 
-  .nav .nav-list.show {
+  .nav.visible,
+  .search-form.visible {
+    display: flex;
+  }
+
+  .nav.visible ul {
+    flex-direction: column;
+    gap: 32px;
+  }
+
+  .nav-sidebar {
     display: flex;
     flex-direction: column;
+    gap: 32px;
+    height: 100%;
+    width: 100%;
+  }
+
+  .nav-sidebar-header {
+    align-items: center;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .searchbar {
+    align-self: center;
+    max-width: 400px;
   }
 
   .toggle-collapse {
-    align-self: center;
     display: flex;
-  }
-
-  .toggle-collapse.flex-start {
-    align-self: flex-start;
-    position: relative;
-    top: 8px;
-  }
-
-  .header .header-content {
-    align-items: flex-start;
-    justify-content: space-between;
   }
 }
 
@@ -671,6 +688,10 @@ pre {
   flex-shrink: 1;
   flex-basis: 240px;
   max-width: 320px;
+}
+
+.p8 {
+  padding: 8px;
 }
 
 .product-detail {
@@ -749,13 +770,24 @@ pre {
 }
 
 .product-list-item:hover {
-  background: #aaa;
+  background: var(--brand-middle);
   filter: none;
 }
 
 .product-list-item:focus {
   background: #999;
   filter: none;
+}
+
+.searchbar {
+  background: #eee;
+}
+
+.searchbar:hover,
+.searchbar:focus,
+.searchbar:active {
+  border: 2px solid var(--brand-blue);
+  outline: 2px solid var(--brand-blue);
 }
 
 .search-form {
@@ -782,16 +814,25 @@ pre {
 
 .search-results {
   background: #fff;
-  border: 2px solid #111;
+  border: 2px solid #ccc;
   color: var(--text-dark);
   display: flex;
   flex-direction: column;
   gap: 16px;
+  max-height: 75vh;
+  max-width: 1000px;
   overflow: auto;
   position: absolute;
-  top: 45px;
   width: 100%;
+  top: 45px;
   z-index: 9;
+}
+
+@media screen and (min-width: 1000px) {
+  .search-results {
+    width: 50vw;
+    right: 0;
+  }
 }
 
 .search-results.hidden {

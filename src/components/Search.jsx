@@ -1,7 +1,12 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-export default function Search({ allCategories, allProducts }) {
+export default function Search({
+  allCategories,
+  allProducts,
+  setVisible,
+  visible,
+}) {
   const navigate = useNavigate();
 
   const [categoryResults, setCategoryResults] = useState({});
@@ -13,27 +18,30 @@ export default function Search({ allCategories, allProducts }) {
   const closeSearch = () => {
     setSearchQuery('');
     setHidden(true);
+    if (setVisible) {
+      setVisible(false);
+    }
     setCategoryResults([]);
     setProductResults([]);
   };
 
   const viewCategory = (event) => {
+    closeSearch();
     const { categoryid } = event.target.dataset;
     navigate(`/catalog/categories/${categoryid}`);
-    closeSearch();
   };
 
   const viewProduct = (event) => {
+    closeSearch();
     const { productid } = event.target.dataset;
     navigate(`/catalog/products/${productid}`);
-    closeSearch();
   };
 
   const displayCategoryResults = () => {
     if (categoryResults.length) {
       return (
         <figure>
-          <figcaption>Categories</figcaption>
+          <figcaption className="p8">Categories</figcaption>
           <ul>
             {categoryResults.map((catId) => (
               <li key={catId}>
@@ -63,7 +71,7 @@ export default function Search({ allCategories, allProducts }) {
     if (productResults.length) {
       return (
         <figure>
-          <figcaption>Products</figcaption>
+          <figcaption className="p8">Products</figcaption>
           <ul>
             {productResults.map((prodId) => (
               <li key={prodId}>
@@ -104,15 +112,17 @@ export default function Search({ allCategories, allProducts }) {
   };
 
   const displayResults = () => {
-    if (categoryResults.length || productResults.length) {
+    const resultCount = categoryResults.length + productResults.length;
+    if (resultCount) {
       return (
         <div className={hidden ? 'search-results hidden' : 'search-results'}>
-          <div>
+          <div className="p8">
             Search returned
             {' '}
-            {categoryResults.length + productResults.length}
+            {resultCount}
             {' '}
-            results:
+            result
+            {resultCount === 1 ? ':' : 's:'}
           </div>
           {displayCategoryResults()}
           {displayProductResults()}
@@ -120,7 +130,7 @@ export default function Search({ allCategories, allProducts }) {
       );
     }
     return (
-      <div className={hidden ? 'search-results hidden' : 'search-results'}>
+      <div className={hidden ? 'search-results hidden' : 'p8 search-results'}>
         Search returned 0 results.
       </div>
     );
@@ -170,7 +180,7 @@ export default function Search({ allCategories, allProducts }) {
 
   return (
     <form
-      className="search-form"
+      className={visible ? 'search-form visible' : 'search-form'}
       onSubmit={(e) => {
         e.preventDefault();
         search();
@@ -178,6 +188,7 @@ export default function Search({ allCategories, allProducts }) {
       }}
     >
       <input
+        className="searchbar"
         onChange={changeQuery}
         placeholder="search"
         type="text"
