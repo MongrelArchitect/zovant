@@ -23,6 +23,10 @@ export default function Header({ allCategories, allProducts, user }) {
     setVisible(!visible);
   };
 
+  const closeNavbar = () => {
+    setVisible(false);
+  };
+
   if (visible) {
     return (
       <header className="header">
@@ -50,7 +54,7 @@ export default function Header({ allCategories, allProducts, user }) {
             <Nav
               user={user}
               visible={visible}
-              toggleCollapse={toggleCollapse}
+              toggleCollapse={closeNavbar}
             />
           </div>
         </div>
@@ -63,7 +67,7 @@ export default function Header({ allCategories, allProducts, user }) {
     <header className="header">
       <div className="header-content">
         <img alt="Zovant" src={logoImage} title="Zovant" />
-        <Nav user={user} toggleCollapse={toggleCollapse} />
+        <Nav user={user} toggleCollapse={closeNavbar} />
         <Search allCategories={allCategories} allProducts={allProducts} />
         <button
           aria-controls="navigation"
