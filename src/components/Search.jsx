@@ -18,20 +18,23 @@ export default function Search({
   const closeSearch = () => {
     setSearchQuery('');
     setHidden(true);
-    if (setVisible) {
-      setVisible(false);
-    }
     setCategoryResults([]);
     setProductResults([]);
   };
 
   const viewCategory = (event) => {
+    if (setVisible) {
+      setVisible(false);
+    }
     closeSearch();
     const { categoryid } = event.target.dataset;
     navigate(`/catalog/categories/${categoryid}`);
   };
 
   const viewProduct = (event) => {
+    if (setVisible) {
+      setVisible(false);
+    }
     closeSearch();
     const { productid } = event.target.dataset;
     navigate(`/catalog/products/${productid}`);

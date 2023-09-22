@@ -372,9 +372,24 @@ pre {
   width: 200px;
 }
 
+.drop-file.download-added {
+  align-items: center;
+  word-break: break-word;
+  color: #111;
+  border: 4px solid var(--brand-blue);
+  display: flex;
+  height: 200px;
+  justify-content: center;
+  width: 200px;
+}
+
 .drop-image {
   height: 64px;
   opacity: 30%;
+}
+
+.file-added {
+  height: 64px;
 }
 
 .error {
@@ -619,8 +634,10 @@ pre {
   }
 
   .dashboard .dashboard-control ul.catalog-categories.show {
+    border: 2px solid #111;
     display: flex;
     max-height: 1000px;
+    padding: 8px;
   }
 
   .header-content {
@@ -731,6 +748,7 @@ pre {
 
 .product-detail .edit-button {
   color: #111;
+  cursor: pointer;
   background: var(--brand-blue);
   padding: 8px;
   width: max-content;

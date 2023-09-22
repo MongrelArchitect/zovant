@@ -1,12 +1,16 @@
 import { useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { v4 as uuid } from 'uuid';
+
 import {
   addNewProduct,
   addProductImage,
   updateProductAccessories,
 } from '../util/database';
 
-import dropIcon from '../assets/images/drop-file.svg';
+import dropFileIcon from '../assets/images/drop-file.svg';
+import dropImageIcon from '../assets/images/add-image.svg';
+import fileIcon from '../assets/images/file-added.svg';
 
 export default function NewProduct({ allCategories, allProducts }) {
   const fileInputRef = useRef(null);
@@ -16,6 +20,7 @@ export default function NewProduct({ allCategories, allProducts }) {
   const [attempted, setAttempted] = useState(false);
   const [category, setCategory] = useState(null);
   const [description, setDescription] = useState('');
+  const [downloads, setDownloads] = useState({});
   const [error, setError] = useState(null);
   const [features, setFeatures] = useState([]);
   const [image, setImage] = useState(null);
@@ -26,6 +31,7 @@ export default function NewProduct({ allCategories, allProducts }) {
   const [successId, setSuccessId] = useState('');
   const [validCategory, setValidCategory] = useState(false);
   const [validDescription, setValidDescription] = useState(false);
+  const [validDownloads, setValidDownloads] = useState(true);
   const [validImage, setValidImage] = useState(false);
   const [validModel, setValidModel] = useState(false);
 
@@ -158,15 +164,178 @@ export default function NewProduct({ allCategories, allProducts }) {
     );
   };
 
+  const checkValidDownloads = (downloadsCopy) => {
+    const downloadIds = Object.keys(downloadsCopy);
+    // no downloads, so we're valid
+    if (!downloadIds.length) {
+      return true;
+    }
+    const valid = !downloadIds.some((downloadId) => {
+      if (downloadsCopy[downloadId].file) {
+        if (downloadsCopy[downloadId].file.size <= 5000000) {
+          // we have a file and it's no more than 5MB, so we're good
+          return false;
+        }
+        // the file we have is too big (5MB max)
+        return true;
+      }
+      // no file, so we're invalid
+      return true;
+    });
+    return valid;
+  };
+
+  const changeDownloads = (event) => {
+    const { downloadid } = event.target.dataset;
+    const downloadsCopy = { ...downloads };
+    const newFile = event.target.files[0];
+    if (newFile) {
+      downloadsCopy[downloadid].file = newFile;
+    } else {
+      downloadsCopy[downloadid].file = null;
+    }
+    setValidDownloads(checkValidDownloads(downloadsCopy));
+    setDownloads(downloadsCopy);
+  };
+
+  const changeDownloadDescription = (event) => {
+    const { downloadid } = event.target.dataset;
+    const downloadsCopy = { ...downloads };
+    downloadsCopy[downloadid].description = event.target.value;
+    setDownloads(downloadsCopy);
+  };
+
+  const deleteDownload = (event) => {
+    const { downloadid } = event.target.dataset;
+    const downloadsCopy = { ...downloads };
+    delete downloadsCopy[downloadid];
+    setValidDownloads(checkValidDownloads(downloadsCopy));
+    setDownloads(downloadsCopy);
+  };
+
+  const dropDownloadFile = (event) => {
+    event.preventDefault();
+    const { downloadid } = event.target.dataset;
+    const downloadsCopy = { ...downloads };
+    const file = event.dataTransfer.files[0];
+    if (file) {
+      downloadsCopy[downloadid].file = file;
+    } else {
+      downloadsCopy[downloadid].file = null;
+    }
+    setValidDownloads(checkValidDownloads(downloadsCopy));
+    setDownloads(downloadsCopy);
+  };
+
+  const newDownload = () => {
+    setValidDownloads(false);
+    const downloadsCopy = { ...downloads };
+    const downloadId = uuid();
+    downloadsCopy[downloadId] = { file: null, description: '' };
+    setDownloads(downloadsCopy);
+  };
+
+  const formatSize = (size) => {
+    let suffix = 'bytes';
+    let newSize = size;
+    if (size >= 1000 && size < 1000000) {
+      suffix = 'KB';
+      newSize = Math.floor(size / 1000);
+    }
+    if (size >= 1000000 && size < 1000000000) {
+      suffix = 'MB';
+      newSize = Math.floor(size / 1000000);
+    }
+    if (size >= 1000000000) {
+      newSize = 'WAY';
+      suffix = 'TOO BIG!';
+    }
+    return `${newSize} ${suffix}`;
+  };
+
+  const displayDownloads = () => {
+    const downloadIds = Object.keys(downloads);
+    if (downloadIds.length) {
+      return (
+        <div className="feature-inputs">
+          {downloadIds.map((downloadId) => (
+            <label
+              className="image-label"
+              htmlFor={downloadId}
+              key={downloadId}
+            >
+              File
+              <div
+                className={
+                  downloads[downloadId].file
+                    ? 'drop-file download-added'
+                    : 'drop-file empty'
+                }
+                data-downloadid={downloadId}
+                onDragOver={(e) => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                }}
+                onDrop={dropDownloadFile}
+              >
+                {downloads[downloadId].file ? (
+                  <>
+                    <img alt="" className="file-added" src={fileIcon} />
+                    <div>{downloads[downloadId].file.name}</div>
+                    <div>{formatSize(downloads[downloadId].file.size)}</div>
+                  </>
+                ) : (
+                  <>
+                    <img alt="" className="drop-image" src={dropFileIcon} />
+                    <div>Drop file here</div>
+                  </>
+                )}
+              </div>
+              <input
+                accept="*/*"
+                data-downloadid={downloadId}
+                hidden
+                id={downloadId}
+                onChange={changeDownloads}
+                type="file"
+              />
+              <div>
+                <span className="edit-button">Upload File</span>
+                <button
+                  className="error"
+                  data-downloadid={downloadId}
+                  onClick={deleteDownload}
+                  type="button"
+                >
+                  X
+                </button>
+              </div>
+              <label htmlFor={`desc-${downloadId}`}>
+                File Description
+                <input
+                  data-downloadid={downloadId}
+                  id={`desc-${downloadId}`}
+                  onChange={changeDownloadDescription}
+                  placeholder="Manual, software, etc."
+                  type="text"
+                />
+              </label>
+            </label>
+          ))}
+        </div>
+      );
+    }
+    return null;
+  };
+
   const displayFeatures = () => {
     if (category) {
       const categoryFeatures = allCategories[category].features;
-      const featureIds = Object.keys(categoryFeatures)
-        .sort((a, b) => {
-          const featureA = categoryFeatures[a];
-          const featureB = categoryFeatures[b];
-          return featureA.localeCompare(featureB, 'en-us', { numeric: true });
-        });
+      const featureIds = Object.keys(categoryFeatures).sort((a, b) => {
+        const featureA = categoryFeatures[a];
+        const featureB = categoryFeatures[b];
+        return featureA.localeCompare(featureB, 'en-us', { numeric: true });
+      });
 
       if (featureIds.length) {
         return (
@@ -180,9 +349,7 @@ export default function NewProduct({ allCategories, allProducts }) {
                   type="checkbox"
                   value={categoryFeatures[featureId]}
                 />
-                <label htmlFor={featureId}>
-                  {categoryFeatures[featureId]}
-                </label>
+                <label htmlFor={featureId}>{categoryFeatures[featureId]}</label>
               </div>
             ))}
           </div>
@@ -208,7 +375,13 @@ export default function NewProduct({ allCategories, allProducts }) {
   const submit = async () => {
     setLoading(true);
     setAttempted(true);
-    if (validCategory && validDescription && validImage && validModel) {
+    if (
+      validCategory
+      && validDescription
+      && validDownloads
+      && validImage
+      && validModel
+    ) {
       if (checkProductExists(model)) {
         setError(`Product model ${model} already in database`);
       } else {
@@ -347,12 +520,12 @@ export default function NewProduct({ allCategories, allProducts }) {
                 />
               ) : (
                 <>
-                  <img alt="" className="drop-image" src={dropIcon} />
-                  <div>Drop file here</div>
+                  <img alt="" className="drop-image" src={dropImageIcon} />
+                  <div>Drop image here</div>
                 </>
               )}
             </div>
-            {image ? image.name : 'no file chosen'}
+            {image ? image.name : 'no image chosen'}
             <input
               accept="image/*"
               hidden
@@ -388,6 +561,20 @@ export default function NewProduct({ allCategories, allProducts }) {
               </button>
             ) : null}
           </fieldset>
+
+          <fieldset>
+            <legend>Downloads (documents, firmware, etc)</legend>
+            {displayDownloads()}
+            {attempted && !validDownloads ? (
+              <div className="error">
+                Check all downloads - each one needs a file (5MB max)
+              </div>
+            ) : null}
+            <button onClick={newDownload} type="button">
+              + add download
+            </button>
+          </fieldset>
+
           <button className="submit" onClick={submit} type="button">
             Submit
           </button>
