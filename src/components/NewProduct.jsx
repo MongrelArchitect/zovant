@@ -4,6 +4,7 @@ import { v4 as uuid } from 'uuid';
 
 import {
   addNewProduct,
+  addProductDownloads,
   addProductImage,
   updateProductAccessories,
 } from '../util/database';
@@ -280,14 +281,28 @@ export default function NewProduct({ allCategories, allProducts }) {
               >
                 {downloads[downloadId].file ? (
                   <>
-                    <img alt="" className="file-added" src={fileIcon} />
-                    <div>{downloads[downloadId].file.name}</div>
-                    <div>{formatSize(downloads[downloadId].file.size)}</div>
+                    <img
+                      alt=""
+                      className="file-added"
+                      data-downloadid={downloadId}
+                      src={fileIcon}
+                    />
+                    <div data-downloadid={downloadId}>
+                      {downloads[downloadId].file.name}
+                    </div>
+                    <div data-downloadid={downloadId}>
+                      {formatSize(downloads[downloadId].file.size)}
+                    </div>
                   </>
                 ) : (
                   <>
-                    <img alt="" className="drop-image" src={dropFileIcon} />
-                    <div>Drop file here</div>
+                    <img
+                      alt=""
+                      className="drop-image"
+                      data-downloadid={downloadId}
+                      src={dropFileIcon}
+                    />
+                    <div data-downloadid={downloadId}>Drop file here</div>
                   </>
                 )}
               </div>
@@ -401,6 +416,10 @@ export default function NewProduct({ allCategories, allProducts }) {
           await addProductImage(product.id, image);
           // add product to "accessories" arrays of its own accessories
           await updateProductAccessories(product.id);
+          // add any downloads (if we have them)
+          if (Object.keys(downloads).length) {
+            await addProductDownloads(product.id, downloads);
+          }
           // show success message with link to product detail
           setSuccessId(product.id);
         } catch (err) {

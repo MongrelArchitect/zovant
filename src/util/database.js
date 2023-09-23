@@ -49,6 +49,37 @@ async function addNewProduct(product) {
   return docRef;
 }
 
+async function addProductDownloads(id, downloads) {
+  const downloadIds = Object.keys(downloads);
+  const productDownloads = {};
+  await Promise.all(
+    downloadIds.map(async (downloadId) => {
+      // upload files to storage and prepare their info for the product
+      const { file } = downloads[downloadId];
+      const { description } = downloads[downloadId];
+      const fileName = file.name;
+      const path = `downloads/${id}/${downloadId}/${fileName}`;
+      const imageRef = ref(storage, path);
+      await uploadBytes(imageRef, file);
+      const downloadURL = await getDownloadURL(imageRef);
+      productDownloads[downloadId] = {
+        downloadURL,
+        description,
+        fileName,
+        fileRef: path,
+        size: file.size,
+      };
+    }),
+  );
+
+  // update the product with download info (if any)
+  const productRef = doc(database, 'products', id);
+  const updatedProduct = await updateDoc(productRef, {
+    downloads: productDownloads,
+  });
+  return updatedProduct;
+}
+
 async function addProductImage(id, file) {
   // upload image to storage and get the download url
   const fileName = file.name;
@@ -161,6 +192,7 @@ async function updateProductAccessories(productId) {
 export {
   addNewCategory,
   addNewProduct,
+  addProductDownloads,
   addProductImage,
   deleteOldImage,
   deleteSingleCategory,
