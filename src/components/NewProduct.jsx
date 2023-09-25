@@ -109,6 +109,19 @@ export default function NewProduct({ allCategories, allProducts }) {
 
   const displayAccessories = () => {
     const productIds = Object.keys(allProducts);
+    if (productIds.length) {
+      productIds.sort((a, b) => {
+        const modelA = allProducts[a].model;
+        const modelB = allProducts[b].model;
+        if (modelA < modelB) {
+          return -1;
+        }
+        if (modelA > modelB) {
+          return 1;
+        }
+        return 0;
+      });
+    }
 
     if (addingAccessories && productIds.length) {
       return productIds.map((id) => (

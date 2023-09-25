@@ -155,6 +155,19 @@ async function updateCategory(id, name, description, features) {
   });
 }
 
+async function updateDownloadDescriptions(productId, downloadsToUpdate) {
+  const productRef = doc(database, 'products', productId);
+  const productSnap = await getDoc(productRef);
+  const { downloads } = productSnap.data();
+  const updateIds = Object.keys(downloadsToUpdate);
+  updateIds.forEach((id) => {
+    downloads[id].description = downloadsToUpdate[id].description;
+  });
+  await updateDoc(productRef, {
+    downloads,
+  });
+}
+
 async function updateProduct(id, product) {
   // convert category id string to database reference
   const newProduct = { ...product };
@@ -199,6 +212,7 @@ export {
   deleteSingleProduct,
   removeProductFromAccessories,
   updateCategory,
+  updateDownloadDescriptions,
   updateProduct,
   updateProductAccessories,
 };

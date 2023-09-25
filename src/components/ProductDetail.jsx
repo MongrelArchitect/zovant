@@ -1,16 +1,21 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
+import { v4 as uuid } from 'uuid';
 
 import {
+  addProductDownloads,
   addProductImage,
   deleteOldImage,
   deleteSingleProduct,
   removeProductFromAccessories,
+  updateDownloadDescriptions,
   updateProduct,
   updateProductAccessories,
 } from '../util/database';
 
 import ndaaIcon from '../assets/images/ndaa.png';
+import dropFileIcon from '../assets/images/drop-file.svg';
+import fileIcon from '../assets/images/file-added.svg';
 
 export default function ProductDetail({ allCategories, allProducts }) {
   const fileInputRef = useRef(null);
@@ -22,6 +27,7 @@ export default function ProductDetail({ allCategories, allProducts }) {
   const [attempted, setAttempted] = useState(false);
   const [confirmingDelete, setConfirmingDelete] = useState(false);
   const [deleted, setDeleted] = useState(false);
+  const [downloadsToDelete, setDownloadsToDelete] = useState([]);
   const [editing, setEditing] = useState(false);
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -31,6 +37,7 @@ export default function ProductDetail({ allCategories, allProducts }) {
   const [productDetails, setProductDetails] = useState(null);
   const [validCategory, setValidCategory] = useState(true);
   const [validDescription, setValidDescription] = useState(true);
+  const [validDownloads, setValidDownloads] = useState(true);
   const [validImage, setValidImage] = useState(true);
   const [validModel, setValidModel] = useState(true);
 
@@ -87,6 +94,18 @@ export default function ProductDetail({ allCategories, allProducts }) {
   const displayAccessories = () => {
     if (editing) {
       const productIds = Object.keys(allProducts);
+      productIds.sort((a, b) => {
+        const modelA = allProducts[a].model;
+        const modelB = allProducts[b].model;
+
+        if (modelA < modelB) {
+          return -1;
+        }
+        if (modelA > modelB) {
+          return 1;
+        }
+        return 0;
+      });
 
       if (productIds.length && productIds.length > 1) {
         return productIds.map((prodId) => {
@@ -251,6 +270,246 @@ export default function ProductDetail({ allCategories, allProducts }) {
     return null;
   };
 
+  const formatSize = (size) => {
+    let suffix = 'bytes';
+    let newSize = size;
+    if (size >= 1000 && size < 1000000) {
+      suffix = 'KB';
+      newSize = Math.floor(size / 1000);
+    }
+    if (size >= 1000000 && size < 1000000000) {
+      suffix = 'MB';
+      newSize = Math.floor(size / 1000000);
+    }
+    if (size >= 1000000000) {
+      newSize = 'WAY';
+      suffix = 'TOO BIG!';
+    }
+    return `${newSize} ${suffix}`;
+  };
+
+  const checkValidDownloads = (downloadsCopy) => {
+    // XXX
+    // FIXME
+    const downloadIds = Object.keys(downloadsCopy);
+    // no downloads, so we're valid
+    if (!downloadIds.length) {
+      return true;
+    }
+    const valid = !downloadIds.some((downloadId) => {
+      if (downloadsCopy[downloadId].file) {
+        if (downloadsCopy[downloadId].file.size <= 5000000) {
+          // we have a file and it's no more than 5MB, so we're good
+          return false;
+        }
+        // the file we have is too big (5MB max)
+        return true;
+      }
+      if (downloadsCopy[downloadId].fileName) {
+        // will only have "fileName" w/o "file" if it's from original downloads
+        return false;
+      }
+      // no file (new one) or fileName (old one), so we're invalid
+      return true;
+    });
+    return valid;
+  };
+
+  const changeDownloadDescription = (event) => {
+    const { downloadid } = event.target.dataset;
+    const downloadsCopy = { ...productDetails.downloads };
+    downloadsCopy[downloadid].description = event.target.value;
+    if (downloadsCopy[downloadid].original) {
+      // we're modifying one of our original downloads - keep track of it
+      downloadsCopy[downloadid].modified = 'description';
+    }
+    setProductDetails({ ...productDetails, downloads: downloadsCopy });
+  };
+
+  const changeDownloads = (event) => {
+    const { downloadid } = event.target.dataset;
+    const downloadsCopy = { ...productDetails.downloads };
+    const newFile = event.target.files[0];
+    if (downloadsCopy[downloadid].original) {
+      // we're modifying one of our original downloads - keep track of it
+      downloadsCopy[downloadid].modified = 'file';
+      // we'll also need to delete the original file from cloud storage
+      const deleteCopy = [...downloadsToDelete];
+      deleteCopy.push(downloadid);
+      setDownloadsToDelete(deleteCopy);
+    }
+    if (newFile) {
+      downloadsCopy[downloadid].file = newFile;
+      downloadsCopy[downloadid].fileName = newFile.name;
+      downloadsCopy[downloadid].size = newFile.size;
+    } else {
+      downloadsCopy[downloadid].file = null;
+      downloadsCopy[downloadid].fileName = null;
+      downloadsCopy[downloadid].size = null;
+    }
+    setValidDownloads(checkValidDownloads(downloadsCopy));
+    setProductDetails({ ...productDetails, downloads: downloadsCopy });
+  };
+
+  const deleteDownload = (event) => {
+    const { downloadid } = event.target.dataset;
+    const downloadsCopy = { ...productDetails.downloads };
+    if (downloadsCopy[downloadid].original) {
+      // track the ones we've removed for eventual delete from storage
+      const deleteCopy = [...downloadsToDelete];
+      deleteCopy.push(downloadid);
+      setDownloadsToDelete(deleteCopy);
+    }
+    delete downloadsCopy[downloadid];
+    setValidDownloads(checkValidDownloads(downloadsCopy));
+    setProductDetails({ ...productDetails, downloads: downloadsCopy });
+  };
+
+  const displayDownloadInfo = (download) => (
+    <span>
+      {`${download.description ? download.description : download.fileName}: `}
+      <a download href={download.downloadURL} title={download.fileName}>
+        {`${download.fileName} (${formatSize(download.size)})`}
+      </a>
+    </span>
+  );
+
+  const dropDownloadFile = (event) => {
+    event.preventDefault();
+    const { downloadid } = event.target.dataset;
+    const downloadsCopy = { ...productDetails.downloads };
+    const file = event.dataTransfer.files[0];
+    if (downloadsCopy[downloadid].original) {
+      // we're modifying one of our original downloads - keep track of it
+      downloadsCopy[downloadid].modified = 'file';
+    }
+    if (file) {
+      downloadsCopy[downloadid].file = file;
+      downloadsCopy[downloadid].fileName = file.name;
+      downloadsCopy[downloadid].size = file.size;
+    } else {
+      downloadsCopy[downloadid].file = null;
+      downloadsCopy[downloadid].fileName = null;
+      downloadsCopy[downloadid].size = null;
+    }
+    setValidDownloads(checkValidDownloads(downloadsCopy));
+    setProductDetails({ ...productDetails, downloads: downloadsCopy });
+  };
+
+  const newDownload = () => {
+    setValidDownloads(false);
+    const downloadsCopy = { ...productDetails.downloads };
+    const downloadId = uuid();
+    downloadsCopy[downloadId] = { file: null, description: '' };
+    setValidDownloads(checkValidDownloads(downloadsCopy));
+    setProductDetails({ ...productDetails, downloads: downloadsCopy });
+  };
+
+  const displayDownloads = () => {
+    const productDownloads = productDetails.downloads;
+    const downloadIds = Object.keys(productDownloads);
+    if (editing) {
+      if (downloadIds.length) {
+        return (
+          <div className="feature-inputs">
+            {downloadIds.map((downloadId) => (
+              <label
+                className="image-label"
+                htmlFor={downloadId}
+                key={downloadId}
+              >
+                File
+                <div
+                  className={
+                    productDownloads[downloadId].fileName
+                      ? 'drop-file download-added'
+                      : 'drop-file empty'
+                  }
+                  data-downloadid={downloadId}
+                  onDragOver={(e) => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                  }}
+                  onDrop={dropDownloadFile}
+                >
+                  {productDownloads[downloadId].fileName ? (
+                    <>
+                      <img
+                        alt=""
+                        className="file-added"
+                        data-downloadid={downloadId}
+                        src={fileIcon}
+                      />
+                      <div data-downloadid={downloadId}>
+                        {productDownloads[downloadId].fileName}
+                      </div>
+                      <div data-downloadid={downloadId}>
+                        {formatSize(productDownloads[downloadId].size)}
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <img
+                        alt=""
+                        className="drop-image"
+                        data-downloadid={downloadId}
+                        src={dropFileIcon}
+                      />
+                      <div data-downloadid={downloadId}>Drop file here</div>
+                    </>
+                  )}
+                </div>
+                <input
+                  accept="*/*"
+                  data-downloadid={downloadId}
+                  hidden
+                  id={downloadId}
+                  onChange={changeDownloads}
+                  type="file"
+                />
+                <div>
+                  <span className="edit-button">Upload File</span>
+                  <button
+                    className="error"
+                    data-downloadid={downloadId}
+                    onClick={deleteDownload}
+                    type="button"
+                  >
+                    X
+                  </button>
+                </div>
+                <label htmlFor={`desc-${downloadId}`}>
+                  File Description
+                  <input
+                    data-downloadid={downloadId}
+                    id={`desc-${downloadId}`}
+                    onChange={changeDownloadDescription}
+                    placeholder="Manual, software, etc."
+                    type="text"
+                    value={productDownloads[downloadId].description || ''}
+                  />
+                </label>
+              </label>
+            ))}
+          </div>
+        );
+      }
+      return null;
+    }
+    return (
+      <fieldset>
+        <legend>Downloads</legend>
+        <ul>
+          {downloadIds.map((downloadId) => (
+            <li key={downloadId}>
+              {displayDownloadInfo(productDownloads[downloadId])}
+            </li>
+          ))}
+        </ul>
+      </fieldset>
+    );
+  };
+
   const displayDetails = () => {
     if (loading) {
       return <div>Loading...</div>;
@@ -293,6 +552,10 @@ export default function ProductDetail({ allCategories, allProducts }) {
 
           {productDetails.accessories.length ? displayAccessories() : null}
 
+          {Object.keys(productDetails.downloads).length
+            ? displayDownloads()
+            : null}
+
           <Link
             className="edit-button"
             onClick={() => {
@@ -310,10 +573,45 @@ export default function ProductDetail({ allCategories, allProducts }) {
     return null;
   };
 
+  const getNewDownloads = () => {
+    // new files to upload (either new downloads or modified originals)
+    const downloadIds = Object.keys(productDetails.downloads);
+    const newDownloads = {};
+    downloadIds.forEach((downloadId) => {
+      if (productDetails.downloads[downloadId].file) {
+        newDownloads[downloadId] = productDetails.downloads[downloadId].file;
+      }
+    });
+    return newDownloads;
+  };
+
+  const getModifiedDescriptions = () => {
+    // original downloads whose descriptions have been modified
+    const downloadIds = Object.keys(productDetails.downloads);
+    const modifiedDescriptions = {};
+    downloadIds.forEach((downloadId) => {
+      const currentDownload = productDetails.downloads[downloadId];
+      if (
+        currentDownload.original
+        && currentDownload.modified
+        && currentDownload.modified === 'description'
+      ) {
+        modifiedDescriptions[downloadId] = currentDownload;
+      }
+    });
+    return modifiedDescriptions;
+  };
+
   const submit = async () => {
     setAttempted(true);
     setLoading(true);
-    if (validDescription && validCategory && validImage && validModel) {
+    if (
+      validDescription
+      && validDownloads
+      && validCategory
+      && validImage
+      && validModel
+    ) {
       try {
         const updatedProduct = {
           accessories: productDetails.accessories,
@@ -346,10 +644,27 @@ export default function ProductDetail({ allCategories, allProducts }) {
         });
         await removeProductFromAccessories(id, noMoreAccessory);
 
+        // delete any removed download files
+        if (downloadsToDelete.length) {
+          // XXX
+        }
+
+        // upload any new download files
+        const newDownloads = getNewDownloads();
+        if (Object.keys(newDownloads).length) {
+          await addProductDownloads(id, newDownloads);
+        }
+
+        // update any original downloads whose descriptions have changed
+        const modifiedDescriptions = getModifiedDescriptions();
+        if (Object.keys(modifiedDescriptions).length) {
+          await updateDownloadDescriptions(id, modifiedDescriptions);
+        }
+
         // finally redirect to the new product details page
-        navigate(`/dashboard/products/${id}`);
         setEditing(false);
         setLoading(false);
+        navigate(`/dashboard/products/${id}`);
       } catch (err) {
         setLoading(false);
         console.error(err);
@@ -558,6 +873,19 @@ export default function ProductDetail({ allCategories, allProducts }) {
             {displayAccessories()}
           </fieldset>
 
+          <fieldset>
+            <legend>Downloads (documents, firmware, etc)</legend>
+            {displayDownloads()}
+            {attempted && !validDownloads ? (
+              <div className="error">
+                Check all downloads - each one needs a file (5MB max)
+              </div>
+            ) : null}
+            <button onClick={newDownload} type="button">
+              + add download
+            </button>
+          </fieldset>
+
           <button className="submit" onClick={submit} type="button">
             Submit
           </button>
@@ -584,6 +912,11 @@ export default function ProductDetail({ allCategories, allProducts }) {
         // keep track of the product's pre-edit accessories, so we can remove
         // any reference to this product for any removed accessories
         setOriginalAccessories([...details.accessories]);
+        // also need to keep track of original "downloads" so if files are
+        // changed we can delete the old ones
+        Object.keys(details.downloads).forEach((downloadId) => {
+          details.downloads[downloadId].original = true;
+        });
       }
       setProductDetails(details);
     }
