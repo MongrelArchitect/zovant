@@ -504,7 +504,9 @@ export default function ProductDetail({ allCategories, allProducts }) {
     }
     return (
       <fieldset>
-        <legend>Downloads</legend>
+        <legend>
+          <h4>Downloads</h4>
+        </legend>
         <ul>
           {downloadIds.map((downloadId) => (
             <li key={downloadId}>
@@ -657,8 +659,7 @@ export default function ProductDetail({ allCategories, allProducts }) {
         if (downloadsToDelete.length) {
           const deleteThese = {};
           downloadsToDelete.forEach((downloadId) => {
-            deleteThese[downloadId] = allProducts[id]
-              .downloads[downloadId].fileRef;
+            deleteThese[downloadId] = allProducts[id].downloads[downloadId].fileRef;
           });
           await removeDownloadsFromProduct(id, deleteThese);
           await deleteDownloadsFromStorage(deleteThese);
@@ -703,6 +704,15 @@ export default function ProductDetail({ allCategories, allProducts }) {
         productDetails.imageRef,
         productDetails.accessories,
       );
+      const productDownloads = Object.keys(productDetails.downloads);
+      if (productDownloads.length) {
+        const deleteThese = {};
+        productDownloads.forEach((downloadId) => {
+          deleteThese[downloadId] = productDetails
+            .downloads[downloadId].fileRef;
+        });
+        await deleteDownloadsFromStorage(deleteThese);
+      }
       navigate(`/dashboard/products/${id}/deleted`);
       setEditing(false);
       setDeleted(true);
@@ -724,11 +734,11 @@ export default function ProductDetail({ allCategories, allProducts }) {
     return (
       <>
         <div className="error">
-          Are you sure you want to delete
-          {' '}
-          {productDetails.model}
-          ? This cannot be
-          undone!
+          {`Are you sure you want to delete ${productDetails.model}? `}
+          {Object.keys(productDetails.downloads).length
+            ? 'All download files will also be deleted. '
+            : null}
+          This cannot be undone!
         </div>
         <button onClick={toggleDelete} type="button">
           Cancel
