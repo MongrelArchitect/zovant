@@ -111,6 +111,17 @@ async function removeProductFromAccessories(id, products) {
   }
 }
 
+async function deleteDownloadsFromStorage(downloadsToDelete) {
+  const downloadIds = Object.keys(downloadsToDelete);
+  await Promise.all(
+    downloadIds.map(async (downloadId) => {
+      // delete files from storage
+      const downloadRef = ref(storage, downloadsToDelete[downloadId]);
+      await deleteObject(downloadRef);
+    }),
+  );
+}
+
 async function deleteOldImage(imagePath) {
   const imageRef = ref(storage, imagePath);
   await deleteObject(imageRef);
@@ -144,6 +155,19 @@ async function deleteSingleProduct(id, imagePath, accessories) {
   await deleteDoc(doc(database, 'products', id));
   // finally remove any reference to the product from its accessories
   await removeProductFromAccessories(id, accessories);
+}
+
+async function removeDownloadsFromProduct(productId, downloadsToRemove) {
+  const productRef = doc(database, 'products', productId);
+  const productSnap = await getDoc(productRef);
+  const { downloads } = productSnap.data();
+  const removeIds = Object.keys(downloadsToRemove);
+  removeIds.forEach((removeId) => {
+    delete downloads[removeId];
+  });
+  await updateDoc(productRef, {
+    downloads,
+  });
 }
 
 async function updateCategory(id, name, description, features) {
@@ -207,9 +231,11 @@ export {
   addNewProduct,
   addProductDownloads,
   addProductImage,
+  deleteDownloadsFromStorage,
   deleteOldImage,
   deleteSingleCategory,
   deleteSingleProduct,
+  removeDownloadsFromProduct,
   removeProductFromAccessories,
   updateCategory,
   updateDownloadDescriptions,

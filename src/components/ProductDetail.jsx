@@ -5,8 +5,10 @@ import { v4 as uuid } from 'uuid';
 import {
   addProductDownloads,
   addProductImage,
+  deleteDownloadsFromStorage,
   deleteOldImage,
   deleteSingleProduct,
+  removeDownloadsFromProduct,
   removeProductFromAccessories,
   updateDownloadDescriptions,
   updateProduct,
@@ -382,6 +384,10 @@ export default function ProductDetail({ allCategories, allProducts }) {
     if (downloadsCopy[downloadid].original) {
       // we're modifying one of our original downloads - keep track of it
       downloadsCopy[downloadid].modified = 'file';
+      // we'll also need to delete the original file from cloud storage
+      const deleteCopy = [...downloadsToDelete];
+      deleteCopy.push(downloadid);
+      setDownloadsToDelete(deleteCopy);
     }
     if (file) {
       downloadsCopy[downloadid].file = file;
@@ -579,7 +585,10 @@ export default function ProductDetail({ allCategories, allProducts }) {
     const newDownloads = {};
     downloadIds.forEach((downloadId) => {
       if (productDetails.downloads[downloadId].file) {
-        newDownloads[downloadId] = productDetails.downloads[downloadId].file;
+        newDownloads[downloadId] = {
+          description: productDetails.downloads[downloadId].description,
+          file: productDetails.downloads[downloadId].file,
+        };
       }
     });
     return newDownloads;
@@ -644,9 +653,15 @@ export default function ProductDetail({ allCategories, allProducts }) {
         });
         await removeProductFromAccessories(id, noMoreAccessory);
 
-        // delete any removed download files
+        // delete any removed download files & update product accordingly
         if (downloadsToDelete.length) {
-          // XXX
+          const deleteThese = {};
+          downloadsToDelete.forEach((downloadId) => {
+            deleteThese[downloadId] = allProducts[id]
+              .downloads[downloadId].fileRef;
+          });
+          await removeDownloadsFromProduct(id, deleteThese);
+          await deleteDownloadsFromStorage(deleteThese);
         }
 
         // upload any new download files
@@ -906,6 +921,10 @@ export default function ProductDetail({ allCategories, allProducts }) {
   };
 
   useEffect(() => {
+    setError(null);
+    setAttempted(false);
+    setDownloadsToDelete([]);
+    setOriginalAccessories([]);
     if (!deleted) {
       const details = { ...allProducts[id] };
       if (editing) {
