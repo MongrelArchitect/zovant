@@ -147,10 +147,12 @@ export default function Search({
       const categorySearch = categoryIds.filter((catId) => {
         const nameResult = allCategories[catId].name
           .toLowerCase()
-          .includes(query);
+          .trim()
+          .includes(query.trim());
         const descResult = allCategories[catId].description
           .toLowerCase()
-          .includes(query);
+          .trim()
+          .includes(query.trim());
         return nameResult || descResult;
       });
       setCategoryResults(categorySearch);
@@ -160,13 +162,16 @@ export default function Search({
       const productSearch = productIds.filter((prodId) => {
         const modelResult = allProducts[prodId].model
           .toLowerCase()
-          .includes(query);
+          .trim()
+          .includes(query.trim());
         const descResult = allProducts[prodId].description
           .toLowerCase()
-          .includes(query);
+          .trim()
+          .includes(query.trim());
         const specResult = allProducts[prodId].specs
           .toLowerCase()
-          .includes(query);
+          .trim()
+          .includes(query.trim());
         return modelResult || descResult || specResult;
       });
       setProductResults(productSearch);
@@ -176,7 +181,7 @@ export default function Search({
   };
 
   const changeQuery = (event) => {
-    const query = event.target.value.toLowerCase().trim();
+    const query = event.target.value.toLowerCase();
     setSearchQuery(query);
     search(query);
   };
