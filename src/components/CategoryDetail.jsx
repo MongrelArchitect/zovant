@@ -321,7 +321,16 @@ export default function CategoryDetail({ allCategories, allProducts }) {
     const productIds = Object.keys(allProducts);
     const categoryProducts = productIds
       .filter((prodId) => allProducts[prodId].category === id)
-      .map((prodId) => allProducts[prodId]);
+      .map((prodId) => allProducts[prodId])
+      .sort((a, b) => {
+        if (a.model < b.model) {
+          return -1;
+        }
+        if (a.model > b.model) {
+          return 1;
+        }
+        return 0;
+      });
     return categoryProducts;
   };
 
