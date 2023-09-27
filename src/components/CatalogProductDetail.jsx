@@ -56,6 +56,54 @@ export default function CatalogProductDetail({
     return null;
   };
 
+  const formatSize = (size) => {
+    let suffix = 'bytes';
+    let newSize = size;
+    if (size >= 1000 && size < 1000000) {
+      suffix = 'KB';
+      newSize = Math.floor(size / 1000);
+    }
+    if (size >= 1000000 && size < 1000000000) {
+      suffix = 'MB';
+      newSize = Math.floor(size / 1000000);
+    }
+    if (size >= 1000000000) {
+      newSize = 'WAY';
+      suffix = 'TOO BIG!';
+    }
+    return `${newSize} ${suffix}`;
+  };
+
+  const displayDownloadInfo = (download) => (
+    <span>
+      {`${download.description ? download.description : download.fileName}: `}
+      <a download href={download.downloadURL} title={download.fileName}>
+        {`${download.fileName} (${formatSize(download.size)})`}
+      </a>
+    </span>
+  );
+
+  const displayDownloads = () => {
+    const downloadIds = Object.keys(product.downloads);
+    if (downloadIds.length) {
+      return (
+        <fieldset>
+          <legend>
+            <h4>Downloads</h4>
+          </legend>
+          <ul>
+            {downloadIds.map((downloadId) => (
+              <li key={downloadId}>
+                {displayDownloadInfo(product.downloads[downloadId])}
+              </li>
+            ))}
+          </ul>
+        </fieldset>
+      );
+    }
+    return null;
+  };
+
   return (
     <div id="catalog-detail" className="product-detail">
       <div className="detail-heading">
@@ -103,6 +151,8 @@ export default function CatalogProductDetail({
       ) : null}
 
       {displayAccessories()}
+
+      {displayDownloads()}
     </div>
   );
 }
