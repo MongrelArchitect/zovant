@@ -432,6 +432,8 @@ export default function NewProduct({ allCategories, allProducts }) {
           // add any downloads (if we have them)
           if (Object.keys(downloads).length) {
             await addProductDownloads(product.id, downloads);
+          } else {
+            await addProductDownloads(product.id, {});
           }
           // show success message with link to product detail
           setSuccessId(product.id);
