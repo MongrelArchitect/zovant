@@ -116,6 +116,31 @@ pre {
   white-space: pre-wrap;
 }
 
+table {
+  background: #fff;
+  border: 2px solid var(--brand-blue);
+}
+
+table th {
+  background: #f2fafd;
+  font-weight: bold;
+}
+
+table th[scope="row"] {
+  background: #f7fff7;
+  text-align: left;
+}
+
+table td {
+  text-align: right;
+}
+
+table td,
+table th {
+  border: 2px solid #111;
+  padding: 8px;
+}
+
 .banner {
   align-items: center;
   background: linear-gradient(90deg, var(--brand-green), var(--brand-blue));

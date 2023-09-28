@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
+import readXlsxFile from 'read-excel-file';
 import { v4 as uuid } from 'uuid';
 
 import {
@@ -8,6 +9,8 @@ import {
   addProductImage,
   updateProductAccessories,
 } from '../util/database';
+
+import generateTable from '../util/specs';
 
 import dropFileIcon from '../assets/images/drop-file.svg';
 import dropImageIcon from '../assets/images/add-image.svg';
@@ -29,6 +32,7 @@ export default function NewProduct({ allCategories, allProducts }) {
   const [model, setModel] = useState('');
   const [ndaa, setNdaa] = useState(true);
   const [specs, setSpecs] = useState('');
+  const [specsExcel, setSpecsExcel] = useState(null);
   const [successId, setSuccessId] = useState('');
   const [validCategory, setValidCategory] = useState(false);
   const [validDescription, setValidDescription] = useState(false);
@@ -98,6 +102,7 @@ export default function NewProduct({ allCategories, allProducts }) {
   };
 
   const changeSpecs = (event) => {
+    setSpecsExcel(null);
     setError(null);
     setSpecs(event.target.value);
   };
@@ -449,6 +454,25 @@ export default function NewProduct({ allCategories, allProducts }) {
     setLoading(false);
   };
 
+  const changeSpecsExcel = async (event) => {
+    setError(null);
+    setSpecs('');
+    const file = event.target.files[0];
+    if (file) {
+      const extension = file.name.slice(file.name.lastIndexOf('.'));
+      if (extension === '.xlsx' || extension === '.xls') {
+        const rows = await readXlsxFile(file);
+        setSpecsExcel(rows);
+      } else {
+        // not an xlsx file, so can't use it
+        setSpecsExcel(null);
+      }
+    } else {
+      // no file provided
+      setSpecsExcel(null);
+    }
+  };
+
   if (successId) {
     return (
       <>
@@ -509,15 +533,29 @@ export default function NewProduct({ allCategories, allProducts }) {
             ) : null}
           </label>
 
-          <label htmlFor="specs">
-            Specifications
-            <textarea
-              id="specs"
-              onChange={changeSpecs}
-              placeholder="Enter the product specifications"
-              rows="5"
-              value={specs || ''}
-            />
+          {specsExcel ? (
+            <>
+              <div>Specifications</div>
+              {generateTable(specsExcel)}
+            </>
+          ) : (
+            <label htmlFor="specs">
+              Specifications
+              <textarea
+                id="specs"
+                onChange={changeSpecs}
+                placeholder="Enter product specs manually here..."
+                rows="5"
+                value={specs || ''}
+              />
+            </label>
+          )}
+
+          <label htmlFor="specs-excel">
+            {specsExcel
+              ? 'Specs using excel file:'
+              : '...or use an excel file (*.xls, *.xlsx)'}
+            <input id="specs-excel" onChange={changeSpecsExcel} type="file" />
           </label>
 
           <div className="category-choice">
