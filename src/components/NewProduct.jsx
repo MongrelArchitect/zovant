@@ -119,8 +119,8 @@ export default function NewProduct({ allCategories, allProducts }) {
     const productIds = Object.keys(allProducts);
     if (productIds.length) {
       productIds.sort((a, b) => {
-        const modelA = allProducts[a].model;
-        const modelB = allProducts[b].model;
+        const modelA = allProducts[a].model.toLowerCase();
+        const modelB = allProducts[b].model.toLowerCase();
         if (modelA < modelB) {
           return -1;
         }
