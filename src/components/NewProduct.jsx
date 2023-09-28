@@ -26,6 +26,7 @@ export default function NewProduct({ allCategories, allProducts }) {
   const [description, setDescription] = useState('');
   const [downloads, setDownloads] = useState({});
   const [error, setError] = useState(null);
+  const [excelFileName, setExcelFileName] = useState(null);
   const [features, setFeatures] = useState([]);
   const [image, setImage] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -36,6 +37,7 @@ export default function NewProduct({ allCategories, allProducts }) {
   const [successId, setSuccessId] = useState('');
   const [validCategory, setValidCategory] = useState(false);
   const [validDescription, setValidDescription] = useState(false);
+  const [validExcel, setValidExcel] = useState(true);
   const [validDownloads, setValidDownloads] = useState(true);
   const [validImage, setValidImage] = useState(false);
   const [validModel, setValidModel] = useState(false);
@@ -103,6 +105,7 @@ export default function NewProduct({ allCategories, allProducts }) {
 
   const changeSpecs = (event) => {
     setSpecsExcel(null);
+    setValidExcel(true);
     setError(null);
     setSpecs(event.target.value);
   };
@@ -412,6 +415,7 @@ export default function NewProduct({ allCategories, allProducts }) {
       validCategory
       && validDescription
       && validDownloads
+      && validExcel
       && validImage
       && validModel
     ) {
@@ -455,22 +459,58 @@ export default function NewProduct({ allCategories, allProducts }) {
   };
 
   const changeSpecsExcel = async (event) => {
-    setError(null);
     setSpecs('');
     const file = event.target.files[0];
     if (file) {
+      setExcelFileName(file.name);
       const extension = file.name.slice(file.name.lastIndexOf('.'));
       if (extension === '.xlsx' || extension === '.xls') {
         const rows = await readXlsxFile(file);
         setSpecsExcel(rows);
+        setValidExcel(true);
       } else {
         // not an xlsx file, so can't use it
         setSpecsExcel(null);
+        setValidExcel(false);
       }
     } else {
       // no file provided
       setSpecsExcel(null);
+      setValidExcel(true);
+      setExcelFileName(null);
     }
+  };
+
+  const dropExcel = async (event) => {
+    event.preventDefault();
+    setSpecs('');
+    const file = event.dataTransfer.files[0];
+    if (file) {
+      setExcelFileName(file.name);
+      const extension = file.name.slice(file.name.lastIndexOf('.'));
+      if (extension === '.xlsx' || extension === '.xls') {
+        const rows = await readXlsxFile(file);
+        setSpecsExcel(rows);
+        setValidExcel(true);
+      } else {
+        // not an xlsx file, so can't use it
+        setSpecsExcel(null);
+        setValidExcel(false);
+      }
+    } else {
+      // no file provided
+      setSpecsExcel(null);
+      setValidExcel(true);
+      setExcelFileName(null);
+    }
+  };
+
+  const removeExcelFile = (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    setSpecsExcel(null);
+    setValidExcel(true);
+    setExcelFileName(null);
   };
 
   if (successId) {
@@ -551,11 +591,60 @@ export default function NewProduct({ allCategories, allProducts }) {
             </label>
           )}
 
-          <label htmlFor="specs-excel">
+          {/* XXX */}
+          <label className="image-label" htmlFor="specs-excel">
             {specsExcel
               ? 'Specs using excel file:'
               : '...or use an excel file (*.xls, *.xlsx)'}
-            <input id="specs-excel" onChange={changeSpecsExcel} type="file" />
+            <div
+              className={
+                specsExcel ? 'drop-file download-added' : 'drop-file empty'
+              }
+              onDragOver={(e) => {
+                e.stopPropagation();
+                e.preventDefault();
+              }}
+              onDrop={dropExcel}
+            >
+              {specsExcel ? (
+                <>
+                  <img alt="" className="file-added" src={fileIcon} />
+                  <div>{excelFileName}</div>
+                </>
+              ) : (
+                <>
+                  <img alt="" className="drop-image" src={dropFileIcon} />
+                  <div>Drop excel file here</div>
+                </>
+              )}
+            </div>
+            <input
+              hidden
+              id="specs-excel"
+              onChange={changeSpecsExcel}
+              type="file"
+            />
+            <div>
+              {!validExcel ? (
+                <div className="error">
+                  Wrong file type - excel only (*.xls or *.xlsx)
+                </div>
+              ) : null}
+              {specsExcel ? (
+                <span className="edit-button">Choose Excel File</span>
+              ) : (
+                <div className="edit-button">Choose Excel File</div>
+              )}
+              {specsExcel ? (
+                <button
+                  className="error"
+                  onClick={removeExcelFile}
+                  type="button"
+                >
+                  X
+                </button>
+              ) : null}
+            </div>
           </label>
 
           <div className="category-choice">
