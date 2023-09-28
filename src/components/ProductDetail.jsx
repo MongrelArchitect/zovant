@@ -553,10 +553,12 @@ export default function ProductDetail({ allCategories, allProducts }) {
             <pre>{productDetails.description}</pre>
           </div>
 
-          <div>
-            <h4>Specifications:</h4>
-            <pre>{productDetails.specs}</pre>
-          </div>
+          {productDetails.specs ? (
+            <div>
+              <h4>Specifications:</h4>
+              <pre>{productDetails.specs}</pre>
+            </div>
+          ) : null}
 
           {productDetails.accessories.length ? displayAccessories() : null}
 
@@ -708,8 +710,7 @@ export default function ProductDetail({ allCategories, allProducts }) {
       if (productDownloads.length) {
         const deleteThese = {};
         productDownloads.forEach((downloadId) => {
-          deleteThese[downloadId] = productDetails
-            .downloads[downloadId].fileRef;
+          deleteThese[downloadId] = productDetails.downloads[downloadId].fileRef;
         });
         await deleteDownloadsFromStorage(deleteThese);
       }

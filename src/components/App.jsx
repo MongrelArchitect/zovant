@@ -123,9 +123,14 @@ export default function App() {
                   user={user}
                 />
               ),
-              loader: ({ params }) => ({
-                product: allProducts[params.productid],
-              }),
+              loader: ({ params }) => {
+                const currentProduct = allProducts[params.productid];
+                // firebase wont accept nested arrays, so we strungify it
+                const specsExcel = currentProduct.specsExcel
+                  ? JSON.parse(currentProduct.specsExcel)
+                  : null;
+                return { product: { ...currentProduct, specsExcel } };
+              },
               path: 'products/:productid',
             },
           ],

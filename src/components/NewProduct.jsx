@@ -431,6 +431,8 @@ export default function NewProduct({ allCategories, allProducts }) {
             model,
             ndaa,
             specs,
+            // firebase won't accept nested arrays, so stringify it
+            specsExcel: JSON.stringify(specsExcel),
           };
           // upload new product to database
           const product = await addNewProduct(newProduct);
@@ -591,7 +593,6 @@ export default function NewProduct({ allCategories, allProducts }) {
             </label>
           )}
 
-          {/* XXX */}
           <label className="image-label" htmlFor="specs-excel">
             {specsExcel
               ? 'Specs using excel file:'

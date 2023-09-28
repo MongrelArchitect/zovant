@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Link, useLoaderData } from 'react-router-dom';
 
+import generateTable from '../util/specs';
+
 import ndaaIcon from '../assets/images/ndaa.png';
 
 export default function CatalogProductDetail({
@@ -149,6 +151,14 @@ export default function CatalogProductDetail({
           <pre>{product.specs}</pre>
         </div>
       ) : null}
+
+      {product.specsExcel ? (
+        <>
+          {generateTable(product.specsExcel)}
+        </>
+      ) : (
+        null
+      )}
 
       {displayAccessories()}
 
