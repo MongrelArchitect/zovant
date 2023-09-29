@@ -624,7 +624,17 @@ export default function ProductDetail({ allCategories, allProducts }) {
       && validModel
     ) {
       try {
-        const updatedProduct = { ...productDetails };
+        const updatedProduct = {
+          accessories: productDetails.accessories,
+          category: productDetails.category,
+          description: productDetails.description,
+          features: productDetails.features,
+          image: productDetails.image,
+          imageRef: productDetails.imageRef,
+          ndaa: productDetails.ndaa,
+          model: productDetails.model,
+          specs: productDetails.specs,
+        };
 
         // updated the product info
         await updateProduct(id, updatedProduct);
@@ -700,8 +710,7 @@ export default function ProductDetail({ allCategories, allProducts }) {
       if (productDownloads.length) {
         const deleteThese = {};
         productDownloads.forEach((downloadId) => {
-          deleteThese[downloadId] = productDetails
-            .downloads[downloadId].fileRef;
+          deleteThese[downloadId] = productDetails.downloads[downloadId].fileRef;
         });
         await deleteDownloadsFromStorage(deleteThese);
       }
