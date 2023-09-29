@@ -624,24 +624,16 @@ export default function ProductDetail({ allCategories, allProducts }) {
       && validModel
     ) {
       try {
-        const updatedProduct = {
-          accessories: productDetails.accessories,
-          category: productDetails.category,
-          description: productDetails.description,
-          features: productDetails.features,
-          ndaa: productDetails.ndaa,
-          model: productDetails.model,
-          specs: productDetails.specs,
-        };
+        const updatedProduct = { ...productDetails };
 
-        // first update the image (if there's a new one)
+        // updated the product info
+        await updateProduct(id, updatedProduct);
+
+        // then update the image (if there's a new one)
         if (newImage) {
           await deleteOldImage(productDetails.imageRef);
           await addProductImage(id, newImage);
         }
-
-        // then update the rest of the product info
-        await updateProduct(id, updatedProduct);
 
         // add the product to any new accessories
         await updateProductAccessories(id);
