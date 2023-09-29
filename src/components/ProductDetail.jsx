@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
+import readXlsxFile from 'read-excel-file';
 import { v4 as uuid } from 'uuid';
 
 import {
@@ -33,6 +34,7 @@ export default function ProductDetail({ allCategories, allProducts }) {
   const [deleted, setDeleted] = useState(false);
   const [downloadsToDelete, setDownloadsToDelete] = useState([]);
   const [editing, setEditing] = useState(false);
+  const [excelFileName, setExcelFileName] = useState(null);
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(false);
   const [newImage, setNewImage] = useState(null);
@@ -42,6 +44,7 @@ export default function ProductDetail({ allCategories, allProducts }) {
   const [validCategory, setValidCategory] = useState(true);
   const [validDescription, setValidDescription] = useState(true);
   const [validDownloads, setValidDownloads] = useState(true);
+  const [validExcel, setValidExcel] = useState(true);
   const [validImage, setValidImage] = useState(true);
   const [validModel, setValidModel] = useState(true);
 
@@ -99,8 +102,8 @@ export default function ProductDetail({ allCategories, allProducts }) {
     if (editing) {
       const productIds = Object.keys(allProducts);
       productIds.sort((a, b) => {
-        const modelA = allProducts[a].model;
-        const modelB = allProducts[b].model;
+        const modelA = allProducts[a].model.toLowerCase();
+        const modelB = allProducts[b].model.toLowerCase();
 
         if (modelA < modelB) {
           return -1;
@@ -628,6 +631,7 @@ export default function ProductDetail({ allCategories, allProducts }) {
       validDescription
       && validDownloads
       && validCategory
+      && validExcel
       && validImage
       && validModel
     ) {
@@ -642,6 +646,10 @@ export default function ProductDetail({ allCategories, allProducts }) {
           ndaa: productDetails.ndaa,
           model: productDetails.model,
           specs: productDetails.specs,
+          // firebase won't accept nested arrays, so stringify it
+          specsExcel: productDetails.specsExcel
+            ? JSON.stringify(productDetails.specsExcel)
+            : null,
         };
 
         // updated the product info
@@ -784,6 +792,61 @@ export default function ProductDetail({ allCategories, allProducts }) {
     setProductDetails({ ...productDetails, ndaa: event.target.checked });
   };
 
+  const changeSpecsExcel = async (event) => {
+    setProductDetails({ ...productDetails, specs: '' });
+    const file = event.target.files[0];
+    if (file) {
+      setExcelFileName(file.name);
+      const extension = file.name.slice(file.name.lastIndexOf('.'));
+      if (extension === '.xlsx' || extension === '.xls') {
+        const rows = await readXlsxFile(file);
+        setProductDetails({ ...productDetails, specsExcel: rows });
+        setValidExcel(true);
+      } else {
+        // not an xlsx file, so can't use it
+        setProductDetails({ ...productDetails, specsExcel: null });
+        setValidExcel(false);
+      }
+    } else {
+      // no file provided
+      setProductDetails({ ...productDetails, specsExcel: null });
+      setValidExcel(true);
+      setExcelFileName(null);
+    }
+  };
+
+  const dropExcel = async (event) => {
+    event.preventDefault();
+    setProductDetails({ ...productDetails, specs: '' });
+    const file = event.dataTransfer.files[0];
+    if (file) {
+      setExcelFileName(file.name);
+      const extension = file.name.slice(file.name.lastIndexOf('.'));
+      if (extension === '.xlsx' || extension === '.xls') {
+        const rows = await readXlsxFile(file);
+        setProductDetails({ ...productDetails, specsExcel: rows });
+        setValidExcel(true);
+      } else {
+        // not an xlsx file, so can't use it
+        setProductDetails({ ...productDetails, specsExcel: null });
+        setValidExcel(false);
+      }
+    } else {
+      // no file provided
+      setProductDetails({ ...productDetails, specsExcel: null });
+      setValidExcel(true);
+      setExcelFileName(null);
+    }
+  };
+
+  const removeExcelFile = (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    setProductDetails({ ...productDetails, specsExcel: null });
+    setValidExcel(true);
+    setExcelFileName(null);
+  };
+
   const displayForm = () => {
     if (loading) {
       return <div>Loading...</div>;
@@ -823,16 +886,79 @@ export default function ProductDetail({ allCategories, allProducts }) {
             ) : null}
           </label>
 
-          <label htmlFor="description">
-            Specifications
-            <textarea
-              id="specs"
-              onChange={changeSpecs}
-              placeholder="Enter the product specifications"
-              required
-              rows="5"
-              value={productDetails.specs || ''}
+          {productDetails.specsExcel ? (
+            <>
+              <div>Specifications</div>
+              {generateTable(productDetails.specsExcel)}
+            </>
+          ) : (
+            <label htmlFor="specs">
+              Specifications
+              <textarea
+                id="specs"
+                onChange={changeSpecs}
+                placeholder="Enter product specs manually here..."
+                rows="5"
+                value={productDetails.specs || ''}
+              />
+            </label>
+          )}
+
+          <label className="image-label" htmlFor="specs-excel">
+            {productDetails.specsExcel
+              ? 'Specs using excel file:'
+              : '...or use an excel file (*.xls, *.xlsx)'}
+            <div
+              className={
+                productDetails.specsExcel
+                  ? 'drop-file download-added'
+                  : 'drop-file empty'
+              }
+              onDragOver={(e) => {
+                e.stopPropagation();
+                e.preventDefault();
+              }}
+              onDrop={dropExcel}
+            >
+              {productDetails.specsExcel ? (
+                <>
+                  <img alt="" className="file-added" src={fileIcon} />
+                  <div>{excelFileName}</div>
+                </>
+              ) : (
+                <>
+                  <img alt="" className="drop-image" src={dropFileIcon} />
+                  <div>Drop excel file here</div>
+                </>
+              )}
+            </div>
+            <input
+              hidden
+              id="specs-excel"
+              onChange={changeSpecsExcel}
+              type="file"
             />
+            <div>
+              {!validExcel ? (
+                <div className="error">
+                  Wrong file type - excel only (*.xls or *.xlsx)
+                </div>
+              ) : null}
+              {productDetails.specsExcel ? (
+                <span className="edit-button">Choose Excel File</span>
+              ) : (
+                <div className="edit-button">Choose Excel File</div>
+              )}
+              {productDetails.specsExcel ? (
+                <button
+                  className="error"
+                  onClick={removeExcelFile}
+                  type="button"
+                >
+                  X
+                </button>
+              ) : null}
+            </div>
           </label>
 
           <div className="category-choice">

@@ -432,7 +432,7 @@ export default function NewProduct({ allCategories, allProducts }) {
             ndaa,
             specs,
             // firebase won't accept nested arrays, so stringify it
-            specsExcel: JSON.stringify(specsExcel),
+            specsExcel: specsExcel ? JSON.stringify(specsExcel) : null,
           };
           // upload new product to database
           const product = await addNewProduct(newProduct);
