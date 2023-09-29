@@ -15,6 +15,8 @@ import {
   updateProductAccessories,
 } from '../util/database';
 
+import generateTable from '../util/specs';
+
 import ndaaIcon from '../assets/images/ndaa.png';
 import dropFileIcon from '../assets/images/drop-file.svg';
 import fileIcon from '../assets/images/file-added.svg';
@@ -560,6 +562,10 @@ export default function ProductDetail({ allCategories, allProducts }) {
             </div>
           ) : null}
 
+          {productDetails.specsExcel ? (
+            <>{generateTable(productDetails.specsExcel)}</>
+          ) : null}
+
           {productDetails.accessories.length ? displayAccessories() : null}
 
           {Object.keys(productDetails.downloads).length
@@ -937,7 +943,10 @@ export default function ProductDetail({ allCategories, allProducts }) {
     setDownloadsToDelete([]);
     setOriginalAccessories([]);
     if (!deleted) {
-      const details = { ...allProducts[id] };
+      const specsExcel = allProducts[id].specsExcel
+        ? JSON.parse(allProducts[id].specsExcel)
+        : null;
+      const details = { ...allProducts[id], specsExcel };
       if (editing) {
         // keep track of the product's pre-edit accessories, so we can remove
         // any reference to this product for any removed accessories

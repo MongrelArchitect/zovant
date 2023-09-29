@@ -14,11 +14,7 @@ function determineData(row) {
 export default function generateTable(specsArray) {
   return (
     <table>
-      <thead>
-        <tr>
-          <th colSpan="2">SPECIFICATIONS</th>
-        </tr>
-      </thead>
+      <caption>SPECIFICATIONS</caption>
       <tbody>
         {specsArray.map((row) => (
           <tr key={`specs-row-${specsArray.indexOf(row)}`}>

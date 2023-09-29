@@ -4,6 +4,7 @@
   --brand-blue : #28adde;
   --brand-green: #0f0;
   --brand-middle: #14d66f;
+  --gradient: linear-gradient(90deg, var(--brand-green), var(--brand-blue));
   --bg-dark: #212529;
   --bg-error: #ff5c5c;
   --bg-light: #f8f9fa;
@@ -136,15 +137,23 @@ table td {
   word-break: break-all;
 }
 
+table caption,
 table td,
 table th {
   border: 2px solid #111;
   padding: 8px;
 }
 
+table caption {
+  background: #d2fafd;
+  border-bottom: 0;
+  font-size: 1.4rem;
+  font-weight: bold;
+}
+
 .banner {
   align-items: center;
-  background: linear-gradient(90deg, var(--brand-green), var(--brand-blue));
+  background: var(--gradient);
   box-shadow:0 0 4px 4px #ccc;
   color: var(--text-dark);
   display: flex;
@@ -515,7 +524,7 @@ table th {
 }
 
 .header-gradient {
-  background: linear-gradient(90deg, var(--brand-green), var(--brand-blue));
+  background: var(--gradient);
   height: 4px;
   width: 100%;
 }
@@ -547,7 +556,7 @@ table th {
 .image-placeholder {
   animation: gradient 2s ease infinite;
   aspect-ratio: 1;
-  background: linear-gradient(90deg, var(--brand-green), var(--brand-blue));
+  background: var(--gradient);
   background-size: 400% 400%;
   border: 2px solid var(--brand-blue);
   border-radius: 5px;
@@ -577,7 +586,7 @@ table th {
   align-items: center;
   animation: gradient 2s ease infinite;
   aspect-ratio: 1;
-  background: linear-gradient(90deg, var(--brand-green), var(--brand-blue));
+  background: var(--gradient);
   background-size: 400% 400%;
   display: flex;
   height: 100vh;
