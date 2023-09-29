@@ -629,19 +629,21 @@ export default function ProductDetail({ allCategories, allProducts }) {
           category: productDetails.category,
           description: productDetails.description,
           features: productDetails.features,
+          image: productDetails.image,
+          imageRef: productDetails.imageRef,
           ndaa: productDetails.ndaa,
           model: productDetails.model,
           specs: productDetails.specs,
         };
 
-        // first update the image (if there's a new one)
+        // updated the product info
+        await updateProduct(id, updatedProduct);
+
+        // then update the image (if there's a new one)
         if (newImage) {
           await deleteOldImage(productDetails.imageRef);
           await addProductImage(id, newImage);
         }
-
-        // then update the rest of the product info
-        await updateProduct(id, updatedProduct);
 
         // add the product to any new accessories
         await updateProductAccessories(id);
@@ -708,8 +710,7 @@ export default function ProductDetail({ allCategories, allProducts }) {
       if (productDownloads.length) {
         const deleteThese = {};
         productDownloads.forEach((downloadId) => {
-          deleteThese[downloadId] = productDetails
-            .downloads[downloadId].fileRef;
+          deleteThese[downloadId] = productDetails.downloads[downloadId].fileRef;
         });
         await deleteDownloadsFromStorage(deleteThese);
       }
