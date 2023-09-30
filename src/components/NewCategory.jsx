@@ -126,7 +126,12 @@ export default function NewCategory({ allCategories }) {
   };
 
   if (loading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="flex g16 align-center">
+        Loading...
+        <div className="loading-animation" />
+      </div>
+    );
   }
 
   if (successId) {

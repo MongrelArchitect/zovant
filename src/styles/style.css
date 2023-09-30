@@ -450,6 +450,18 @@ table caption {
   display: flex;
 }
 
+.flex {
+  display: flex;
+}
+
+.flex.align-center {
+  align-items: center;
+}
+
+.flex.g16 {
+  gap: 16px;
+}
+
 .footer {
   align-items: center;
   background: var(--bg-dark);
@@ -615,6 +627,20 @@ table caption {
   flex-direction: column;
   gap: 32px;
   padding: 16px;
+}
+
+.loading-animation {
+  animation: rotate 500ms linear infinite;
+  border-top: 4px solid var(--brand-middle);
+  border-radius: 50%;
+  height: 32px;
+  width: 32px;
+}
+
+@keyframes rotate {
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .nav a.active {

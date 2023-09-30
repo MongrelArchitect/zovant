@@ -535,7 +535,10 @@ export default function NewProduct({ allCategories, allProducts }) {
     <>
       <h2>New Product</h2>
       {loading ? (
-        <div>Loading...</div>
+        <div className="flex g16 align-center">
+          Loading...
+          <div className="loading-animation" />
+        </div>
       ) : (
         <form className="product-detail">
           <div>

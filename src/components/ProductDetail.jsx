@@ -525,7 +525,12 @@ export default function ProductDetail({ allCategories, allProducts }) {
 
   const displayDetails = () => {
     if (loading) {
-      return <div>Loading...</div>;
+      return (
+        <div className="flex g16 align-center">
+          Loading...
+          <div className="loading-animation" />
+        </div>
+      );
     }
     if (productDetails) {
       return (
@@ -849,7 +854,12 @@ export default function ProductDetail({ allCategories, allProducts }) {
 
   const displayForm = () => {
     if (loading) {
-      return <div>Loading...</div>;
+      return (
+        <div className="flex g16 align-center">
+          Loading...
+          <div className="loading-animation" />
+        </div>
+      );
     }
     if (productDetails) {
       return (

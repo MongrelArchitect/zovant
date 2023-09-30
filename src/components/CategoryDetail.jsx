@@ -191,7 +191,12 @@ export default function CategoryDetail({ allCategories, allProducts }) {
 
   const displayDetails = () => {
     if (loading) {
-      return <div>Loading...</div>;
+      return (
+        <div className="flex g16 align-center">
+          Loading...
+          <div className="loading-animation" />
+        </div>
+      );
     }
     if (categoryDetails) {
       return (
@@ -261,7 +266,12 @@ export default function CategoryDetail({ allCategories, allProducts }) {
 
   const displayForm = () => {
     if (loading) {
-      return <div>Loading...</div>;
+      return (
+        <div className="flex g16 align-center">
+          Loading...
+          <div className="loading-animation" />
+        </div>
+      );
     }
     if (categoryDetails) {
       return (
