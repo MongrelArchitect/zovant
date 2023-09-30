@@ -650,7 +650,7 @@ export default function ProductDetail({ allCategories, allProducts }) {
           imageRef: productDetails.imageRef,
           ndaa: productDetails.ndaa,
           model: productDetails.model,
-          specs: productDetails.specs,
+          specs: productDetails.specsExcel ? null : productDetails.specs,
           // firebase won't accept nested arrays, so stringify it
           specsExcel: productDetails.specsExcel
             ? JSON.stringify(productDetails.specsExcel)
