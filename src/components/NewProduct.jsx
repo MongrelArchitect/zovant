@@ -194,11 +194,11 @@ export default function NewProduct({ allCategories, allProducts }) {
     }
     const valid = !downloadIds.some((downloadId) => {
       if (downloadsCopy[downloadId].file) {
-        if (downloadsCopy[downloadId].file.size <= 5000000) {
-          // we have a file and it's no more than 5MB, so we're good
+        if (downloadsCopy[downloadId].file.size <= 20000000) {
+          // we have a file and it's no more than 20MB, so we're good
           return false;
         }
-        // the file we have is too big (5MB max)
+        // the file we have is too big (20MB max)
         return true;
       }
       // no file, so we're invalid
@@ -732,7 +732,7 @@ export default function NewProduct({ allCategories, allProducts }) {
             {displayDownloads()}
             {attempted && !validDownloads ? (
               <div className="error">
-                Check all downloads - each one needs a file (5MB max)
+                Check all downloads - each one needs a file (20MB max)
               </div>
             ) : null}
             <button onClick={newDownload} type="button">
