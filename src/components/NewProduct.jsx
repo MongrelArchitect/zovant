@@ -5,6 +5,7 @@ import { v4 as uuid } from 'uuid';
 
 import {
   addNewProduct,
+  addProductAdditionalImages,
   addProductDownloads,
   addProductImage,
   updateProductAccessories,
@@ -21,6 +22,7 @@ export default function NewProduct({ allCategories, allProducts }) {
 
   const [accessories, setAccessories] = useState([]);
   const [addingAccessories, setAddingAccessories] = useState(false);
+  const [additionalImages, setAdditionalImages] = useState({});
   const [attempted, setAttempted] = useState(false);
   const [category, setCategory] = useState(null);
   const [description, setDescription] = useState('');
@@ -35,6 +37,7 @@ export default function NewProduct({ allCategories, allProducts }) {
   const [specs, setSpecs] = useState('');
   const [specsExcel, setSpecsExcel] = useState(null);
   const [successId, setSuccessId] = useState('');
+  const [validAdditionalImages, setValidAdditionalImages] = useState(true);
   const [validCategory, setValidCategory] = useState(false);
   const [validDescription, setValidDescription] = useState(false);
   const [validExcel, setValidExcel] = useState(true);
@@ -412,7 +415,8 @@ export default function NewProduct({ allCategories, allProducts }) {
     setLoading(true);
     setAttempted(true);
     if (
-      validCategory
+      validAdditionalImages
+      && validCategory
       && validDescription
       && validDownloads
       && validExcel
@@ -438,6 +442,8 @@ export default function NewProduct({ allCategories, allProducts }) {
           const product = await addNewProduct(newProduct);
           // upload image to storage and update product accordingly
           await addProductImage(product.id, image);
+          // upload any additional images
+          await addProductAdditionalImages(product.id, additionalImages);
           // add product to "accessories" arrays of its own accessories
           await updateProductAccessories(product.id);
           // add any downloads (if we have them)
@@ -530,6 +536,120 @@ export default function NewProduct({ allCategories, allProducts }) {
       </>
     );
   }
+
+  const checkValidAdditionalImages = (imagesCopy) => {
+    let valid = false;
+    const imageIds = Object.keys(imagesCopy);
+    if (!imageIds.length) {
+      valid = true;
+    } else {
+      imageIds.forEach((imageid) => {
+        const file = imagesCopy[imageid];
+        if (
+          file
+          && file.type.split('/')[0] === 'image'
+          && file.size <= 5000000
+        ) {
+          valid = true;
+        } else {
+          valid = false;
+        }
+      });
+    }
+    return valid;
+  };
+
+  const changeAdditionalImages = (event) => {
+    const { imageid } = event.target.dataset;
+    const imagesCopy = { ...additionalImages };
+    const file = event.target.files[0];
+    imagesCopy[imageid] = file;
+    setValidAdditionalImages(checkValidAdditionalImages(imagesCopy));
+    setAdditionalImages(imagesCopy);
+  };
+
+  const deleteAdditionalImage = (event) => {
+    const { imageid } = event.target.dataset;
+    const imagesCopy = { ...additionalImages };
+    delete imagesCopy[imageid];
+    setValidAdditionalImages(checkValidAdditionalImages(imagesCopy));
+    setAdditionalImages(imagesCopy);
+  };
+
+  const dropAdditionalImage = () => {};
+
+  const displayAdditionalImages = () => {
+    const imageIds = Object.keys(additionalImages);
+    if (imageIds.length) {
+      return (
+        <div className="feature-inputs">
+          {imageIds.map((imageId) => (
+            <label className="image-label" htmlFor={imageId} key={imageId}>
+              Additional Image
+              <div
+                className={
+                  additionalImages[imageId] ? 'drop-file' : 'drop-file empty'
+                }
+                data-imageid={imageId}
+                onDragOver={(e) => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                }}
+                onDrop={dropAdditionalImage}
+              >
+                {additionalImages[imageId] ? (
+                  <img
+                    alt=""
+                    className="image-preview"
+                    data-imageid={imageId}
+                    src={URL.createObjectURL(additionalImages[imageId])}
+                  />
+                ) : (
+                  <>
+                    <img
+                      alt=""
+                      className="drop-image"
+                      data-imageid={imageId}
+                      src={dropImageIcon}
+                    />
+                    <div data-downloadid={imageId}>Drop image here</div>
+                  </>
+                )}
+              </div>
+              <input
+                accept="image/*"
+                data-imageid={imageId}
+                hidden
+                id={imageId}
+                onChange={changeAdditionalImages}
+                type="file"
+              />
+              <div>
+                <span className="edit-button">Upload Additional Image</span>
+                <button
+                  className="error"
+                  data-imageid={imageId}
+                  onClick={deleteAdditionalImage}
+                  type="button"
+                >
+                  X
+                </button>
+              </div>
+            </label>
+          ))}
+        </div>
+      );
+    }
+    return null;
+  };
+
+  const newAdditionalImage = () => {
+    const imagesCopy = { ...additionalImages };
+    const imageId = uuid();
+    imagesCopy[imageId] = null;
+    setValidAdditionalImages(checkValidAdditionalImages(imagesCopy));
+    setAdditionalImages(imagesCopy);
+  };
 
   return (
     <>
@@ -711,6 +831,19 @@ export default function NewProduct({ allCategories, allProducts }) {
               <div className="error">Image required (5MB limit)</div>
             ) : null}
           </label>
+
+          {image ? (
+            <fieldset>
+              <legend>Additional Images</legend>
+              {displayAdditionalImages()}
+              {attempted && !validAdditionalImages ? (
+                <div className="error">Check each image (5MB limit)</div>
+              ) : null}
+              <button onClick={newAdditionalImage} type="button">
+                + add additional image
+              </button>
+            </fieldset>
+          ) : null}
 
           <fieldset>
             <legend>Accessories / related products</legend>

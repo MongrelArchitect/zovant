@@ -82,6 +82,36 @@ async function addProductDownloads(id, downloads) {
   return updatedProduct;
 }
 
+async function addProductAdditionalImages(id, images) {
+  const imageIds = Object.keys(images);
+  const finalized = {};
+  if (imageIds.length) {
+    await Promise.all(
+      // upload all the additional images & set their info for the product
+      imageIds.map(async (imageId) => {
+        const file = images[imageId];
+        const fileName = file.name;
+        const lastDot = fileName.lastIndexOf('.');
+        const extension = fileName.slice(lastDot + 1);
+        const path = `additional/${id}-${imageId}.${extension}`;
+        const imageRef = ref(storage, path);
+        await uploadBytes(imageRef, file);
+        const imageURL = await getDownloadURL(imageRef);
+        finalized[imageId] = {
+          image: imageURL,
+          imageRef: path,
+        };
+      }),
+    );
+  }
+
+  // update the product with info for additional images
+  const productRef = doc(database, 'products', id);
+  await updateDoc(productRef, {
+    additionalImages: finalized,
+  });
+}
+
 async function addProductImage(id, file) {
   // upload image to storage and get the download url
   const fileName = file.name;
@@ -232,6 +262,7 @@ export {
   addNewCategory,
   addNewProduct,
   addProductDownloads,
+  addProductAdditionalImages,
   addProductImage,
   deleteDownloadsFromStorage,
   deleteOldImage,
