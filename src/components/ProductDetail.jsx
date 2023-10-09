@@ -521,6 +521,44 @@ export default function ProductDetail({ allCategories, allProducts }) {
     );
   };
 
+  const displayAdditionalImages = () => {
+    if (editing) {
+      // XXX
+      // editing mode
+    }
+    if (productDetails.additionalImages) {
+      const imageIds = Object.keys(productDetails.additionalImages);
+      if (imageIds.length) {
+        return (
+          <fieldset>
+            <legend className="mb-8">Additional Images:</legend>
+            <div className="additional-images flex wrap align-center g16">
+              {imageIds.map((imageId) => (
+                <div key={imageId}>
+                  <div
+                    hidden={!placeholder}
+                    className="image-placeholder small"
+                  />
+                  <img
+                    alt={productDetails.model}
+                    className="product-image-small"
+                    hidden={placeholder}
+                    onLoad={() => {
+                      setPlaceholder(false);
+                    }}
+                    src={productDetails.additionalImages[imageId].image}
+                  />
+                </div>
+              ))}
+            </div>
+          </fieldset>
+        );
+      }
+      return null;
+    }
+    return null;
+  };
+
   const displayDetails = () => {
     if (loading) {
       return (
@@ -553,6 +591,8 @@ export default function ProductDetail({ allCategories, allProducts }) {
             }}
             src={productDetails.image}
           />
+
+          {displayAdditionalImages()}
 
           {displayFeatures()}
 

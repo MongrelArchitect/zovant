@@ -122,7 +122,7 @@ export default function CatalogProductDetail({
       if (imageIds.length) {
         return (
           <fieldset>
-            <legend className="mb-8">Click an image to view</legend>
+            <legend className="mb-8">Choose an image to view</legend>
             <div className="additional-images flex wrap align-center g16">
               <div hidden={!placeholder} className="image-placeholder small" />
               <button
