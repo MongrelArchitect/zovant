@@ -77,6 +77,25 @@ button.submit {
   background: var(--brand-middle);
 }
 
+button.image-select {
+  background: none;
+  border: none;
+  border-radius: 4px;
+  display: flex;
+  outline: 2px solid var(--brand-blue);
+  padding: 0;
+}
+
+button.image-select.selected {
+  outline: 4px solid var(--brand-middle);
+}
+
+button.image-select:hover,
+button.image-select:focus {
+  outline: 4px solid var(--brand-middle);
+  filter: none;
+}
+
 fieldset {
   display: flex;
   flex-direction: column;
@@ -468,6 +487,10 @@ table caption {
   display: flex;
 }
 
+.flex.wrap {
+  flex-wrap: wrap;
+}
+
 .flex.align-center {
   align-items: center;
 }
@@ -766,6 +789,10 @@ table caption {
   max-width: 1000px;
 }
 
+.mb-8 {
+  margin-bottom: 8px;
+}
+
 .ndaa-icon {
   max-width: 160px;
   width: 100%;
@@ -846,6 +873,10 @@ table caption {
   border: 2px solid var(--brand-blue);
   border-radius: 5px;
   height: 80px;
+}
+
+.product-image-small.additional {
+  border: none;
 }
 
 .product-list-item {

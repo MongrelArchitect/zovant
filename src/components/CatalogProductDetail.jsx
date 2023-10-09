@@ -12,6 +12,7 @@ export default function CatalogProductDetail({
 }) {
   const { product } = useLoaderData();
 
+  const [currentImage, setCurrentImage] = useState(product.image);
   const [placeholder, setPlaceholder] = useState(true);
 
   useEffect(() => {
@@ -106,6 +107,84 @@ export default function CatalogProductDetail({
     return null;
   };
 
+  const chooseImage = (event) => {
+    const { imageid } = event.target.dataset;
+    if (imageid === 'orig') {
+      setCurrentImage(product.image);
+    } else {
+      setCurrentImage(product.additionalImages[imageid].image);
+    }
+  };
+
+  const displayAdditionalImages = () => {
+    if (product.additionalImages) {
+      const imageIds = Object.keys(product.additionalImages);
+      if (imageIds.length) {
+        return (
+          <fieldset>
+            <legend className="mb-8">Click an image to view</legend>
+            <div className="additional-images flex wrap align-center g16">
+              <div hidden={!placeholder} className="image-placeholder small" />
+              <button
+                className={
+                  currentImage === product.image
+                    ? 'image-select selected'
+                    : 'image-select'
+                }
+                data-imageid="orig"
+                onClick={chooseImage}
+                type="button"
+              >
+                <img
+                  alt={product.model}
+                  className="product-image-small additional"
+                  data-imageid="orig"
+                  hidden={placeholder}
+                  onLoad={() => {
+                    setPlaceholder(false);
+                  }}
+                  src={product.image}
+                />
+              </button>
+              {imageIds.map((imageId) => (
+                <div key={imageId}>
+                  <div
+                    hidden={!placeholder}
+                    className="image-placeholder small"
+                  />
+                  <button
+                    className={
+                      currentImage === product.additionalImages[imageId].image
+                        ? 'image-select selected'
+                        : 'image-select'
+                    }
+                    data-imageid={imageId}
+                    onClick={chooseImage}
+                    type="button"
+                  >
+                    <img
+                      alt={product.model}
+                      className="product-image-small additional"
+                      data-imageid={imageId}
+                      hidden={placeholder}
+                      onLoad={() => {
+                        setPlaceholder(false);
+                      }}
+                      src={product.additionalImages[imageId].image}
+                    />
+                  </button>
+                </div>
+              ))}
+            </div>
+          </fieldset>
+        );
+      }
+      return null;
+    }
+
+    return null;
+  };
+
   return (
     <div id="catalog-detail" className="product-detail">
       <div className="detail-heading">
@@ -129,6 +208,8 @@ export default function CatalogProductDetail({
         ) : null}
       </div>
 
+      {displayAdditionalImages()}
+
       <div hidden={!placeholder} className="image-placeholder" />
       <img
         alt={product.model}
@@ -137,7 +218,7 @@ export default function CatalogProductDetail({
         onLoad={() => {
           setPlaceholder(false);
         }}
-        src={product.image}
+        src={currentImage}
       />
 
       <div>
@@ -152,13 +233,7 @@ export default function CatalogProductDetail({
         </div>
       ) : null}
 
-      {product.specsExcel ? (
-        <>
-          {generateTable(product.specsExcel)}
-        </>
-      ) : (
-        null
-      )}
+      {product.specsExcel ? <>{generateTable(product.specsExcel)}</> : null}
 
       {displayAccessories()}
 
