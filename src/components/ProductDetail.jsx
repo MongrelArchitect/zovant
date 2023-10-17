@@ -524,10 +524,46 @@ export default function ProductDetail({ allCategories, allProducts }) {
     );
   };
 
-  const checkValidAdditionalImages = () => {
-    console.log(productDetails.additionalImages);
-    // XXX
+  const checkFile = (file) => {
+    if (
+      file
+      && file.type.split('/')[0] === 'image'
+      && file.size <= 5000000
+    ) {
+      return true;
+    }
     return false;
+  };
+
+  const checkValidAdditionalImages = (imagesCopy) => {
+    let valid = false;
+    const imageIds = Object.keys(imagesCopy);
+    if (!imageIds.length) {
+      valid = true;
+    } else {
+      imageIds.forEach((imageId) => {
+        const { file } = imagesCopy[imageId];
+        const { original } = imagesCopy[imageId];
+        if (original) {
+          // looking at an original image that may or may not have changed
+          if (!file) {
+            // the original image hasn't been changed
+            valid = true;
+          } else {
+            // the original image has changed - check it out
+            valid = checkFile(file);
+          }
+        } else if (!file) {
+          // a new image has been added, but no file chosen
+          valid = false;
+        } else {
+          // a file has been chosen - check it out
+          valid = checkFile(file);
+        }
+      });
+    }
+    console.log(valid);
+    return valid;
   };
 
   const dropAdditionalImage = () => {};
