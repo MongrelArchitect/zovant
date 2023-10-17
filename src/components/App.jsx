@@ -50,7 +50,7 @@ export default function App() {
 
   useEffect(() => {
     const productsQuery = query(collection(database, 'products'));
-    onSnapshot(productsQuery, (querySnapshot) => {
+    const unsubscribe = onSnapshot(productsQuery, (querySnapshot) => {
       const products = {};
       querySnapshot.forEach((docu) => {
         products[docu.id] = {
@@ -76,6 +76,8 @@ export default function App() {
       setAllCategories(categories);
       setLoadedCategories(true);
     });
+
+    return () => unsubscribe();
   }, []);
 
   useEffect(() => {
