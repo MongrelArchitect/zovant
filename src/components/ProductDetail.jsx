@@ -20,6 +20,7 @@ import generateTable from '../util/specs';
 
 import ndaaIcon from '../assets/images/ndaa.png';
 import dropFileIcon from '../assets/images/drop-file.svg';
+import dropImageIcon from '../assets/images/add-image.svg';
 import fileIcon from '../assets/images/file-added.svg';
 
 export default function ProductDetail({ allCategories, allProducts }) {
@@ -36,11 +37,13 @@ export default function ProductDetail({ allCategories, allProducts }) {
   const [editing, setEditing] = useState(false);
   const [excelFileName, setExcelFileName] = useState(null);
   const [error, setError] = useState(false);
+  const [imagesToDelete, setImagesToDelete] = useState({});
   const [loading, setLoading] = useState(false);
   const [newImage, setNewImage] = useState(null);
   const [originalAccessories, setOriginalAccessories] = useState([]);
   const [placeholder, setPlaceholder] = useState(true);
   const [productDetails, setProductDetails] = useState(null);
+  const [validAdditionalImages, setValidAdditionalImages] = useState(true);
   const [validCategory, setValidCategory] = useState(true);
   const [validDescription, setValidDescription] = useState(true);
   const [validDownloads, setValidDownloads] = useState(true);
@@ -521,14 +524,133 @@ export default function ProductDetail({ allCategories, allProducts }) {
     );
   };
 
-  const displayAdditionalImages = () => {
-    if (editing) {
-      // XXX
-      // editing mode
+  const checkValidAdditionalImages = () => {
+    console.log(productDetails.additionalImages);
+    // XXX
+    return false;
+  };
+
+  const dropAdditionalImage = () => {};
+
+  const changeAdditionalImages = (event) => {
+    const { imageid } = event.target.dataset;
+    const imagesCopy = { ...productDetails.additionalImages };
+    if (imagesCopy[imageid].original) {
+      const deleteCopy = { ...imagesToDelete };
+      deleteCopy[imageid] = imagesCopy[imageid];
+      setImagesToDelete(deleteCopy);
     }
+    const file = event.target.files[0];
+    imagesCopy[imageid].file = file;
+    setValidAdditionalImages(checkValidAdditionalImages(imagesCopy));
+    setProductDetails({ ...productDetails, additionalImages: imagesCopy });
+  };
+
+  const deleteAdditionalImage = (event) => {
+    const { imageid } = event.target.dataset;
+    const imagesCopy = { ...productDetails.additionalImages };
+    if (imagesCopy[imageid].original) {
+      const deleteCopy = { ...imagesToDelete };
+      deleteCopy[imageid] = imagesCopy[imageid];
+      setImagesToDelete(deleteCopy);
+    }
+    delete imagesCopy[imageid];
+    setValidAdditionalImages(checkValidAdditionalImages(imagesCopy));
+    setProductDetails({ ...productDetails, additionalImages: imagesCopy });
+  };
+
+  const displayImagePreview = (imageId) => {
+    if (productDetails.additionalImages[imageId].file) {
+      // we have a new additional image
+      return (
+        <img
+          alt=""
+          className="image-preview"
+          data-imageid={imageId}
+          src={URL.createObjectURL(
+            productDetails.additionalImages[imageId].file,
+          )}
+        />
+      );
+    }
+    if (
+      !productDetails.additionalImages[imageId].file
+      && productDetails.additionalImages[imageId].image
+    ) {
+      // we're looking at an already existing additional image
+      return (
+        <img
+          alt=""
+          className="image-preview"
+          data-imageid={imageId}
+          src={productDetails.additionalImages[imageId].image}
+        />
+      );
+    }
+    // otherwise there's no image to show
+    return (
+      <>
+        <img
+          alt=""
+          className="drop-image"
+          data-imageid={imageId}
+          src={dropImageIcon}
+        />
+        <div data-downloadid={imageId}>Drop image here</div>
+      </>
+    );
+  };
+
+  const displayAdditionalImages = () => {
     if (productDetails.additionalImages) {
       const imageIds = Object.keys(productDetails.additionalImages);
       if (imageIds.length) {
+        if (editing) {
+          return (
+            <div className="feature-inputs">
+              {imageIds.map((imageId) => (
+                <label className="image-label" htmlFor={imageId} key={imageId}>
+                  Additional Image
+                  <div
+                    className={
+                      productDetails.additionalImages[imageId].image
+                      || productDetails.additionalImages[imageId].file
+                        ? 'drop-file'
+                        : 'drop-file empty'
+                    }
+                    data-imageid={imageId}
+                    onDragOver={(e) => {
+                      e.stopPropagation();
+                      e.preventDefault();
+                    }}
+                    onDrop={dropAdditionalImage}
+                  >
+                    {displayImagePreview(imageId)}
+                  </div>
+                  <input
+                    accept="image/*"
+                    data-imageid={imageId}
+                    hidden
+                    id={imageId}
+                    onChange={changeAdditionalImages}
+                    type="file"
+                  />
+                  <div>
+                    <span className="edit-button">Upload Additional Image</span>
+                    <button
+                      className="error"
+                      data-imageid={imageId}
+                      onClick={deleteAdditionalImage}
+                      type="button"
+                    >
+                      X
+                    </button>
+                  </div>
+                </label>
+              ))}
+            </div>
+          );
+        }
         return (
           <fieldset>
             <legend className="mb-8">Additional Images:</legend>
@@ -890,6 +1012,19 @@ export default function ProductDetail({ allCategories, allProducts }) {
     setExcelFileName(null);
   };
 
+  const newAdditionalImage = () => {
+    let imagesCopy;
+    if (productDetails.additionalImages) {
+      imagesCopy = { ...productDetails.additionalImages };
+    } else {
+      imagesCopy = {};
+    }
+    const newImageId = uuid();
+    imagesCopy[newImageId] = { image: null, imageRef: null };
+    setValidAdditionalImages(checkValidAdditionalImages(imagesCopy));
+    setProductDetails({ ...productDetails, additionalImages: imagesCopy });
+  };
+
   const displayForm = () => {
     if (loading) {
       return (
@@ -1077,6 +1212,17 @@ export default function ProductDetail({ allCategories, allProducts }) {
           </label>
 
           <fieldset>
+            <legend>Additional Images</legend>
+            {displayAdditionalImages()}
+            {attempted && !validAdditionalImages ? (
+              <div className="error">Check each image (5MB limit)</div>
+            ) : null}
+            <button onClick={newAdditionalImage} type="button">
+              + add additional image
+            </button>
+          </fieldset>
+
+          <fieldset>
             <legend>Accessories / related products</legend>
             {displayAccessories()}
           </fieldset>
@@ -1118,21 +1264,31 @@ export default function ProductDetail({ allCategories, allProducts }) {
     setAttempted(false);
     setDownloadsToDelete([]);
     setOriginalAccessories([]);
+    setImagesToDelete({});
     if (!deleted) {
       const specsExcel = allProducts[id].specsExcel
         ? JSON.parse(allProducts[id].specsExcel)
         : null;
-      const details = { ...allProducts[id], specsExcel };
-      if (editing) {
-        // keep track of the product's pre-edit accessories, so we can remove
-        // any reference to this product for any removed accessories
-        setOriginalAccessories([...details.accessories]);
-        // also need to keep track of original "downloads" so if files are
-        // changed we can delete the old ones
-        Object.keys(details.downloads).forEach((downloadId) => {
-          details.downloads[downloadId].original = true;
-        });
-      }
+      const origImages = allProducts[id].additionalImages
+        ? allProducts[id].additionalImages
+        : {};
+      const details = {
+        ...allProducts[id],
+        additionalImages: origImages,
+        specsExcel,
+      };
+      // keep track of the product's pre-edit accessories, so we can remove
+      // any reference to this product for any removed accessories
+      setOriginalAccessories([...details.accessories]);
+      // also need to keep track of original "downloads" so if files are
+      // changed we can delete the old ones
+      Object.keys(details.downloads).forEach((downloadId) => {
+        details.downloads[downloadId].original = true;
+      });
+      // same thing for any additional images
+      Object.keys(details.additionalImages).forEach((imageId) => {
+        details.additionalImages[imageId].original = true;
+      });
       setProductDetails(details);
     }
   }, [editing, id]);

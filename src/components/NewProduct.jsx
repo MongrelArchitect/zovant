@@ -576,6 +576,7 @@ export default function NewProduct({ allCategories, allProducts }) {
     setAdditionalImages(imagesCopy);
   };
 
+  // XXX
   const dropAdditionalImage = () => {};
 
   const displayAdditionalImages = () => {
