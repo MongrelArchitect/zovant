@@ -82,9 +82,10 @@ async function addProductDownloads(id, downloads) {
   return updatedProduct;
 }
 
-async function addProductAdditionalImages(id, images) {
+async function addProductAdditionalImages(id, images, originalAdditionals) {
   const imageIds = Object.keys(images);
-  const finalized = {};
+  // need to preserve references to any pre-existing additional images
+  const finalized = originalAdditionals ? { ...originalAdditionals } : {};
   if (imageIds.length) {
     await Promise.all(
       // upload all the additional images & set their info for the product

@@ -4,6 +4,7 @@ import readXlsxFile from 'read-excel-file';
 import { v4 as uuid } from 'uuid';
 
 import {
+  addProductAdditionalImages,
   addProductDownloads,
   addProductImage,
   deleteDownloadsFromStorage,
@@ -525,11 +526,7 @@ export default function ProductDetail({ allCategories, allProducts }) {
   };
 
   const checkFile = (file) => {
-    if (
-      file
-      && file.type.split('/')[0] === 'image'
-      && file.size <= 5000000
-    ) {
+    if (file && file.type.split('/')[0] === 'image' && file.size <= 5000000) {
       return true;
     }
     return false;
@@ -562,11 +559,12 @@ export default function ProductDetail({ allCategories, allProducts }) {
         }
       });
     }
-    console.log(valid);
     return valid;
   };
 
-  const dropAdditionalImage = () => {};
+  const dropAdditionalImage = () => {
+    // XXX
+  };
 
   const changeAdditionalImages = (event) => {
     const { imageid } = event.target.dataset;
@@ -574,6 +572,7 @@ export default function ProductDetail({ allCategories, allProducts }) {
     if (imagesCopy[imageid].original) {
       const deleteCopy = { ...imagesToDelete };
       deleteCopy[imageid] = imagesCopy[imageid];
+      console.log(deleteCopy);
       setImagesToDelete(deleteCopy);
     }
     const file = event.target.files[0];
@@ -588,6 +587,7 @@ export default function ProductDetail({ allCategories, allProducts }) {
     if (imagesCopy[imageid].original) {
       const deleteCopy = { ...imagesToDelete };
       deleteCopy[imageid] = imagesCopy[imageid];
+      console.log(deleteCopy);
       setImagesToDelete(deleteCopy);
     }
     delete imagesCopy[imageid];
@@ -829,7 +829,8 @@ export default function ProductDetail({ allCategories, allProducts }) {
     setAttempted(true);
     setLoading(true);
     if (
-      validDescription
+      validAdditionalImages
+      && validDescription
       && validDownloads
       && validCategory
       && validExcel
@@ -860,6 +861,33 @@ export default function ProductDetail({ allCategories, allProducts }) {
         if (newImage) {
           await deleteOldImage(productDetails.imageRef);
           await addProductImage(id, newImage);
+        }
+
+        // upload any additional images
+        const newAdditionalImages = {};
+        const originalAdditionals = {};
+        const additionalIds = Object.keys(productDetails.additionalImages);
+        additionalIds.forEach((imageId) => {
+          if (productDetails.additionalImages[imageId].file) {
+            newAdditionalImages[imageId] = productDetails.additionalImages[imageId].file;
+          } else {
+            // gotta keep track of unchanged additional images so we dont
+            // inadvertantly override them when updating firestore
+            originalAdditionals[imageId] = {
+              image: productDetails.additionalImages[imageId].image,
+              imageRef: productDetails.additionalImages[imageId].imageRef,
+            };
+          }
+        });
+        if (Object.keys(newAdditionalImages).length) {
+          // now uploaded any newly added additional images
+          await addProductAdditionalImages(
+            id,
+            newAdditionalImages,
+            Object.keys(originalAdditionals).length
+              ? originalAdditionals
+              : null,
+          );
         }
 
         // add the product to any new accessories
