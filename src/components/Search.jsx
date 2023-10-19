@@ -169,9 +169,11 @@ export default function Search({
           .trim()
           .includes(query.trim());
         const specResult = allProducts[prodId].specs
-          .toLowerCase()
-          .trim()
-          .includes(query.trim());
+          ? allProducts[prodId].specs
+            .toLowerCase()
+            .trim()
+            .includes(query.trim())
+          : false;
         return modelResult || descResult || specResult;
       });
       setProductResults(productSearch);
