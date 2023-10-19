@@ -203,6 +203,18 @@ async function removeDownloadsFromProduct(productId, downloadsToRemove) {
   });
 }
 
+async function removeImagesFromProduct(productId, imageIds) {
+  const productRef = doc(database, 'products', productId);
+  const productSnap = await getDoc(productRef);
+  const { additionalImages } = productSnap.data();
+  imageIds.forEach((imageId) => {
+    delete additionalImages[imageId];
+  });
+  await updateDoc(productRef, {
+    additionalImages,
+  });
+}
+
 async function updateCategory(id, name, description, features) {
   const categoryRef = doc(database, 'categories', id);
   await updateDoc(categoryRef, {
@@ -270,6 +282,7 @@ export {
   deleteSingleCategory,
   deleteSingleProduct,
   removeDownloadsFromProduct,
+  removeImagesFromProduct,
   removeProductFromAccessories,
   updateCategory,
   updateDownloadDescriptions,

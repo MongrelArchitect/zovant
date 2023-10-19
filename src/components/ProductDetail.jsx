@@ -11,6 +11,7 @@ import {
   deleteOldImage,
   deleteSingleProduct,
   removeDownloadsFromProduct,
+  removeImagesFromProduct,
   removeProductFromAccessories,
   updateDownloadDescriptions,
   updateProduct,
@@ -572,7 +573,6 @@ export default function ProductDetail({ allCategories, allProducts }) {
     if (imagesCopy[imageid].original) {
       const deleteCopy = { ...imagesToDelete };
       deleteCopy[imageid] = imagesCopy[imageid];
-      console.log(deleteCopy);
       setImagesToDelete(deleteCopy);
     }
     const file = event.target.files[0];
@@ -587,7 +587,6 @@ export default function ProductDetail({ allCategories, allProducts }) {
     if (imagesCopy[imageid].original) {
       const deleteCopy = { ...imagesToDelete };
       deleteCopy[imageid] = imagesCopy[imageid];
-      console.log(deleteCopy);
       setImagesToDelete(deleteCopy);
     }
     delete imagesCopy[imageid];
@@ -861,6 +860,22 @@ export default function ProductDetail({ allCategories, allProducts }) {
         if (newImage) {
           await deleteOldImage(productDetails.imageRef);
           await addProductImage(id, newImage);
+        }
+
+        // delete any removed additional images
+        const deleteIds = Object.keys(imagesToDelete);
+        const deleteRefs = deleteIds.map(
+          (imageId) => imagesToDelete[imageId].imageRef,
+        );
+        if (deleteRefs.length) {
+          // first remove them from the product database entry
+          await removeImagesFromProduct(id, deleteIds);
+          await Promise.all(
+            deleteRefs.map(async (deleteRef) => {
+              // delete them from storage
+              await deleteOldImage(deleteRef);
+            }),
+          );
         }
 
         // upload any additional images
