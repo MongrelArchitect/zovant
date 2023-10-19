@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat&family=Noto+Sans&display=swap');
 
 :root {
   --brand-blue : #28adde;
@@ -322,6 +322,7 @@ table caption {
 }
 
 .catalog-detail-image.product-image {
+  background: #fff;
   max-width: 500px;
 }
 
@@ -346,6 +347,7 @@ table caption {
 }
 
 .catalog-products .product-image {
+  background: #fff;
   max-width: 240px;
 }
 
@@ -422,6 +424,7 @@ table caption {
   background: #ceffce;
   padding-bottom: 8px;
   border: 2px solid var(--text-dark);
+  font-family: Montserrat, sans-serif;
   font-weight: bold;
   padding: 8px;
   text-align: center;
