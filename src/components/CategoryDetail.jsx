@@ -276,30 +276,36 @@ export default function CategoryDetail({ allCategories, allProducts }) {
     if (categoryDetails) {
       return (
         <form className="product-detail">
-          <label htmlFor="name">
-            Name (required)
-            <input
-              id="name"
-              onChange={changeName}
-              required
-              type="text"
-              value={categoryDetails.name || ''}
-            />
-            {attempted && !validName ? (
-              <div className="error">Name required</div>
-            ) : null}
-          </label>
-          <label htmlFor="description">
-            Description
-            <textarea
-              id="description"
-              onChange={changeDescription}
-              required
-              rows="5"
-              value={categoryDetails.description || ''}
-            />
-          </label>
-          <fieldset>
+          <fieldset className="detail-form-item">
+            <legend>Name (required)</legend>
+            <label htmlFor="name">
+              <input
+                id="name"
+                onChange={changeName}
+                required
+                type="text"
+                value={categoryDetails.name || ''}
+              />
+              {attempted && !validName ? (
+                <div className="error">Name required</div>
+              ) : null}
+            </label>
+          </fieldset>
+
+          <fieldset className="detail-form-item">
+            <legend>Description</legend>
+            <label htmlFor="description">
+              <textarea
+                id="description"
+                onChange={changeDescription}
+                required
+                rows="5"
+                value={categoryDetails.description || ''}
+              />
+            </label>
+          </fieldset>
+
+          <fieldset className="detail-form-item">
             <legend>Features / Filters:</legend>
             {displayFeatures()}
             <button onClick={newFeature} type="button">

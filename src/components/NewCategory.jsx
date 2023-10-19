@@ -154,34 +154,38 @@ export default function NewCategory({ allCategories }) {
     <>
       <h2>New Category</h2>
       <form className="product-detail">
-        <label htmlFor="name">
-          Name (required)
-          <input
-            id="name"
-            onChange={changeName}
-            placeholder="Enter category name"
-            required
-            type="text"
-            value={name || ''}
-          />
-          {attempted && !validName ? (
-            <div className="error">Name required</div>
-          ) : null}
-        </label>
+        <fieldset className="detail-form-item">
+          <legend>Name (required)</legend>
+          <label htmlFor="name">
+            <input
+              id="name"
+              onChange={changeName}
+              placeholder="Enter category name"
+              required
+              type="text"
+              value={name || ''}
+            />
+            {attempted && !validName ? (
+              <div className="error">Name required</div>
+            ) : null}
+          </label>
+        </fieldset>
 
-        <label htmlFor="description">
-          Description
-          <textarea
-            id="description"
-            onChange={changeDescription}
-            placeholder="Provide a brief description of the category"
-            required
-            rows="5"
-            value={description || ''}
-          />
-        </label>
+        <fieldset className="detail-form-item">
+          <legend>Description</legend>
+          <label htmlFor="description">
+            <textarea
+              id="description"
+              onChange={changeDescription}
+              placeholder="Provide a brief description of the category"
+              required
+              rows="5"
+              value={description || ''}
+            />
+          </label>
+        </fieldset>
 
-        <fieldset>
+        <fieldset className="detail-form-item">
           <legend>Features / Filters</legend>
           {displayFeatures()}
           <button onClick={newFeature} type="button">
