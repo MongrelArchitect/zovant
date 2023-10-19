@@ -410,6 +410,24 @@ table caption {
   gap: 8px;
 }
 
+.dashboard-detail .product-detail > .detail-form-item {
+  padding-bottom: 8px;
+  background: #eefefe;
+  border: 2px solid var(--text-dark);
+  padding: 8px;
+  width: 100%;
+}
+
+.dashboard-detail .product-detail > fieldset.detail-form-item legend {
+  background: #ceffce;
+  padding-bottom: 8px;
+  border: 2px solid var(--text-dark);
+  font-weight: bold;
+  padding: 8px;
+  text-align: center;
+  width: 100%;
+}
+
 .detail-heading {
   align-items: flex-start;
   display: flex;
@@ -493,6 +511,10 @@ table caption {
 
 .flex.align-center {
   align-items: center;
+}
+
+.flex.g8 {
+  gap: 8px;
 }
 
 .flex.g16 {
