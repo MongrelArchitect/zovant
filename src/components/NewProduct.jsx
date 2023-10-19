@@ -161,7 +161,6 @@ export default function NewProduct({ allCategories, allProducts }) {
     if (categoryIds.length) {
       return (
         <label htmlFor="categories">
-          Category (required)
           <select
             defaultValue="DEFAULT"
             id="categories"
@@ -669,179 +668,191 @@ export default function NewProduct({ allCategories, allProducts }) {
         </div>
       ) : (
         <form className="product-detail">
-          <div>
+          <fieldset className="detail-form-item">
+            <legend>Category (required)</legend>
             {displayCategories()}
             {attempted && !validCategory ? (
               <div className="error">Category required</div>
             ) : null}
-          </div>
+          </fieldset>
 
-          <label htmlFor="model">
-            Model (required)
-            <input
-              id="model"
-              onChange={changeModel}
-              placeholder="Model number / name"
-              required
-              type="text"
-              value={model || ''}
-            />
-            {attempted && !validModel ? (
-              <div className="error">Model required</div>
-            ) : null}
-          </label>
+          <fieldset className="detail-form-item">
+            <legend>Model (required)</legend>
+            <label htmlFor="model">
+              <input
+                id="model"
+                onChange={changeModel}
+                placeholder="Model number / name"
+                required
+                type="text"
+                value={model || ''}
+              />
+              {attempted && !validModel ? (
+                <div className="error">Model required</div>
+              ) : null}
+            </label>
+          </fieldset>
 
-          <label htmlFor="description">
-            Description (required)
-            <textarea
-              id="description"
-              onChange={changeDescription}
-              placeholder="Provide a brief description of the product"
-              required
-              rows="5"
-              value={description || ''}
-            />
-            {attempted && !validDescription ? (
-              <div className="error">Description required</div>
-            ) : null}
-          </label>
+          <fieldset className="detail-form-item">
+            <legend>Description (required)</legend>
+            <label htmlFor="description">
+              <textarea
+                id="description"
+                onChange={changeDescription}
+                placeholder="Provide a brief description of the product"
+                required
+                rows="5"
+                value={description || ''}
+              />
+              {attempted && !validDescription ? (
+                <div className="error">Description required</div>
+              ) : null}
+            </label>
+          </fieldset>
 
           {specsExcel ? (
-            <>
-              <div>Specifications</div>
+            <fieldset className="detail-form-item">
+              <legend>Specifications (using excel file)</legend>
               {generateTable(specsExcel)}
-            </>
+            </fieldset>
           ) : (
-            <label htmlFor="specs">
-              Specifications
-              <textarea
-                id="specs"
-                onChange={changeSpecs}
-                placeholder="Enter product specs manually here..."
-                rows="5"
-                value={specs || ''}
-              />
-            </label>
+            <fieldset className="detail-form-item">
+              <legend>Specifications (plaintext)</legend>
+              <label htmlFor="specs">
+                <textarea
+                  id="specs"
+                  onChange={changeSpecs}
+                  placeholder="Enter product specs manually here..."
+                  rows="5"
+                  value={specs || ''}
+                />
+              </label>
+            </fieldset>
           )}
 
-          <label className="image-label" htmlFor="specs-excel">
-            {specsExcel
-              ? 'Specs using excel file:'
-              : '...or use an excel file (*.xls, *.xlsx)'}
-            <div
-              className={
-                specsExcel ? 'drop-file download-added' : 'drop-file empty'
-              }
-              onDragOver={(e) => {
-                e.stopPropagation();
-                e.preventDefault();
-              }}
-              onDrop={dropExcel}
-            >
-              {specsExcel ? (
-                <>
-                  <img alt="" className="file-added" src={fileIcon} />
-                  <div>{excelFileName}</div>
-                </>
-              ) : (
-                <>
-                  <img alt="" className="drop-image" src={dropFileIcon} />
-                  <div>Drop excel file here</div>
-                </>
-              )}
-            </div>
-            <input
-              hidden
-              id="specs-excel"
-              onChange={changeSpecsExcel}
-              type="file"
-            />
-            <div>
-              {!validExcel ? (
-                <div className="error">
-                  Wrong file type - excel only (*.xls or *.xlsx)
-                </div>
-              ) : null}
-              {specsExcel ? (
-                <span className="edit-button">Choose Excel File</span>
-              ) : (
-                <div className="edit-button">Choose Excel File</div>
-              )}
-              {specsExcel ? (
-                <button
-                  className="error"
-                  onClick={removeExcelFile}
-                  type="button"
-                >
-                  X
-                </button>
-              ) : null}
-            </div>
-          </label>
+          <fieldset className="detail-form-item">
+            <legend>Specifications (excel file)</legend>
+            <label className="image-label" htmlFor="specs-excel">
+              <div
+                className={
+                  specsExcel ? 'drop-file download-added' : 'drop-file empty'
+                }
+                onDragOver={(e) => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                }}
+                onDrop={dropExcel}
+              >
+                {specsExcel ? (
+                  <>
+                    <img alt="" className="file-added" src={fileIcon} />
+                    <div>{excelFileName}</div>
+                  </>
+                ) : (
+                  <>
+                    <img alt="" className="drop-image" src={dropFileIcon} />
+                    <div>Drop excel file here</div>
+                  </>
+                )}
+              </div>
+              <input
+                hidden
+                id="specs-excel"
+                onChange={changeSpecsExcel}
+                type="file"
+              />
+              <div>
+                {!validExcel ? (
+                  <div className="error">
+                    Wrong file type - excel only (*.xls or *.xlsx)
+                  </div>
+                ) : null}
+                {specsExcel ? (
+                  <span className="edit-button">Choose Excel File</span>
+                ) : (
+                  <div className="edit-button">Choose Excel File</div>
+                )}
+                {specsExcel ? (
+                  <button
+                    className="error"
+                    onClick={removeExcelFile}
+                    type="button"
+                  >
+                    X
+                  </button>
+                ) : null}
+              </div>
+            </label>
+          </fieldset>
 
-          <div className="category-choice">
-            <input
-              checked={ndaa}
-              id="ndaa"
-              onChange={changeNdaa}
-              type="checkbox"
-            />
-            {/* eslint-disable-next-line */}
-            <label htmlFor="ndaa">NDAA Compliant</label>
-          </div>
+          <fieldset className="category-choice detail-form-item">
+            <legend>Compliance</legend>
+            <div className="flex align-center g8">
+              <input
+                checked={ndaa}
+                id="ndaa"
+                onChange={changeNdaa}
+                type="checkbox"
+              />
+              {/* eslint-disable-next-line */}
+              <label htmlFor="ndaa">NDAA Compliant</label>
+            </div>
+          </fieldset>
 
-          <fieldset>
+          <fieldset className="detail-form-item">
             <legend>Features / Filters</legend>
             {displayFeatures()}
           </fieldset>
 
-          <label className="image-label" htmlFor="image">
-            Image (required)
-            <div
-              className={image ? 'drop-file' : 'drop-file empty'}
-              onDragOver={(e) => {
-                e.stopPropagation();
-                e.preventDefault();
-              }}
-              onDrop={dropFile}
-            >
-              {image ? (
-                <img
-                  alt=""
-                  className="image-preview"
-                  src={URL.createObjectURL(image)}
-                />
-              ) : (
-                <>
-                  <img alt="" className="drop-image" src={dropImageIcon} />
-                  <div>Drop image here</div>
-                </>
-              )}
-            </div>
-            {image ? image.name : 'no image chosen'}
-            <input
-              accept="image/*"
-              hidden
-              id="image"
-              onChange={changeImage}
-              ref={fileInputRef}
-              type="file"
-            />
-            <button
-              onClick={() => {
-                fileInputRef.current.click();
-              }}
-              type="button"
-            >
-              Upload Image
-            </button>
-            {attempted && !validImage ? (
-              <div className="error">Image required (5MB limit)</div>
-            ) : null}
-          </label>
+          <fieldset className="detail-form-item">
+            <legend>Main Image (required)</legend>
+            <label className="image-label" htmlFor="image">
+              <div
+                className={image ? 'drop-file' : 'drop-file empty'}
+                onDragOver={(e) => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                }}
+                onDrop={dropFile}
+              >
+                {image ? (
+                  <img
+                    alt=""
+                    className="image-preview"
+                    src={URL.createObjectURL(image)}
+                  />
+                ) : (
+                  <>
+                    <img alt="" className="drop-image" src={dropImageIcon} />
+                    <div>Drop image here</div>
+                  </>
+                )}
+              </div>
+              {image ? image.name : 'no image chosen'}
+              <input
+                accept="image/*"
+                hidden
+                id="image"
+                onChange={changeImage}
+                ref={fileInputRef}
+                type="file"
+              />
+              <button
+                onClick={() => {
+                  fileInputRef.current.click();
+                }}
+                type="button"
+              >
+                Upload Image
+              </button>
+              {attempted && !validImage ? (
+                <div className="error">Image required (5MB limit)</div>
+              ) : null}
+            </label>
+          </fieldset>
 
           {image ? (
-            <fieldset>
+            <fieldset className="detail-form-item">
               <legend>Additional Images</legend>
               {displayAdditionalImages()}
               {attempted && !validAdditionalImages ? (
@@ -853,7 +864,7 @@ export default function NewProduct({ allCategories, allProducts }) {
             </fieldset>
           ) : null}
 
-          <fieldset>
+          <fieldset className="detail-form-item">
             <legend>Accessories / related products</legend>
             {displayAccessories()}
             {!addingAccessories ? (
@@ -868,7 +879,7 @@ export default function NewProduct({ allCategories, allProducts }) {
             ) : null}
           </fieldset>
 
-          <fieldset>
+          <fieldset className="detail-form-item">
             <legend>Downloads (documents, firmware, etc)</legend>
             {displayDownloads()}
             {attempted && !validDownloads ? (

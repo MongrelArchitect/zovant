@@ -1186,12 +1186,12 @@ export default function ProductDetail({ allCategories, allProducts }) {
 
           {productDetails.specsExcel ? (
             <fieldset className="detail-form-item">
-              <legend>Specifications (Using Excel File)</legend>
+              <legend>Specifications (using excel file)</legend>
               {generateTable(productDetails.specsExcel)}
             </fieldset>
           ) : (
             <fieldset className="detail-form-item">
-              <legend>Specifications (Plaintext)</legend>
+              <legend>Specifications (plaintext)</legend>
               <label htmlFor="specs">
                 <textarea
                   id="specs"
@@ -1205,7 +1205,7 @@ export default function ProductDetail({ allCategories, allProducts }) {
           )}
 
           <fieldset className="detail-form-item">
-            <legend>Specifications (Excel File)</legend>
+            <legend>Specifications (excel file)</legend>
             <label className="image-label" htmlFor="specs-excel">
               <div
                 className={
