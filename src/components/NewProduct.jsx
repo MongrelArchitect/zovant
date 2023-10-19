@@ -576,8 +576,15 @@ export default function NewProduct({ allCategories, allProducts }) {
     setAdditionalImages(imagesCopy);
   };
 
-  // XXX
-  const dropAdditionalImage = () => {};
+  const dropAdditionalImage = (event) => {
+    event.preventDefault();
+    const { imageid } = event.target.dataset;
+    const imagesCopy = { ...additionalImages };
+    const file = event.dataTransfer.files[0];
+    imagesCopy[imageid] = file;
+    setValidAdditionalImages(checkValidAdditionalImages(imagesCopy));
+    setAdditionalImages(imagesCopy);
+  };
 
   const displayAdditionalImages = () => {
     const imageIds = Object.keys(additionalImages);

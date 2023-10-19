@@ -563,8 +563,19 @@ export default function ProductDetail({ allCategories, allProducts }) {
     return valid;
   };
 
-  const dropAdditionalImage = () => {
-    // XXX
+  const dropAdditionalImage = (event) => {
+    event.preventDefault();
+    const { imageid } = event.target.dataset;
+    const imagesCopy = { ...productDetails.additionalImages };
+    if (imagesCopy[imageid].original) {
+      const deleteCopy = { ...imagesToDelete };
+      deleteCopy[imageid] = imagesCopy[imageid];
+      setImagesToDelete(deleteCopy);
+    }
+    const file = event.dataTransfer.files[0];
+    imagesCopy[imageid].file = file;
+    setValidAdditionalImages(checkValidAdditionalImages(imagesCopy));
+    setProductDetails({ ...productDetails, additionalImages: imagesCopy });
   };
 
   const changeAdditionalImages = (event) => {
@@ -973,6 +984,22 @@ export default function ProductDetail({ allCategories, allProducts }) {
           deleteThese[downloadId] = productDetails.downloads[downloadId].fileRef;
         });
         await deleteDownloadsFromStorage(deleteThese);
+      }
+      // delete any additional images from storage
+      const deleteIds = Object.keys(productDetails.additionalImages);
+
+      const deleteRefs = deleteIds
+        // we only need the ids of any original images, not newly added ones
+        .filter((imageId) => productDetails.additionalImages[imageId].original)
+        // now get the reference paths to delete them
+        .map((imageId) => productDetails.additionalImages[imageId].imageRef);
+
+      if (deleteRefs.length) {
+        await Promise.all(
+          deleteRefs.map(async (deleteRef) => {
+            await deleteOldImage(deleteRef);
+          }),
+        );
       }
       navigate(`/dashboard/products/${id}/deleted`);
       setEditing(false);
