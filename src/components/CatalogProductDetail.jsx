@@ -19,6 +19,10 @@ export default function CatalogProductDetail({
     window.scrollTo(0, 0);
   }, []);
 
+  useEffect(() => {
+    setCurrentImage(product.image);
+  }, [product]);
+
   const displayAccessories = () => {
     if (product.accessories.length) {
       return (
