@@ -1,30 +1,71 @@
+import { useState, useEffect } from 'react';
+
 import Banner from './Banner';
 import Hero from './Hero';
+import Image from './Image';
 import Info from './Info';
+import InfoControl from './InfoControl';
 
-import info01 from '../assets/images/info01.jpg';
-import info02 from '../assets/images/info02.jpg';
+export default function Home({ infoSections, user }) {
+  const [info, setInfo] = useState([]);
 
-export default function Home() {
+  useEffect(() => {
+    const banners = { ...infoSections.banners };
+    const bannerIds = Object.keys(banners);
+    const cards = { ...infoSections.cards };
+    const cardIds = Object.keys(cards);
+    const images = { ...infoSections.images };
+    const imageIds = Object.keys(images);
+
+    const rawInfo = [];
+    bannerIds.forEach((bannerId) => {
+      rawInfo.push({ ...banners[bannerId], id: bannerId, type: 'banner' });
+    });
+    cardIds.forEach((cardId) => {
+      rawInfo.push({ ...cards[cardId], id: cardId, type: 'card' });
+    });
+    imageIds.forEach((imageId) => {
+      rawInfo.push({ ...images[imageId], id: imageId, type: 'image' });
+    });
+    rawInfo.sort((a, b) => {
+      if (a.timestamp > b.timestamp) {
+        return -1;
+      }
+      if (a.timestamp < b.timestamp) {
+        return 1;
+      }
+      return 0;
+    });
+    setInfo(rawInfo);
+  }, [infoSections]);
+
   return (
     <div className="home">
       <Hero />
       <div className="info">
-        <Info
-          heading="Heading"
-          content="Reprehenderit consequuntur eveniet inventore sunt aut voluptatibus Quae dicta quos officia fugit delectus placeat Harum commodi quisquam rem possimus illo aliquid, alias! Dolor quisquam praesentium mollitia ipsum sapiente? Ex sunt dolorum voluptatum eum corporis blanditiis, nemo eum Sunt consequatur voluptatem impedit ipsam quisquam Magnam vero ipsam aspernatur culpa eveniet! Blanditiis iste nobis illo voluptatum ipsam Expedita numquam ad ipsam saepe dolore est Doloribus a eos obcaecati veritatis repellat, eius? Laboriosam minima id."
-        />
-        <Banner content="A banner goes here" />
-        <Info
-          heading="Another Section"
-          content="Amet officiis similique necessitatibus sunt repellendus perspiciatis! Soluta veniam voluptatem vitae dolorum consectetur officiis Officia nesciunt fugit nihil quasi ad."
-          image={info01}
-        />
-        <Info
-          heading="Something"
-          content="Adipisicing quaerat omnis quasi iste necessitatibus molestias Eaque rerum aut nemo provident itaque. Rerum perferendis sequi ducimus molestiae debitis est Commodi expedita aliquam soluta temporibus soluta. Accusantium praesentium repellendus sed aspernatur enim architecto. Dolorem quibusdam vitae repellat porro natus autem"
-          image={info02}
-        />
+        {user ? <InfoControl user={user} /> : null}
+        {info.map((infoDetail) => {
+          if (infoDetail.type === 'banner') {
+            return <Banner key={infoDetail.id} content={infoDetail.content} />;
+          }
+          if (infoDetail.type === 'card') {
+            return (
+              <Info
+                key={infoDetail.id}
+                heading={infoDetail.heading}
+                content={infoDetail.content}
+                image={infoDetail.image}
+              />
+            );
+          }
+          if (infoDetail.type === 'image') {
+            return (
+              // XXX
+              <Image key={infoDetail.id} image={infoDetail.image} />
+            );
+          }
+          return null;
+        })}
       </div>
     </div>
   );

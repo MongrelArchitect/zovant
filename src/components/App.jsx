@@ -35,7 +35,9 @@ import '../styles/style.css';
 export default function App() {
   const [allCategories, setAllCategories] = useState({});
   const [allProducts, setAllProducts] = useState({});
+  const [infoSections, setInfoSections] = useState({});
   const [loadedCategories, setLoadedCategories] = useState(false);
+  const [loadedInfo, setLoadedInfo] = useState(false);
   const [loadedProducts, setLoadedProducts] = useState(false);
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(null);
@@ -50,7 +52,7 @@ export default function App() {
 
   useEffect(() => {
     const productsQuery = query(collection(database, 'products'));
-    const unsubscribe = onSnapshot(productsQuery, (querySnapshot) => {
+    const unsubProducts = onSnapshot(productsQuery, (querySnapshot) => {
       const products = {};
       querySnapshot.forEach((docu) => {
         products[docu.id] = {
@@ -65,7 +67,7 @@ export default function App() {
     });
 
     const categoriesQuery = query(collection(database, 'categories'));
-    onSnapshot(categoriesQuery, (querySnapshot) => {
+    const unsubCategories = onSnapshot(categoriesQuery, (querySnapshot) => {
       const categories = {};
       querySnapshot.forEach((docu) => {
         categories[docu.id] = {
@@ -77,14 +79,30 @@ export default function App() {
       setLoadedCategories(true);
     });
 
-    return () => unsubscribe();
+    const infoQuery = query(collection(database, 'info'));
+    const unsubInfo = onSnapshot(infoQuery, (querySnapshot) => {
+      const info = {};
+      querySnapshot.forEach((docu) => {
+        info[docu.id] = {
+          ...docu.data(),
+        };
+      });
+      setInfoSections(info);
+      setLoadedInfo(true);
+    });
+
+    return () => {
+      unsubProducts();
+      unsubCategories();
+      unsubInfo();
+    };
   }, []);
 
   useEffect(() => {
-    if (loadedCategories && loadedProducts) {
+    if (loadedCategories && loadedInfo && loadedProducts) {
       setLoading(false);
     }
-  }, [loadedCategories, loadedProducts]);
+  }, [loadedCategories, loadedInfo, loadedProducts]);
 
   const router = createBrowserRouter([
     {
@@ -98,7 +116,10 @@ export default function App() {
       ),
       errorElement: <ErrorPage user={user} />,
       children: [
-        { index: true, element: <Home /> },
+        {
+          index: true,
+          element: <Home infoSections={infoSections} user={user} />,
+        },
         {
           path: '/about',
           element: <About />,
