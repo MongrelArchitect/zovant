@@ -46,21 +46,35 @@ export default function Home({ infoSections, user }) {
         {user ? <InfoControl user={user} /> : null}
         {info.map((infoDetail) => {
           if (infoDetail.type === 'banner') {
-            return <Banner key={infoDetail.id} content={infoDetail.content} />;
+            return (
+              <Banner
+                bannerId={infoDetail.id}
+                content={infoDetail.content}
+                key={infoDetail.id}
+                user={user}
+              />
+            );
           }
           if (infoDetail.type === 'card') {
             return (
               <Info
-                key={infoDetail.id}
-                heading={infoDetail.heading}
                 content={infoDetail.content}
+                heading={infoDetail.heading}
                 image={infoDetail.image}
+                infoId={infoDetail.id}
+                key={infoDetail.id}
+                user={user}
               />
             );
           }
           if (infoDetail.type === 'image') {
             return (
-              <Image key={infoDetail.id} image={infoDetail.image} />
+              <Image
+                image={infoDetail.image}
+                imageId={infoDetail.id}
+                key={infoDetail.id}
+                user={user}
+              />
             );
           }
           return null;

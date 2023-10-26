@@ -4,6 +4,7 @@ import {
   arrayUnion,
   collection,
   deleteDoc,
+  deleteField,
   doc,
   getCountFromServer,
   getDoc,
@@ -139,6 +140,13 @@ async function addProductImage(id, file) {
     imageRef: path,
   });
   return updatedProduct;
+}
+
+async function deleteInfoItem(type, id) {
+  const infoRef = doc(database, 'info', type);
+  await updateDoc(infoRef, {
+    [id]: deleteField(),
+  });
 }
 
 async function removeProductFromAccessories(id, products) {
@@ -288,6 +296,7 @@ export {
   addProductAdditionalImages,
   addProductImage,
   deleteDownloadsFromStorage,
+  deleteInfoItem,
   deleteOldImage,
   deleteSingleCategory,
   deleteSingleProduct,

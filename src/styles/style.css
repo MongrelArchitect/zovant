@@ -188,10 +188,13 @@ table caption {
   align-items: center;
   background: var(--gradient);
   box-shadow:0 0 4px 4px #ccc;
+  border-left: 8px solid var(--brand-green);
+  border-right: 8px solid var(--brand-blue);
   color: var(--text-dark);
   display: flex;
   font-size: 1.8rem;
   justify-content: center;
+  position: relative;
   height: 100px;
   width: 100%;
 }
@@ -225,6 +228,7 @@ table caption {
   gap: 16px;
   justify-content: center;
   padding: 1rem;
+  position: relative;
 }
 
 .card h1 {
@@ -487,6 +491,10 @@ table caption {
   padding: 8px;
 }
 
+.error-text {
+  color: var(--text-error);
+}
+
 .feature-choice {
   display: flex;
   gap: 8px;
@@ -663,6 +671,49 @@ table caption {
   width: 80px;
 }
 
+.info-edit-controls {
+  align-items: center;
+  background: #eee;
+  border: 2px solid var(--text-dark);
+  display: flex;
+  font-size: 1.2rem;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 4px;
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 8;
+}
+
+.info-edit-controls.confirming {
+  align-items: flex-start;
+  flex-direction: column;
+}
+
+.info-edit-controls img {
+  height: 32px;
+}
+
+.info-edit-controls button {
+  display: flex;
+  background: var(--brand-middle);
+  padding: 0;
+}
+
+.info-edit-controls button.confirm {
+  padding: 4px;
+}
+
+.info-edit-controls button.delete-button {
+  background: var(--bg-error);
+}
+
+.info-edit-controls button:hover,
+.info-edit-controls button:focus {
+  outline: 2px solid var(--text-dark);
+}
+
 .info-form {
   background: #eee;
   padding: 8px;
@@ -683,6 +734,7 @@ table caption {
   gap: 16px;
   justify-content: center;
   padding: 0;
+  position: relative;
 }
 
 .info-image {
