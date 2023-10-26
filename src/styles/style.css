@@ -562,6 +562,21 @@ table caption {
   gap: 8px;
 }
 
+.grayout {
+  align-items: center;
+  backdrop-filter: blur(10px);
+  background: rgba(32, 32, 32, 0.8);
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  padding: 64px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  z-index: 9;
+}
+
 .header {
   background: var(--bg-dark);
   position: sticky;
@@ -623,6 +638,10 @@ table caption {
   width: 100%;
 }
 
+.hidden {
+  display: none;
+}
+
 .image-label {
   align-self: flex-start;
 }
@@ -642,6 +661,17 @@ table caption {
 .image-placeholder.small {
   height: 80px;
   width: 80px;
+}
+
+.info-form {
+  background: #eee;
+  padding: 8px;
+}
+
+.info-form-header {
+  align-self: center;
+  font-size: 1.6rem;
+  font-weight: bold;
 }
 
 .info-image-container {

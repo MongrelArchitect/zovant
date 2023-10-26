@@ -17,7 +17,16 @@ import {
   ref,
   uploadBytes,
 } from 'firebase/storage';
+import { v4 as uuidv4 } from 'uuid';
 import { database, storage } from './firebase';
+
+async function addNewBanner(content) {
+  const newId = uuidv4();
+  const bannerDoc = doc(database, 'info', 'banners');
+  await updateDoc(bannerDoc, {
+    [newId]: { content, timestamp: Date.now() },
+  });
+}
 
 async function addNewCategory(name, description, features) {
   const docRef = await addDoc(collection(database, 'categories'), {
@@ -272,6 +281,7 @@ async function updateProductAccessories(productId) {
 }
 
 export {
+  addNewBanner,
   addNewCategory,
   addNewProduct,
   addProductDownloads,

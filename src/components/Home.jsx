@@ -60,7 +60,6 @@ export default function Home({ infoSections, user }) {
           }
           if (infoDetail.type === 'image') {
             return (
-              // XXX
               <Image key={infoDetail.id} image={infoDetail.image} />
             );
           }
