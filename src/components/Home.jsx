@@ -43,12 +43,19 @@ export default function Home({ infoSections, user }) {
     if (user) {
       return (
         <div className="flex flex-col g16 align-center">
-          <h1 className="text-xl">Hi Avo!</h1>
+          <h1 className="text-xl">Hi admin!</h1>
           <p>
-            There are no info cards to display. Click the buttons above to add
+            There are no info items to display. Click the buttons above to add
             some!
           </p>
-          <p>BTW, nobody can see this message but you.</p>
+          <p>
+            Only admins can view this message, and it will disappear once info
+            items are added.
+          </p>
+          <p>
+            A default message will be displayed to the general public if there
+            are no info items.
+          </p>
         </div>
       );
     }
