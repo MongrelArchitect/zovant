@@ -162,6 +162,15 @@ async function addProductImage(id, file) {
 
 async function deleteInfoItem(type, id) {
   const infoRef = doc(database, 'info', type);
+
+  if (type === 'images') {
+    // delete image from storage
+    const infoSnap = await getDoc(infoRef);
+    const imagePath = infoSnap.data()[id].imageRef;
+    const imageRef = ref(storage, imagePath);
+    await deleteObject(imageRef);
+  }
+
   await updateDoc(infoRef, {
     [id]: deleteField(),
   });
