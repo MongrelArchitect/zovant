@@ -11,7 +11,7 @@ export default function Info({
       <div className="card-contents">
         <div className="card-text">
           <h1>{heading}</h1>
-          <p className="card-text">{content}</p>
+          <pre className="card-text">{content}</pre>
         </div>
         <img alt="" className="card-image" src={image || logo} />
       </div>

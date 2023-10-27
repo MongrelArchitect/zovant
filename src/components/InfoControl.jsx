@@ -37,6 +37,11 @@ export default function InfoControl({ user }) {
     setCardImage(null);
     setImage(null);
     setForm(null);
+    setValidBannerContent(false);
+    setValidCardContent(false);
+    setValidCardHeading(false);
+    setValidCardImage(true);
+    setValidImage(false);
     setVisibleForm(false);
     setAttempted(false);
   };

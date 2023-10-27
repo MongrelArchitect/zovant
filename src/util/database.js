@@ -60,24 +60,34 @@ async function addNewProduct(product) {
 }
 
 async function addInfoCard(content, heading, file) {
-  // upload image to storage and get the download url
-  const fileName = file.name;
-  const lastDot = fileName.lastIndexOf('.');
-  const extension = fileName.slice(lastDot + 1);
   const newId = uuidv4();
-  const path = `info/${newId}.${extension}`;
-  const imageRef = ref(storage, path);
-  await uploadBytes(imageRef, file);
-  const imageURL = await getDownloadURL(imageRef);
+
+  const imageInfo = {
+    path: null,
+    URL: null,
+  };
+
+  if (file) {
+    // upload image to storage and get the download url
+    const fileName = file.name;
+    const lastDot = fileName.lastIndexOf('.');
+    const extension = fileName.slice(lastDot + 1);
+    const path = `info/${newId}.${extension}`;
+    const imageRef = ref(storage, path);
+    await uploadBytes(imageRef, file);
+    const imageURL = await getDownloadURL(imageRef);
+    imageInfo.path = path;
+    imageInfo.URL = imageURL;
+  }
 
   // update database with card information
-  const imageDoc = doc(database, 'info', 'images');
+  const imageDoc = doc(database, 'info', 'cards');
   await updateDoc(imageDoc, {
     [newId]: {
       content,
       heading,
-      image: imageURL,
-      imageRef: path,
+      image: imageInfo.URL,
+      imageRef: imageInfo.path,
       timestamp: Date.now(),
     },
   });
@@ -191,8 +201,10 @@ async function deleteInfoItem(type, id) {
     // delete image from storage
     const infoSnap = await getDoc(infoRef);
     const imagePath = infoSnap.data()[id].imageRef;
-    const imageRef = ref(storage, imagePath);
-    await deleteObject(imageRef);
+    if (imagePath) {
+      const imageRef = ref(storage, imagePath);
+      await deleteObject(imageRef);
+    }
   }
 
   await updateDoc(infoRef, {
