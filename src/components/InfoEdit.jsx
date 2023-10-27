@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { deleteInfoItem } from '../util/database';
+import { deleteInfoItem, updateInfoTimestamp } from '../util/database';
 
 import arrowUpIcon from '../assets/images/arrow-up.svg';
 import trashIcon from '../assets/images/trash.svg';
@@ -13,6 +13,14 @@ export default function InfoEdit({ bannerId, infoId, imageId }) {
   const deleteItem = async () => {
     try {
       await deleteInfoItem(infoType, id);
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
+  const moveToTop = async () => {
+    try {
+      await updateInfoTimestamp(id, infoType);
     } catch (err) {
       setError(err.message);
     }
@@ -61,7 +69,7 @@ export default function InfoEdit({ bannerId, infoId, imageId }) {
 
   return (
     <div className="info-edit-controls">
-      <button type="button">
+      <button onClick={moveToTop} type="button">
         <img alt="move to top" title="move to top" src={arrowUpIcon} />
       </button>
       <button className="delete-button" onClick={toggleConfirm} type="button">
