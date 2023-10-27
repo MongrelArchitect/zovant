@@ -719,6 +719,10 @@ table caption {
   padding: 8px;
 }
 
+.info-form-container {
+  overflow: auto;
+}
+
 .info-form-header {
   align-self: center;
   font-size: 1.6rem;

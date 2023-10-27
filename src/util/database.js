@@ -59,6 +59,24 @@ async function addNewProduct(product) {
   return docRef;
 }
 
+async function addInfoImage(file) {
+  // upload image to storage and get the download url
+  const fileName = file.name;
+  const lastDot = fileName.lastIndexOf('.');
+  const extension = fileName.slice(lastDot + 1);
+  const newId = uuidv4();
+  const path = `info/${newId}.${extension}`;
+  const imageRef = ref(storage, path);
+  await uploadBytes(imageRef, file);
+  const imageURL = await getDownloadURL(imageRef);
+
+  // update database with image information
+  const imageDoc = doc(database, 'info', 'images');
+  await updateDoc(imageDoc, {
+    [newId]: { image: imageURL, imageRef: path, timestamp: Date.now() },
+  });
+}
+
 async function addProductDownloads(id, downloads) {
   const downloadIds = Object.keys(downloads);
   const productDownloads = {};
@@ -292,6 +310,7 @@ export {
   addNewBanner,
   addNewCategory,
   addNewProduct,
+  addInfoImage,
   addProductDownloads,
   addProductAdditionalImages,
   addProductImage,
