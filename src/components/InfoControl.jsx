@@ -106,7 +106,7 @@ export default function InfoControl({ user }) {
   const displayForm = () => {
     if (form === 'banner') {
       return (
-        <div className="dashboard-detail">
+        <div className="info-form-container dashboard-detail">
           <form className="product-detail">
             <h2 className="info-form-header">New Banner</h2>
             <fieldset className="detail-form-item">
@@ -218,15 +218,22 @@ export default function InfoControl({ user }) {
     return null;
   }
   return (
-    <div className="flex g16">
+    <div className="dashboard-detail">
       <div className={visibleForm ? 'grayout' : 'hidden'}>{displayForm()}</div>
-      <button type="button">+ NEW CARD</button>
-      <button onClick={newImage} type="button">
-        + NEW IMAGE
-      </button>
-      <button onClick={newBanner} type="button">
-        + NEW BANNER
-      </button>
+      <form className="product-detail">
+        <fieldset className="detail-form-item">
+          <legend>Info Item Controls</legend>
+          <div className="flex g16 wrap justify-center">
+            <button type="button">+ NEW CARD</button>
+            <button onClick={newImage} type="button">
+              + NEW IMAGE
+            </button>
+            <button onClick={newBanner} type="button">
+              + NEW BANNER
+            </button>
+          </div>
+        </fieldset>
+      </form>
     </div>
   );
 }

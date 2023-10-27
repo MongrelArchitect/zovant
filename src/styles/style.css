@@ -524,6 +524,10 @@ table caption {
   align-items: center;
 }
 
+.flex.justify-center {
+  justify-content: center;
+}
+
 .flex.g8 {
   gap: 8px;
 }
@@ -577,7 +581,7 @@ table caption {
   display: flex;
   flex-direction: column;
   height: 100vh;
-  padding: 64px;
+  padding-top: 64px;
   position: fixed;
   top: 0;
   left: 0;
@@ -720,7 +724,9 @@ table caption {
 }
 
 .info-form-container {
+  max-width: 400px;
   overflow: auto;
+  width: 100%;
 }
 
 .info-form-header {
