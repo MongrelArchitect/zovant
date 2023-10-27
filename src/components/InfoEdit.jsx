@@ -8,22 +8,27 @@ export default function InfoEdit({ bannerId, infoId, imageId }) {
   const [confirming, setConfirming] = useState(false);
   const [error, setError] = useState(null);
   const [id, setId] = useState(null);
+  const [loading, setLoading] = useState(false);
   const [infoType, setInfoType] = useState(null);
 
   const deleteItem = async () => {
+    setLoading(true);
     try {
       await deleteInfoItem(infoType, id);
     } catch (err) {
       setError(err.message);
     }
+    setLoading(false);
   };
 
   const moveToTop = async () => {
+    setLoading(true);
     try {
       await updateInfoTimestamp(id, infoType);
     } catch (err) {
       setError(err.message);
     }
+    setLoading(false);
   };
 
   const toggleConfirm = () => {
@@ -45,6 +50,17 @@ export default function InfoEdit({ bannerId, infoId, imageId }) {
       setId(imageId);
     }
   }, []);
+
+  if (loading) {
+    return (
+      <div className="info-edit-controls confirming">
+        <div className="flex g16 align-center">
+          Loading...
+          <div className="loading-animation" />
+        </div>
+      </div>
+    );
+  }
 
   if (confirming) {
     return (
