@@ -9,6 +9,7 @@ export default function InfoControl({ user }) {
   const [error, setError] = useState(null);
   const [form, setForm] = useState(null);
   const [image, setImage] = useState(null);
+  const [loading, setLoading] = useState(false);
   const [newBannerContent, setNewBannerContent] = useState('');
   const [newCardContent, setNewCardContent] = useState('');
   const [newCardHeading, setNewCardHeading] = useState('');
@@ -49,11 +50,14 @@ export default function InfoControl({ user }) {
   const submitBanner = async () => {
     setAttempted(true);
     if (validBannerContent) {
+      setLoading(true);
       try {
         await addNewBanner(newBannerContent);
       } catch (err) {
+        setLoading(false);
         setError(err.message);
       }
+      setLoading(false);
       closeForm();
     }
   };
@@ -90,11 +94,14 @@ export default function InfoControl({ user }) {
   const submitImage = async () => {
     setAttempted(true);
     if (validImage) {
+      setLoading(true);
       try {
         await addInfoImage(image);
       } catch (err) {
+        setLoading(false);
         setError(err.message);
       }
+      setLoading(false);
       closeForm();
     }
   };
@@ -169,16 +176,32 @@ export default function InfoControl({ user }) {
   const submitCard = async () => {
     setAttempted(true);
     if (validCardContent && validCardHeading && validCardImage) {
+      setLoading(true);
       try {
         await addInfoCard(newCardContent, newCardHeading, cardImage);
       } catch (err) {
+        setLoading(false);
         setError(err.message);
       }
+      setLoading(false);
       closeForm();
     }
   };
 
   const displayForm = () => {
+    if (loading) {
+      return (
+        <div className="info-form-container dashboard-detail">
+          <div className="product-detail">
+            <div className="flex g16 align-center">
+              Loading...
+              <div className="loading-animation" />
+            </div>
+          </div>
+        </div>
+      );
+    }
+
     if (form === 'banner') {
       return (
         <div className="info-form-container dashboard-detail">
@@ -407,6 +430,7 @@ export default function InfoControl({ user }) {
   if (!user) {
     return null;
   }
+
   return (
     <div className="dashboard-detail">
       <div className={visibleForm ? 'grayout' : 'hidden'}>{displayForm()}</div>
