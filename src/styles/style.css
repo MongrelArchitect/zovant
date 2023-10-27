@@ -524,6 +524,10 @@ table caption {
   align-items: center;
 }
 
+.flex.flex-col {
+  flex-direction: column;
+}
+
 .flex.justify-center {
   justify-content: center;
 }
@@ -1083,6 +1087,10 @@ table caption {
   width: 100%;
   top: 45px;
   z-index: 9;
+}
+
+.text-xl {
+  font-size: 2rem;
 }
 
 @media screen and (min-width: 1000px) {

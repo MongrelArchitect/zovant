@@ -39,46 +39,70 @@ export default function Home({ infoSections, user }) {
     setInfo(rawInfo);
   }, [infoSections]);
 
+  const showEmptyPage = () => {
+    if (user) {
+      return (
+        <div className="flex flex-col g16 align-center">
+          <h1 className="text-xl">Hi Avo!</h1>
+          <p>
+            There are no info cards to display. Click the buttons above to add
+            some!
+          </p>
+          <p>BTW, nobody can see this message but you.</p>
+        </div>
+      );
+    }
+    return (
+      <Info
+        heading="Welcome to Zovant"
+        content="Check out our products to see all that we have to offer!"
+        user={user}
+      />
+    );
+  };
+
   return (
     <div className="home">
       <Hero />
       <div className="info">
         {user ? <InfoControl user={user} /> : null}
-        {info.map((infoDetail) => {
-          if (infoDetail.type === 'banner') {
-            return (
-              <Banner
-                bannerId={infoDetail.id}
-                content={infoDetail.content}
-                key={infoDetail.id}
-                user={user}
-              />
-            );
-          }
-          if (infoDetail.type === 'card') {
-            return (
-              <Info
-                content={infoDetail.content}
-                heading={infoDetail.heading}
-                image={infoDetail.image}
-                infoId={infoDetail.id}
-                key={infoDetail.id}
-                user={user}
-              />
-            );
-          }
-          if (infoDetail.type === 'image') {
-            return (
-              <Image
-                image={infoDetail.image}
-                imageId={infoDetail.id}
-                key={infoDetail.id}
-                user={user}
-              />
-            );
-          }
-          return null;
-        })}
+        {info.length
+          ? info.map((infoDetail) => {
+            if (infoDetail.type === 'banner') {
+              return (
+                <Banner
+                  bannerId={infoDetail.id}
+                  content={infoDetail.content}
+                  key={infoDetail.id}
+                  user={user}
+                />
+              );
+            }
+            if (infoDetail.type === 'card') {
+              return (
+                <Info
+                  content={infoDetail.content}
+                  heading={infoDetail.heading}
+                  image={infoDetail.image}
+                  infoId={infoDetail.id}
+                  key={infoDetail.id}
+                  user={user}
+                />
+              );
+            }
+            if (infoDetail.type === 'image') {
+              return (
+                <Image
+                  image={infoDetail.image}
+                  imageId={infoDetail.id}
+                  key={infoDetail.id}
+                  user={user}
+                />
+              );
+            }
+            return null;
+          })
+          : showEmptyPage()}
       </div>
     </div>
   );
