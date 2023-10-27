@@ -1,15 +1,21 @@
 import { useState } from 'react';
-import { addInfoImage, addNewBanner } from '../util/database';
+import { addInfoCard, addInfoImage, addNewBanner } from '../util/database';
 
 import dropImageIcon from '../assets/images/add-image.svg';
 
 export default function InfoControl({ user }) {
   const [attempted, setAttempted] = useState(false);
+  const [cardImage, setCardImage] = useState(null);
   const [error, setError] = useState(null);
   const [form, setForm] = useState(null);
   const [image, setImage] = useState(null);
   const [newBannerContent, setNewBannerContent] = useState('');
+  const [newCardContent, setNewCardContent] = useState('');
+  const [newCardHeading, setNewCardHeading] = useState('');
   const [validBannerContent, setValidBannerContent] = useState(false);
+  const [validCardContent, setValidCardContent] = useState(false);
+  const [validCardHeading, setValidCardHeading] = useState(false);
+  const [validCardImage, setValidCardImage] = useState(true);
   const [validImage, setValidImage] = useState(false);
   const [visibleForm, setVisibleForm] = useState(false);
 
@@ -26,17 +32,20 @@ export default function InfoControl({ user }) {
   const closeForm = () => {
     setError(null);
     setNewBannerContent('');
+    setNewCardContent('');
+    setNewCardHeading('');
+    setCardImage(null);
     setImage(null);
     setForm(null);
     setVisibleForm(false);
     setAttempted(false);
   };
 
-  const submitBanner = () => {
+  const submitBanner = async () => {
     setAttempted(true);
     if (validBannerContent) {
       try {
-        addNewBanner(newBannerContent);
+        await addNewBanner(newBannerContent);
       } catch (err) {
         setError(err.message);
       }
@@ -73,11 +82,11 @@ export default function InfoControl({ user }) {
     setImage(null);
   };
 
-  const submitImage = () => {
+  const submitImage = async () => {
     setAttempted(true);
     if (validImage) {
       try {
-        addInfoImage(image);
+        await addInfoImage(image);
       } catch (err) {
         setError(err.message);
       }
@@ -101,6 +110,67 @@ export default function InfoControl({ user }) {
       suffix = 'TOO BIG!';
     }
     return `${newSize} ${suffix}`;
+  };
+
+  const changeCardContent = (event) => {
+    setError(null);
+    setNewCardContent(event.target.value);
+    if (event.target.value.trim()) {
+      setValidCardContent(true);
+    } else {
+      setValidCardContent(false);
+    }
+  };
+
+  const changeCardHeading = (event) => {
+    setError(null);
+    setNewCardHeading(event.target.value);
+    if (event.target.value.trim()) {
+      setValidCardHeading(true);
+    } else {
+      setValidCardHeading(false);
+    }
+  };
+
+  const changeCardImage = (event) => {
+    setError(null);
+    const file = event.target.files[0];
+    if (!file || file.type.split('/')[0] !== 'image' || file.size > 5000000) {
+      setValidCardImage(false);
+    } else {
+      setValidCardImage(true);
+    }
+    setCardImage(file);
+  };
+
+  const deleteCardImage = () => {
+    setError(null);
+    setValidImage(true);
+    setImage(null);
+  };
+
+  const dropCardImage = (event) => {
+    setError(null);
+    event.preventDefault();
+    const file = event.dataTransfer.files[0];
+    if (!file || file.type.split('/')[0] !== 'image' || file.size > 5000000) {
+      setValidCardImage(false);
+    } else {
+      setValidCardImage(true);
+    }
+    setCardImage(file);
+  };
+
+  const submitCard = async () => {
+    setAttempted(true);
+    if (validCardContent && validCardHeading && validCardImage) {
+      try {
+        await addInfoCard(newCardContent, newCardHeading, cardImage);
+      } catch (err) {
+        setError(err.message);
+      }
+      closeForm();
+    }
   };
 
   const displayForm = () => {
@@ -176,7 +246,9 @@ export default function InfoControl({ user }) {
                 />
                 {image ? (
                   <div>{`${image.name} - ${formatSize(image.size)}`}</div>
-                ) : <div>No file chosen</div>}
+                ) : (
+                  <div>No file chosen</div>
+                )}
                 <div>
                   <span className="edit-button">Choose File</span>
                   <button className="error" onClick={deleteImage} type="button">
@@ -201,11 +273,124 @@ export default function InfoControl({ user }) {
         </div>
       );
     }
+
+    if (form === 'card') {
+      return (
+        <div className="info-form-container dashboard-detail">
+          <form className="product-detail">
+            <h2 className="info-form-header">New Card</h2>
+
+            <fieldset className="detail-form-item">
+              <legend>Heading (required)</legend>
+              <label htmlFor="new-card-heading">
+                <input
+                  id="new-card-heading"
+                  onChange={changeCardHeading}
+                  required
+                  type="text"
+                  value={newCardHeading || ''}
+                />
+              </label>
+              {attempted && !validCardHeading ? (
+                <div className="error">Heading required</div>
+              ) : null}
+            </fieldset>
+
+            <fieldset className="detail-form-item">
+              <legend>Content (required)</legend>
+              <label htmlFor="new-card-content">
+                <textarea
+                  id="new-card-content"
+                  onChange={changeCardContent}
+                  required
+                  rows="5"
+                  value={newCardContent || ''}
+                />
+              </label>
+              {attempted && !validCardContent ? (
+                <div className="error">Content required</div>
+              ) : null}
+            </fieldset>
+
+            <fieldset className="detail-form-item">
+              <legend>Image (optional)</legend>
+              <label className="image-label" htmlFor="new-card-image">
+                <div
+                  className={cardImage ? 'drop-file' : 'drop-file empty'}
+                  onDragOver={(e) => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                  }}
+                  onDrop={dropCardImage}
+                >
+                  {cardImage ? (
+                    <img
+                      alt=""
+                      className="image-preview"
+                      src={URL.createObjectURL(cardImage)}
+                    />
+                  ) : (
+                    <>
+                      <img alt="" className="drop-image" src={dropImageIcon} />
+                      <div>Drop image here</div>
+                    </>
+                  )}
+                </div>
+                <input
+                  accept="image/*"
+                  hidden
+                  id="new-card-image"
+                  onChange={changeCardImage}
+                  type="file"
+                />
+                {cardImage ? (
+                  <div>
+                    {`${cardImage.name} - ${formatSize(
+                      cardImage.size,
+                    )}`}
+                  </div>
+                ) : (
+                  <div>No file chosen</div>
+                )}
+                <div>
+                  <span className="edit-button">Choose File</span>
+                  <button
+                    className="error"
+                    onClick={deleteCardImage}
+                    type="button"
+                  >
+                    X
+                  </button>
+                </div>
+                {attempted && !validCardImage ? (
+                  <div className="error">Must be an image (5MB maximum)</div>
+                ) : null}
+              </label>
+            </fieldset>
+
+            {attempted && error ? <div className="error">{error}</div> : null}
+            <div className="flex g16">
+              <button onClick={submitCard} className="submit" type="button">
+                Submit
+              </button>
+              <button onClick={closeForm} type="button">
+                Cancel
+              </button>
+            </div>
+          </form>
+        </div>
+      );
+    }
     return null;
   };
 
   const newBanner = () => {
     setForm('banner');
+    setVisibleForm(true);
+  };
+
+  const newCard = () => {
+    setForm('card');
     setVisibleForm(true);
   };
 
@@ -224,7 +409,9 @@ export default function InfoControl({ user }) {
         <fieldset className="detail-form-item">
           <legend>Info Item Controls</legend>
           <div className="flex g16 wrap justify-center">
-            <button type="button">+ NEW CARD</button>
+            <button onClick={newCard} type="button">
+              + NEW CARD
+            </button>
             <button onClick={newImage} type="button">
               + NEW IMAGE
             </button>

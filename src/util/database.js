@@ -59,6 +59,30 @@ async function addNewProduct(product) {
   return docRef;
 }
 
+async function addInfoCard(content, heading, file) {
+  // upload image to storage and get the download url
+  const fileName = file.name;
+  const lastDot = fileName.lastIndexOf('.');
+  const extension = fileName.slice(lastDot + 1);
+  const newId = uuidv4();
+  const path = `info/${newId}.${extension}`;
+  const imageRef = ref(storage, path);
+  await uploadBytes(imageRef, file);
+  const imageURL = await getDownloadURL(imageRef);
+
+  // update database with card information
+  const imageDoc = doc(database, 'info', 'images');
+  await updateDoc(imageDoc, {
+    [newId]: {
+      content,
+      heading,
+      image: imageURL,
+      imageRef: path,
+      timestamp: Date.now(),
+    },
+  });
+}
+
 async function addInfoImage(file) {
   // upload image to storage and get the download url
   const fileName = file.name;
@@ -163,7 +187,7 @@ async function addProductImage(id, file) {
 async function deleteInfoItem(type, id) {
   const infoRef = doc(database, 'info', type);
 
-  if (type === 'images') {
+  if (type === 'images' || type === 'cards') {
     // delete image from storage
     const infoSnap = await getDoc(infoRef);
     const imagePath = infoSnap.data()[id].imageRef;
@@ -327,6 +351,7 @@ export {
   addNewBanner,
   addNewCategory,
   addNewProduct,
+  addInfoCard,
   addInfoImage,
   addProductDownloads,
   addProductAdditionalImages,
