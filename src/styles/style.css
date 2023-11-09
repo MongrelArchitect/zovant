@@ -249,7 +249,7 @@ table caption {
 .card-image {
   border: 3px solid var(--brand-blue);
   border-radius: 5%;
-  height: 200px;
+  height: auto;
   width: 200px;
 }
 
@@ -257,6 +257,9 @@ table caption {
   align-items: center;
   display: flex;
   gap: 16px;
+  max-width: 900px;
+  width: 100%;
+  justify-content: space-between;
 }
 
 .card-text {
