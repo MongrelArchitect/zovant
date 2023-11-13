@@ -10,7 +10,8 @@ export default function Contact() {
       <div className="info">
         <Info
           heading="Contact"
-          content="Consectetur delectus obcaecati soluta quod a Eum facere fugit quaerat optio eos Vitae debitis labore quas doloremque suscipit Explicabo delectus."
+          email="info@zovantcctv.com"
+          content="For all inquiries, please email us at "
         />
       </div>
     </div>
