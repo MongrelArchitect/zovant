@@ -24,6 +24,7 @@ import LoadingScreen from './LoadingScreen';
 import Login from './Login';
 import NewCategory from './NewCategory';
 import NewProduct from './NewProduct';
+import Privacy from './Privacy';
 import ProductDetail from './ProductDetail';
 import Products from './Products';
 import Root from './Root';
@@ -270,6 +271,10 @@ export default function App() {
             }
             return null;
           },
+        },
+        {
+          path: '/privacy',
+          element: <Privacy />,
         },
       ],
     },

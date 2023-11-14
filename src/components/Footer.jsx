@@ -9,7 +9,6 @@ export default function Footer({ user }) {
   return (
     <footer className="footer">
       <div className="footer-content">
-
         <div className="brand">
           <img alt="Zovant" className="logo" src={logoIcon} />
           <ul className="socials">
@@ -49,37 +48,25 @@ export default function Footer({ user }) {
                 title="youtube"
                 rel="noreferrer"
               >
-                <img
-                  alt="Youtube"
-                  className="social-logo"
-                  src={youtubeIcon}
-                />
+                <img alt="Youtube" className="social-logo" src={youtubeIcon} />
               </a>
             </li>
           </ul>
-          <Link to={user ? '/dashboard' : '/login'}>Admin</Link>
         </div>
 
         <div className="footer-links">
           <ul>
             <h3>Links</h3>
-            <li>Something</li>
-            <li>Something else</li>
-            <li>Another link</li>
-            <li>Again</li>
-          </ul>
-          <ul>
-            <h3>Other</h3>
-            <li>A thing here</li>
-            <li>Maybe</li>
-            <li>Here we go again</li>
+            <li>
+              <Link to="/privacy">Privacy</Link>
+            </li>
+            <li>
+              <Link to={user ? '/dashboard' : '/login'}>Admin</Link>
+            </li>
           </ul>
         </div>
-
       </div>
-      <div className="copyright">
-        © Zovant - All rights reserved
-      </div>
+      <div className="copyright">© Zovant - All rights reserved</div>
     </footer>
   );
 }

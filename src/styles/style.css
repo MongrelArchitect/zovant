@@ -254,7 +254,7 @@ table caption {
 }
 
 .card-contents {
-  align-items: center;
+  align-items: flex-start;
   display: flex;
   gap: 16px;
   max-width: 900px;
@@ -603,7 +603,8 @@ table caption {
   z-index: 9;
 }
 
-.header a {
+.header a,
+.footer a {
   color: var(--text-light);
   opacity: 0.6;
   text-decoration: none;
@@ -611,7 +612,9 @@ table caption {
 }
 
 .header a:hover,
-.header a:focus {
+.header a:focus,
+.footer a:hover,
+.footer a:focus {
   opacity: 1;
 }
 
@@ -953,6 +956,28 @@ table caption {
   padding: 8px;
 }
 
+.privacy .card-text h2 {
+  align-self: flex-start;
+  font-weight: bold;
+}
+
+.privacy .card-text h3 {
+  font-size: 1.3rem;
+  font-weight: bold;
+}
+
+.privacy .card-text ul {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  list-style: disc;
+  margin-left: 40px;
+}
+
+.privacy .card-text ul li.no-style {
+  list-style: none;
+}
+
 .product-detail {
   background: #eee;
   border: 2px solid #ccc;
@@ -1133,6 +1158,7 @@ table caption {
 @media screen and (max-width: 600px) {
   .card-contents {
     flex-direction: column;
+    align-items: center;
   }
 
   .carousel {
