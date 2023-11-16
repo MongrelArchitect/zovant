@@ -14,7 +14,7 @@ export default function Privacy() {
               <h1>Privacy Policy</h1>
               <p>
                 Zovant (&quot;us,&quot; &quot;we,&quot; or &quot;our&quot;)
-                operates [Your App Store Name] (the &quot;App Store&quot;).
+                operates ZovantCCTV (the &quot;App Store&quot;).
               </p>
               <p>
                 This page informs you of our policies regarding the collection,
