@@ -137,8 +137,7 @@ export default function Privacy() {
                 <ul>
                   <li>Comply with a legal obligation.</li>
                   <li>
-                    Protect and defend the rights or property of [Your Name or
-                    Business Name].
+                    Protect and defend the rights or property of Zovant.
                   </li>
                   <li>
                     Prevent or investigate possible wrongdoing in connection
