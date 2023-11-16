@@ -44,7 +44,7 @@ export default function Footer({ user }) {
             <li>
               <a
                 target="_blank"
-                href="https://youtube.com"
+                href="https://www.youtube.com/@ZOVANTCCTV"
                 title="youtube"
                 rel="noreferrer"
               >
