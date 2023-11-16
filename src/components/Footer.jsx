@@ -1,6 +1,5 @@
 import { Link } from 'react-router-dom';
 
-import facebookIcon from '../assets/images/facebook-logo.svg';
 import instagramIcon from '../assets/images/instagram-logo.svg';
 import youtubeIcon from '../assets/images/youtube-logo.svg';
 import logoIcon from '../assets/images/zovant-logo-horizontal-transparent.png';
@@ -16,21 +15,7 @@ export default function Footer({ user }) {
             <li>
               <a
                 target="_blank"
-                href="https://facebook.com"
-                title="Facebook"
-                rel="noreferrer"
-              >
-                <img
-                  alt="Facebook"
-                  className="social-logo"
-                  src={facebookIcon}
-                />
-              </a>
-            </li>
-            <li>
-              <a
-                target="_blank"
-                href="https://instagram.com"
+                href="https://www.instagram.com/zovantcctv/"
                 title="Instagram"
                 rel="noreferrer"
               >
