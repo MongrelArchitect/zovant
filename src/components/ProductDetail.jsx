@@ -43,6 +43,7 @@ export default function ProductDetail({ allCategories, allProducts }) {
   const [loading, setLoading] = useState(false);
   const [newImage, setNewImage] = useState(null);
   const [originalAccessories, setOriginalAccessories] = useState([]);
+  const [originalDownloads, setOriginalDownloads] = useState({});
   const [placeholder, setPlaceholder] = useState(true);
   const [productDetails, setProductDetails] = useState(null);
   const [validAdditionalImages, setValidAdditionalImages] = useState(true);
@@ -857,6 +858,7 @@ export default function ProductDetail({ allCategories, allProducts }) {
           accessories: productDetails.accessories,
           category: productDetails.category,
           description: productDetails.description,
+          downloads: originalDownloads,
           features: productDetails.features,
           image: productDetails.image,
           imageRef: productDetails.imageRef,
@@ -946,7 +948,7 @@ export default function ProductDetail({ allCategories, allProducts }) {
         // upload any new download files
         const newDownloads = getNewDownloads();
         if (Object.keys(newDownloads).length) {
-          await addProductDownloads(id, newDownloads);
+          await addProductDownloads(id, newDownloads, originalDownloads);
         }
 
         // update any original downloads whose descriptions have changed
@@ -1386,6 +1388,7 @@ export default function ProductDetail({ allCategories, allProducts }) {
     setAttempted(false);
     setDownloadsToDelete([]);
     setOriginalAccessories([]);
+    setOriginalDownloads({});
     setImagesToDelete({});
     if (!deleted) {
       const specsExcel = allProducts[id].specsExcel
@@ -1404,6 +1407,7 @@ export default function ProductDetail({ allCategories, allProducts }) {
       setOriginalAccessories([...details.accessories]);
       // also need to keep track of original "downloads" so if files are
       // changed we can delete the old ones
+      setOriginalDownloads({ ...details.downloads });
       Object.keys(details.downloads).forEach((downloadId) => {
         details.downloads[downloadId].original = true;
       });
