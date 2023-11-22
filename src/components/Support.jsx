@@ -42,7 +42,16 @@ export default function Support({ allProducts }) {
   };
 
   const displayDownloads = (downloads) => {
-    const downloadIds = Object.keys(downloads);
+    const downloadIds = Object.keys(downloads).sort((a, b) => {
+      if (downloads[a].description < downloads[b].description) {
+        return -1;
+      }
+      if (downloads[a].description > downloads[b].description) {
+        return 1;
+      }
+      return 0;
+    });
+
     return downloadIds.map((downloadId) => {
       const download = downloads[downloadId];
       return (
@@ -63,7 +72,15 @@ export default function Support({ allProducts }) {
   };
 
   const displayProductDownloads = () => {
-    const productIds = Object.keys(productDownloads);
+    const productIds = Object.keys(productDownloads).sort((a, b) => {
+      if (allProducts[a].model < allProducts[b].model) {
+        return -1;
+      }
+      if (allProducts[a].model > allProducts[b].model) {
+        return 1;
+      }
+      return 0;
+    });
 
     if (productIds.length) {
       return (
