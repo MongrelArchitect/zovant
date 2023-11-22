@@ -124,7 +124,7 @@ export default function NewDownload() {
           <legend>Description (required)</legend>
           <label htmlFor="description">
             <input
-              id="name"
+              id="description"
               onChange={changeDescription}
               placeholder="Enter file description"
               required

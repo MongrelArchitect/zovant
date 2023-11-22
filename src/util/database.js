@@ -335,6 +335,13 @@ async function updateDownloadDescriptions(productId, downloadsToUpdate) {
   });
 }
 
+async function updateGeneralDownload(downloadId, description) {
+  const downloadDoc = doc(database, 'downloads', downloadId);
+  await updateDoc(downloadDoc, {
+    description,
+  });
+}
+
 async function updateInfoTimestamp(id, type) {
   const infoDoc = doc(database, 'info', type);
   const nestedField = `${id}.timestamp`;
@@ -397,6 +404,7 @@ export {
   removeProductFromAccessories,
   updateCategory,
   updateDownloadDescriptions,
+  updateGeneralDownload,
   updateInfoTimestamp,
   updateProduct,
   updateProductAccessories,

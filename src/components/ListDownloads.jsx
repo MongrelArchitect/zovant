@@ -8,7 +8,7 @@ export default function ListDownloads({ generalDownloads }) {
       return -1;
     }
     if (generalDownloads[a].description > generalDownloads[b].description) {
-      return -1;
+      return 1;
     }
     return 0;
   });
