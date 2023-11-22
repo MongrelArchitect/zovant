@@ -31,6 +31,11 @@ export default function Dashboard({ user }) {
                 <li>
                   <Link to="/dashboard/products/">Edit Product</Link>
                 </li>
+                <br />
+                <h3>Downloads</h3>
+                <li>
+                  <Link to="/dashboard/downloads/new">New Download</Link>
+                </li>
               </ul>
             </div>
 

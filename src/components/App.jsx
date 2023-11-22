@@ -23,6 +23,7 @@ import ListProducts from './ListProducts';
 import LoadingScreen from './LoadingScreen';
 import Login from './Login';
 import NewCategory from './NewCategory';
+import NewDownload from './NewDownload';
 import NewProduct from './NewProduct';
 import Privacy from './Privacy';
 import ProductDetail from './ProductDetail';
@@ -216,6 +217,10 @@ export default function App() {
             {
               path: 'categories/new',
               element: <NewCategory allCategories={allCategories} />,
+            },
+            {
+              path: 'downloads/new',
+              element: <NewDownload />,
             },
             {
               path: 'products/:id',
