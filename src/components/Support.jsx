@@ -4,7 +4,7 @@ import Banner from './Banner';
 
 import openIcon from '../assets/images/open-in-new.svg';
 
-export default function Support({ allProducts }) {
+export default function Support({ allProducts, generalDownloads }) {
   const [productDownloads, setProductDownloads] = useState({});
 
   useEffect(() => {
@@ -71,6 +71,48 @@ export default function Support({ allProducts }) {
     });
   };
 
+  const displayGeneralDownloads = () => {
+    const downloadIds = Object.keys(generalDownloads).sort((a, b) => {
+      if (generalDownloads[a].description < generalDownloads[b].description) {
+        return -1;
+      }
+      if (generalDownloads[a].description > generalDownloads[b].description) {
+        return -1;
+      }
+      return 0;
+    });
+
+    if (downloadIds.length) {
+      return (
+        <ul className="downloads-list">
+          {downloadIds.map((downloadId) => {
+            const download = generalDownloads[downloadId];
+            return (
+              <li
+                className="flex flex-col align-start p8 ml16"
+                key={downloadId}
+              >
+                {download.description
+                  ? download.description
+                  : download.fileName}
+                <a
+                  className="flex align-center g8"
+                  target="_blank"
+                  href={download.downloadURL}
+                  rel="noreferrer"
+                >
+                  {`(${download.fileName}) - ${formatSize(download.size)}`}
+                  <img alt="open in new tab" src={openIcon} />
+                </a>
+              </li>
+            );
+          })}
+        </ul>
+      );
+    }
+    return <div>No general downloads available.</div>;
+  };
+
   const displayProductDownloads = () => {
     const productIds = Object.keys(productDownloads).sort((a, b) => {
       if (allProducts[a].model < allProducts[b].model) {
@@ -109,6 +151,26 @@ export default function Support({ allProducts }) {
     return <div>No product-specific downloads available.</div>;
   };
 
+  if (
+    !Object.keys(productDownloads).length
+    && !Object.keys(generalDownloads).length
+  ) {
+    return (
+      <div className="support">
+        <div className="info">
+          <Banner content="Support Center" />
+
+          <article className="card">
+            <div className="flex flex-col card-contents">
+              <h1>No Downloads Available</h1>
+              <div>There are no files available for download.</div>
+            </div>
+          </article>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="support">
       <div className="info">
@@ -117,7 +179,7 @@ export default function Support({ allProducts }) {
         <article className="card">
           <div className="flex flex-col card-contents">
             <h1>General Downloads</h1>
-            <div className="card-text">Some text here</div>
+            <div>{displayGeneralDownloads()}</div>
           </div>
         </article>
 
