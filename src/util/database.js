@@ -21,6 +21,24 @@ import {
 import { v4 as uuidv4 } from 'uuid';
 import { database, storage } from './firebase';
 
+async function addGeneralDownload(file, description) {
+  const docRef = await addDoc(collection(database, 'downloads'), {
+    description,
+    fileName: file.name,
+    size: file.size,
+  });
+  const filePath = `/downloads/${docRef.id}/${file.name}`;
+  const fileRef = ref(storage, filePath);
+  await uploadBytes(fileRef, file);
+  const downloadURL = await getDownloadURL(fileRef);
+  const downloadRef = doc(database, 'downloads', docRef.id);
+  await updateDoc(downloadRef, {
+    downloadURL,
+    fileRef: filePath,
+  });
+  return docRef.id;
+}
+
 async function addNewBanner(content) {
   const newId = uuidv4();
   const bannerDoc = doc(database, 'info', 'banners');
@@ -360,6 +378,7 @@ async function updateProductAccessories(productId) {
 }
 
 export {
+  addGeneralDownload,
   addNewBanner,
   addNewCategory,
   addNewProduct,
