@@ -77,9 +77,7 @@ export default function NewDownload() {
     setLoading(true);
     try {
       if (validDescrption && validFile) {
-        // XXX
         const downloadId = await addGeneralDownload(file, description);
-        console.log(downloadId);
         setSuccessId(downloadId);
       } else {
         setError('Something went wrong - check each input');

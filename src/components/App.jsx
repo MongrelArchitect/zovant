@@ -15,10 +15,12 @@ import CatalogProductDetail from './CatalogProductDetail';
 import CategoryDetail from './CategoryDetail';
 import Contact from './Contact';
 import Dashboard from './Dashboard';
+import DownloadDetail from './DownloadDetail';
 import ErrorPage from './ErrorPage';
 import ForgotPassword from './ForgotPassword';
 import Home from './Home';
 import ListCategories from './ListCategories';
+import ListDownloads from './ListDownloads';
 import ListProducts from './ListProducts';
 import LoadingScreen from './LoadingScreen';
 import Login from './Login';
@@ -39,7 +41,9 @@ export default function App() {
   const [allCategories, setAllCategories] = useState({});
   const [allProducts, setAllProducts] = useState({});
   const [infoSections, setInfoSections] = useState({});
+  const [generalDownloads, setGeneralDownloads] = useState({});
   const [loadedCategories, setLoadedCategories] = useState(false);
+  const [loadedDownloads, setLoadedDownloads] = useState(false);
   const [loadedInfo, setLoadedInfo] = useState(false);
   const [loadedProducts, setLoadedProducts] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -94,18 +98,31 @@ export default function App() {
       setLoadedInfo(true);
     });
 
+    const downloadsQuery = query(collection(database, 'downloads'));
+    const unsubDownloads = onSnapshot(downloadsQuery, (querySnapshot) => {
+      const downloads = {};
+      querySnapshot.forEach((docu) => {
+        downloads[docu.id] = {
+          ...docu.data(),
+        };
+      });
+      setGeneralDownloads(downloads);
+      setLoadedDownloads(true);
+    });
+
     return () => {
       unsubProducts();
       unsubCategories();
       unsubInfo();
+      unsubDownloads();
     };
   }, []);
 
   useEffect(() => {
-    if (loadedCategories && loadedInfo && loadedProducts) {
+    if (loadedCategories && loadedInfo && loadedProducts && loadedDownloads) {
       setLoading(false);
     }
-  }, [loadedCategories, loadedInfo, loadedProducts]);
+  }, [loadedCategories, loadedInfo, loadedProducts, loadedDownloads]);
 
   const router = createBrowserRouter([
     {
@@ -219,8 +236,16 @@ export default function App() {
               element: <NewCategory allCategories={allCategories} />,
             },
             {
+              path: 'downloads/',
+              element: <ListDownloads generalDownloads={generalDownloads} />,
+            },
+            {
               path: 'downloads/new',
               element: <NewDownload />,
+            },
+            {
+              path: 'downloads/:downloadId',
+              element: <DownloadDetail generalDownloads={generalDownloads} />,
             },
             {
               path: 'products/:id',
@@ -284,7 +309,12 @@ export default function App() {
         },
         {
           path: '/support',
-          element: <Support allProducts={allProducts} />,
+          element: (
+            <Support
+              allProducts={allProducts}
+              generalDownloads={generalDownloads}
+            />
+          ),
         },
       ],
     },
