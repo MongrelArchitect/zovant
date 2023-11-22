@@ -527,8 +527,16 @@ table caption {
   align-items: center;
 }
 
+.flex.align-start {
+  align-items: flex-start;
+}
+
 .flex.flex-col {
   flex-direction: column;
+}
+
+.flex.justify-between {
+  justify-content: space-between;
 }
 
 .flex.justify-center {
@@ -821,6 +829,10 @@ table caption {
   100% {
     transform: rotate(360deg);
   }
+}
+
+.ml16 {
+  margin-left: 16px;
 }
 
 .nav a.active {
@@ -1149,6 +1161,24 @@ table caption {
 .success {
   background: var(--brand-middle);
   padding: 8px;
+}
+
+.support .card .card-contents {
+  align-items: stretch;
+}
+
+.support .downloads-list {
+  background: #fff;
+}
+
+.support .downloads-list img {
+  filter: invert(22%) sepia(55%) saturate(4212%) hue-rotate(181deg) brightness(97%) contrast(101%);
+  height: 24px;
+}
+
+.support .support-list {
+  background: #ddd;
+  border: 2px solid #ddd;
 }
 
 #root {

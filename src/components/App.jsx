@@ -29,6 +29,7 @@ import ProductDetail from './ProductDetail';
 import Products from './Products';
 import Root from './Root';
 import Summary from './Summary';
+import Support from './Support';
 
 import '../styles/reset.css';
 import '../styles/style.css';
@@ -275,6 +276,10 @@ export default function App() {
         {
           path: '/privacy',
           element: <Privacy />,
+        },
+        {
+          path: '/support',
+          element: <Support allProducts={allProducts} />,
         },
       ],
     },

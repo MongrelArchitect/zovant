@@ -111,9 +111,9 @@ async function addInfoImage(file) {
   });
 }
 
-async function addProductDownloads(id, downloads) {
+async function addProductDownloads(id, downloads, originalDownloads) {
   const downloadIds = Object.keys(downloads);
-  const productDownloads = {};
+  const productDownloads = { ...originalDownloads };
   if (downloadIds.length) {
     await Promise.all(
       downloadIds.map(async (downloadId) => {

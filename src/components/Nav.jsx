@@ -26,6 +26,11 @@ export default function Nav({ toggleCollapse, user, visible }) {
             Contact
           </NavLink>
         </li>
+        <li>
+          <NavLink onClick={toggleCollapse} to="/support">
+            Support
+          </NavLink>
+        </li>
         {user ? (
           <>
             <li>
