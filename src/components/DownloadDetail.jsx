@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { updateGeneralDownload } from '../util/database';
+import { deleteGeneralDownload, updateGeneralDownload } from '../util/database';
 
 export default function DownloadDetail({ generalDownloads }) {
   const { downloadId } = useParams();
@@ -9,7 +9,10 @@ export default function DownloadDetail({ generalDownloads }) {
 
   const [attempted, setAttempted] = useState(false);
   const [confirmingDelete, setConfirmingDelete] = useState(false);
-  const [description, setDescription] = useState(currentDownload.description);
+  const [deleted, setDeleted] = useState(false);
+  const [description, setDescription] = useState(
+    currentDownload ? currentDownload.description : '',
+  );
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -21,7 +24,19 @@ export default function DownloadDetail({ generalDownloads }) {
     setDescription(event.target.value);
   };
 
-  const deleteDownload = () => {};
+  const deleteDownload = async () => {
+    setAttempted(true);
+    setLoading(true);
+    try {
+      await deleteGeneralDownload(downloadId, currentDownload);
+      setDeleted(true);
+    } catch (err) {
+      console.error(err);
+      setLoading(false);
+      setError('Error deleting file');
+    }
+    setLoading(false);
+  };
 
   const formatSize = (size) => {
     let suffix = 'bytes';
@@ -69,6 +84,18 @@ export default function DownloadDetail({ generalDownloads }) {
         Loading...
         <div className="loading-animation" />
       </div>
+    );
+  }
+
+  if (deleted) {
+    return (
+      <>
+        <h2>Download Deleted</h2>
+        <div className="product-detail">
+          <div>Delete successful.</div>
+          <Link to="/dashboard/downloads">Return to downloads list</Link>
+        </div>
+      </>
     );
   }
 

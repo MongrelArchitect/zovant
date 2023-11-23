@@ -212,6 +212,12 @@ async function addProductImage(id, file) {
   return updatedProduct;
 }
 
+async function deleteGeneralDownload(id, info) {
+  const downloadRef = ref(storage, info.fileRef);
+  await deleteObject(downloadRef);
+  await deleteDoc(doc(database, 'downloads', id));
+}
+
 async function deleteInfoItem(type, id) {
   const infoRef = doc(database, 'info', type);
 
@@ -395,6 +401,7 @@ export {
   addProductAdditionalImages,
   addProductImage,
   deleteDownloadsFromStorage,
+  deleteGeneralDownload,
   deleteInfoItem,
   deleteOldImage,
   deleteSingleCategory,

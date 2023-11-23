@@ -106,7 +106,7 @@ export default function NewDownload() {
         <div className="product-detail">
           <div>
             New download
-            {`"${description}"`}
+            {` "${description}"`}
             {' '}
             created successfully.
           </div>
