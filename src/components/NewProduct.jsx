@@ -88,7 +88,7 @@ export default function NewProduct({ allCategories, allProducts }) {
 
   const changeImage = (event) => {
     const file = event.target.files[0];
-    if (!file || file.type.split('/')[0] !== 'image' || file.size > 5000000) {
+    if (!file || file.type.split('/')[0] !== 'image' || file.size > 20000000) {
       setValidImage(false);
     } else {
       setValidImage(true);
@@ -402,7 +402,7 @@ export default function NewProduct({ allCategories, allProducts }) {
     setError(null);
     event.preventDefault();
     const file = event.dataTransfer.files[0];
-    if (!file || file.type.split('/')[0] !== 'image' || file.size > 5000000) {
+    if (!file || file.type.split('/')[0] !== 'image' || file.size > 20000000) {
       setValidImage(false);
     } else {
       setValidImage(true);
@@ -547,7 +547,7 @@ export default function NewProduct({ allCategories, allProducts }) {
         if (
           file
           && file.type.split('/')[0] === 'image'
-          && file.size <= 5000000
+          && file.size <= 20000000
         ) {
           valid = true;
         } else {
@@ -846,7 +846,7 @@ export default function NewProduct({ allCategories, allProducts }) {
                 Upload Image
               </button>
               {attempted && !validImage ? (
-                <div className="error">Image required (5MB limit)</div>
+                <div className="error">Image required (20MB limit)</div>
               ) : null}
             </label>
           </fieldset>
@@ -856,7 +856,7 @@ export default function NewProduct({ allCategories, allProducts }) {
               <legend>Additional Images</legend>
               {displayAdditionalImages()}
               {attempted && !validAdditionalImages ? (
-                <div className="error">Check each image (5MB limit)</div>
+                <div className="error">Check each image (20MB limit)</div>
               ) : null}
               <button onClick={newAdditionalImage} type="button">
                 + add additional image

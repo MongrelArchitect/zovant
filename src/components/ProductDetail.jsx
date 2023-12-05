@@ -75,7 +75,7 @@ export default function ProductDetail({ allCategories, allProducts }) {
   const changeImage = (event) => {
     const file = event.target.files[0];
     if (file) {
-      if (file.type.split('/')[0] !== 'image' || file.size > 5000000) {
+      if (file.type.split('/')[0] !== 'image' || file.size > 20000000) {
         setValidImage(false);
       } else {
         setValidImage(true);
@@ -91,8 +91,8 @@ export default function ProductDetail({ allCategories, allProducts }) {
       if (newImage.type.split('/')[0] !== 'image') {
         return 'Wrong format - images only (jpg, png, gif, etc.)';
       }
-      if (newImage.size > 5000000) {
-        return 'Image too large - 5MB maximum file size';
+      if (newImage.size > 20000000) {
+        return 'Image too large - 20MB maximum file size';
       }
     }
     return null;
@@ -533,7 +533,7 @@ export default function ProductDetail({ allCategories, allProducts }) {
   };
 
   const checkFile = (file) => {
-    if (file && file.type.split('/')[0] === 'image' && file.size <= 5000000) {
+    if (file && file.type.split('/')[0] === 'image' && file.size <= 20000000) {
       return true;
     }
     return false;
@@ -1050,7 +1050,7 @@ export default function ProductDetail({ allCategories, allProducts }) {
     event.preventDefault();
     const file = event.dataTransfer.files[0];
     if (file) {
-      if (file.type.split('/')[0] !== 'image' || file.size > 5000000) {
+      if (file.type.split('/')[0] !== 'image' || file.size > 20000000) {
         setValidImage(false);
       } else {
         setValidImage(true);
@@ -1339,7 +1339,7 @@ export default function ProductDetail({ allCategories, allProducts }) {
             <legend>Additional Images</legend>
             {displayAdditionalImages()}
             {attempted && !validAdditionalImages ? (
-              <div className="error">Check each image (5MB limit)</div>
+              <div className="error">Check each image (20MB limit)</div>
             ) : null}
             <button onClick={newAdditionalImage} type="button">
               + add additional image

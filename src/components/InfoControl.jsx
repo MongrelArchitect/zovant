@@ -65,7 +65,7 @@ export default function InfoControl({ user }) {
   const changeImage = (event) => {
     setError(null);
     const file = event.target.files[0];
-    if (!file || file.type.split('/')[0] !== 'image' || file.size > 5000000) {
+    if (!file || file.type.split('/')[0] !== 'image' || file.size > 20000000) {
       setValidImage(false);
     } else {
       setValidImage(true);
@@ -77,7 +77,7 @@ export default function InfoControl({ user }) {
     setError(null);
     event.preventDefault();
     const file = event.dataTransfer.files[0];
-    if (!file || file.type.split('/')[0] !== 'image' || file.size > 5000000) {
+    if (!file || file.type.split('/')[0] !== 'image' || file.size > 20000000) {
       setValidImage(false);
     } else {
       setValidImage(true);
@@ -147,7 +147,7 @@ export default function InfoControl({ user }) {
   const changeCardImage = (event) => {
     setError(null);
     const file = event.target.files[0];
-    if (!file || file.type.split('/')[0] !== 'image' || file.size > 5000000) {
+    if (!file || file.type.split('/')[0] !== 'image' || file.size > 20000000) {
       setValidCardImage(false);
     } else {
       setValidCardImage(true);
@@ -165,7 +165,7 @@ export default function InfoControl({ user }) {
     setError(null);
     event.preventDefault();
     const file = event.dataTransfer.files[0];
-    if (!file || file.type.split('/')[0] !== 'image' || file.size > 5000000) {
+    if (!file || file.type.split('/')[0] !== 'image' || file.size > 20000000) {
       setValidCardImage(false);
     } else {
       setValidCardImage(true);
@@ -284,7 +284,7 @@ export default function InfoControl({ user }) {
                   </button>
                 </div>
                 {attempted && !validImage ? (
-                  <div className="error">Image required (5MB maximum)</div>
+                  <div className="error">Image required (20MB maximum)</div>
                 ) : null}
               </label>
             </fieldset>
@@ -391,7 +391,7 @@ export default function InfoControl({ user }) {
                   </button>
                 </div>
                 {attempted && !validCardImage ? (
-                  <div className="error">Must be an image (5MB maximum)</div>
+                  <div className="error">Must be an image (20MB maximum)</div>
                 ) : null}
               </label>
             </fieldset>
