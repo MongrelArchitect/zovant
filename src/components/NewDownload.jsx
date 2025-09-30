@@ -22,8 +22,8 @@ export default function NewDownload() {
   };
 
   const checkValidFile = (fileToCheck) => {
-    if (fileToCheck && fileToCheck.size <= 20000000) {
-      // we've got a file and it's 20MB or less, good to go!
+    if (fileToCheck && fileToCheck.size <= 200000000) {
+      // we've got a file and it's 200MB or less, good to go!
       return true;
     }
     return false;
@@ -66,8 +66,8 @@ export default function NewDownload() {
       newSize = Math.floor(size / 1000000);
     }
     if (size >= 1000000000) {
-      newSize = 'WAY';
-      suffix = 'TOO BIG!';
+      newSize = 'VERY';
+      suffix = 'LARGE!';
     }
     return `${newSize} ${suffix}`;
   };
@@ -138,7 +138,7 @@ export default function NewDownload() {
         </fieldset>
 
         <fieldset className="detail-form-item">
-          <legend>File (required - 20MB max)</legend>
+          <legend>File (required - 200MB max)</legend>
           <label className="image-label" htmlFor="file">
             <div
               className={file ? 'drop-file' : 'drop-file empty'}
@@ -171,7 +171,7 @@ export default function NewDownload() {
             />
             <span className="edit-button">Choose File</span>
             {attempted && !validFile ? (
-              <div className="error">File required (20MB limit)</div>
+              <div className="error">File required (200MB limit)</div>
             ) : null}
           </label>
         </fieldset>
